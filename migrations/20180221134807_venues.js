@@ -9,9 +9,9 @@ exports.up = function(knex, Promise) {
     t.varchar('fb')
     t.varchar('email')
     t.integer('capacity')
-    t.boolean('diy').notNullable().defaultTo(false)
-    t.integer('up').notNullable().defaultTo(0)
-    t.integer('down').notNullable().defaultTo(0)
+    t.boolean('diy').defaultTo(false)
+    t.integer('up').defaultTo(0)
+    t.integer('down').defaultTo(0)
   })
 };
 

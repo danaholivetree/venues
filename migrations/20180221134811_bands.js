@@ -9,6 +9,7 @@ exports.up = function(knex, Promise) {
     t.varchar('fb')
     t.varchar('bandcamp')
     t.varchar('spotify')
+    t.varchar('genre')
     t.integer('stars')
   })
 };
