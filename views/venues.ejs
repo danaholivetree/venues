@@ -13,41 +13,56 @@
 
     <div class='searchbox'>
       <p>Filter by:</p>
-      <div class='row'>
-        <div class="input-group mb-3 col-3">
-          <div class="input-group-prepend">
-            <label class="input-group-text" for="stateSelector">State</label>
-          </div>
-          <select class="custom-select" name='state' id="stateSelector"></select>
-        </div>
-        <div class="input-group mb-3 col-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">City</span>
-          </div>
-          <input type="text" id='cityInput' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-        </div>
-        <div class="input-group mb-3 col-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Venue</span>
-          </div>
-          <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-        </div>
-        <div class="input-group mb-3 col-2">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Capacity</span>
-          </div>
-            <select class="custom-select" name='capacity' id="capSelector">
-              <option value='any'>Any</option>
-              <option value='1'> < 100</option>
-              <option value='2'>101-250</option>
-              <option value='3'>251-600</option>
-              <option value='4'>601-1200</option>
-              <option value='5'>1201+</option>
-            </select>
-        </div>
+
+      <form id='searchForm'>
+        <div class='form-row'>
+            <!-- <div class="form-group col-3">
+              <label for="stateSelector">State</label>
+              <select class="custom-select form-control" default='Colorado' id="stateSelector"></select>
+            </div> -->
+            <div class="input-group mb-3 col-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">State</span>
+              </div>
+                <select class="custom-select form-control" name='state' default='Colorado' id="stateSelector"></select>
+            </div>
 
 
-      </div>
+          <div class="input-group mb-3 col-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">City</span>
+            </div>
+            <input type="text" id='cityInput' name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          </div>
+          <div class="input-group mb-3 col-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Venue</span>
+            </div>
+            <input type="text" id='venueInput' name='venue' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          </div>
+          <div class="input-group mb-3 col-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Capacity</span>
+            </div>
+              <select class="custom-select" name='capacity' id="capSelector">
+                <option value='any'>Any</option>
+                <option value='1'> < 100</option>
+                <option value='2'>101-250</option>
+                <option value='3'>251-600</option>
+                <option value='4'>601-1200</option>
+                <option value='5'>1201+</option>
+              </select>
+          </div>
+          <div class="col-1">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </form>
+
+
+
+
+
     </div>
 
 
@@ -65,7 +80,7 @@
           <th><i class="material-icons md-24">thumb_up</i></th>
           <th><i class="material-icons md-24">thumb_down</i></th>
         </thead>
-        <tbody>
+        <tbody id='venuesList'>
       <%venues.forEach( venue => { %>
           <tr>
             <td><%= venue.state %></td>

@@ -12,16 +12,17 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/q', function(req, res, next) {
-  const {city, state, diy, venue, capacity} = req.query
+  const {city, state, venue, capacity} = req.query
 
   return knex('venues')
     .select('*')
     .where({
-      city, state, diy, venue
+      state, city
     })
     .then( venues => {
+      console.log('venues came back from db', venues);
       res.setHeader('content-type', 'application/json')
-      res.send(venues)
+      res.send(JSON.stringify({venues}))
     })
 });
 
