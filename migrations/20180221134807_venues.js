@@ -6,11 +6,11 @@ exports.up = function(knex, Promise) {
     t.string('city').defaultTo('')
     t.string('venue').defaultTo('').notNullable()
     t.string('url').defaultTo('')
-    t.boolean('diy').notNullable().defaultTo(false)
+    t.boolean('diy').defaultTo(false)
     t.integer('capacity').defaultTo(0)
     t.integer('up').defaultTo(0)
     t.integer('down').defaultTo(0)
-    t.timestamps()
+    t.timestamps(true, true)
   })
 };
 

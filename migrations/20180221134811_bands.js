@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
     t.string('spotify').defaultTo('')
     t.string('genre').defaultTo('')
     t.integer('stars').defaultTo(0)
-    t.timestamps()
+    t.timestamps(true, true)
   });
 };
 
