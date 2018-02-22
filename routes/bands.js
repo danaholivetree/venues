@@ -1,10 +1,14 @@
 var express = require('express');
 var router = express.Router();
+const knex = require('../knex')
 
-var names = ['dan', 'shea', 'kerry', 'robin']
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express', names});
+  return knex('bands')
+    .select('*')
+    .then( bands => {
+      res.render('bands', {bands, title: 'Bands'})
+    })
 });
 
 module.exports = router;

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+
+      <table>
+        <thead>
+          <tr>
+            <th>state</th>
+            <th>city</th>
+            <th>band</th>
+            <th>url</th>
+            <th>fb</th>
+            <th>bandcamp</th>
+            <th>spotify</th>
+            <th>genre</th>
+            <th>stars</th>
+          </tr>
+
+        </thead>
+
+      <% bands.forEach( band => { %>
+          <tr>
+            <td><%= band.state %></td>
+            <td><%= band.city %></td>
+            <td><%= band.band %></td>
+            <td><%= band.url %></td>
+            <td><%- link_to('fb',band.fb) -%></td>
+            <td><%= band.bandcamp %></td>
+            <td><%= band.spotify %></td>
+            <td><%= band.genre %></td>
+            <td><%= band.stars %></td>
+          </tr>
+
+      <% }); %>
+
+      </table>
+  </body>
+</html>
