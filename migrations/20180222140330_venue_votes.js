@@ -4,6 +4,7 @@ exports.up = function(knex, Promise) {
       t.increments()
       t.integer('users_id').references('users.id').notNullable().onDelete('CASCADE')
       t.integer('venues_id').references('venues.id').notNullable().onDelete('CASCADE')
+    })
 };
 
 exports.down = function(knex, Promise) {

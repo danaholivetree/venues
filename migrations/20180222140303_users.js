@@ -6,8 +6,9 @@ exports.up = function(knex, Promise) {
       t.varchar('email', 128).notNullable()
       t.integer('contributions').defaultTo(0)
       t.boolean('admin').defaultTo(false)
-};
+    })
+}
 
 exports.down = function(knex, Promise) {
     return knex.schema.dropTableIfExists('users')
-  }
+}
