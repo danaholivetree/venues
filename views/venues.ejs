@@ -8,27 +8,22 @@
     <h1> Venues in  <%= venues[0].state %> </h1>
       <table>
         <thead>
-
+          <th>state</th>
+          <th>city</th>
           <th>venue</th>
           <th>url</th>
-          <th>fb</th>
-          <th>email</th>
           <th>capacity</th>
-          <th>diy?</th>
+          <th>diy</th>
           <th>up</th>
           <th>down</th>
         </thead>
         <tbody>
       <%venues.forEach( venue => { %>
-
-        <%-console.log(venue.fb? venue.fb.split('/')[3] : '') -%>
           <tr>
-
+            <td><%= venue.state %></td>
+            <td><%= venue.city %></td>
             <td><%= venue.venue %></td>
-            <td><%= venue.url %></td>
-            <td><%- venue.fb ? link_to(venue.fb.split('/')[3], venue.fb) : '' -%></td>
-            <!-- <td><%= venue.fb %> </td> -->
-            <td><%= venue.email %></td>
+            <td><%- venue.url.split('/')[2] === 'www.facebook.com' ? link_to('facebook', venue.url) : venue.url.includes('@') ? mail_to('email', venue.url) : link_to('website', venue.url)-%></td>
             <td><%= venue.capacity %></td>
             <td><%= venue.diy %></td>
             <td><%= venue.up %></td>
