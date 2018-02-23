@@ -30,7 +30,6 @@ $(document).ready(function() {
         $('#venuesList').empty()
         data.venues.forEach( venue => {
           let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
-          console.log('urlText ', urlText)
           $('#venuesList').append($(`
             <tr>
               <td>${venue.state}</td>
