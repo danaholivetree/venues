@@ -2,41 +2,96 @@
 <html>
   <head>
     <title><%= title %></title>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' />
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="./javascripts/searchform.js"></script>
   </head>
   <body>
 
-      <table>
+    <div class='searchbox'>
+      <p>Filter by:</p>
+
+      <form id='bandSearchForm'>
+        <div class='form-row'>
+          <div class="input-group mb-3 col-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">State</span>
+            </div>
+              <select class="custom-select form-control stateSelector" name='state' default='Colorado'></select>
+          </div>
+
+          <div class="input-group mb-3 col-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">City</span>
+            </div>
+            <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          </div>
+          <div class="input-group mb-3 col-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Band</span>
+            </div>
+            <input type="text" name='band' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          </div>
+          <div class="input-group mb-3 col-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">Genre</span>
+            </div>
+              <select class="custom-select" name='genre'>
+                <option value='Any'>Any</option>
+                <option value='Americana'>Americana</option>
+                <option value='Indie'>Indie Rock/Pop</option>
+                <option value='Hardcore'>Hardcore/Metal/Punk</option>
+                <option value='Rap'>Rap / R&B</option>
+
+              </select>
+          </div>
+          <div class="col-1">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+      <h1> Bands in  <%= bands[0].state %> </h1>
+      <table class='table'>
         <thead>
           <tr>
             <th>state</th>
             <th>city</th>
             <th>band</th>
+            <th>genre</th>
+            <th>stars</th>
             <th>url</th>
             <th>fb</th>
             <th>bandcamp</th>
             <th>spotify</th>
-            <th>genre</th>
-            <th>stars</th>
+
           </tr>
 
         </thead>
+        <tbody id='bandsList'>
+          <% bands.forEach( band => { %>
+            <% let displayUrl = band.url && band.url.split('/')[2][0] === 'w' ? band.url.split('/')[2].split('.').slice(1).join('.') : band.url && band.url.split('/')[2][0] !== 'w' ? band.url.split('/')[2] : '' %>
+            <% let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : '' %>
+            <% let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : '' %>
+              <tr>
+                <td><%= band.state %></td>
+                <td><%= band.city %></td>
+                <td><%= band.band %></td>
+                <td><%= band.genre %></td>
+                <td><%= band.stars %></td>
+                <td><%- band.url && link_to(displayUrl, band.url, {target: '_blank'}) -%></td>
+                <td><%- band.fb && link_to('fb', band.fb, {target:'_blank'}) -%></td>
+                <td><%- band.bandcamp && link_to('bandcamp', band.bandcamp, {target:'_blank'}) -%></td>
+                <td><%- band.spotify && link_to('spotify', band.spotify, {target:'_blank'}) -%></td>
+              </tr>
 
-      <% bands.forEach( band => { %>
-          <tr>
-            <td><%= band.state %></td>
-            <td><%= band.city %></td>
-            <td><%= band.band %></td>
-            <td><%= band.url %></td>
-            <td><%- link_to('fb',band.fb) -%></td>
-            <td><%= band.bandcamp %></td>
-            <td><%= band.spotify %></td>
-            <td><%= band.genre %></td>
-            <td><%= band.stars %></td>
-          </tr>
-
-      <% }); %>
-
+          <% }); %>
+        </tbody>
       </table>
   </body>
 </html>

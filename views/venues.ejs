@@ -3,29 +3,28 @@
   <head>
     <title><%= title %></title>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' />
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="./javascripts/searchform.js"></script>
   </head>
   <body>
 
     <div class='searchbox'>
       <p>Filter by:</p>
 
-      <form id='searchForm'>
+      <form id='venueSearchForm'>
         <div class='form-row'>
-            <!-- <div class="form-group col-3">
-              <label for="stateSelector">State</label>
-              <select class="custom-select form-control" default='Colorado' id="stateSelector"></select>
-            </div> -->
-            <div class="input-group mb-3 col-3">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="inputGroup-sizing-default">State</span>
-              </div>
-                <select class="custom-select form-control" name='state' default='Colorado' id="stateSelector"></select>
+          <div class="input-group mb-3 col-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">State</span>
             </div>
+              <select class="custom-select form-control stateSelector" name='state' default='Colorado'></select>
+          </div>
 
 
           <div class="input-group mb-3 col-3">
@@ -58,15 +57,7 @@
           </div>
         </div>
       </form>
-
-
-
-
-
     </div>
-
-
-
 
     <h1> Venues in  <%= venues[0].state %> </h1>
       <table class='table'>
@@ -97,6 +88,5 @@
         </tbody>
       </table>
 
-      <script src="./javascripts/searchform.js"></script>
   </body>
 </html>

@@ -2,9 +2,9 @@
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('bands', function(t) {
     t.increments()
-    t.string('state').defaultTo('')
-    t.string('city').defaultTo('')
-    t.string('band').defaultTo('')
+    t.string('state').defaultTo('').notNullable()
+    t.string('city').defaultTo('').notNullable()
+    t.string('band').defaultTo('').notNullable()
     t.string('url').defaultTo('')
     t.string('fb').defaultTo('')
     t.string('bandcamp').defaultTo('')
