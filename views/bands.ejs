@@ -9,6 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="./javascripts/searchform.js"></script>
+      <script src="./javascripts/addButton.js"></script>
   </head>
   <body>
 
@@ -56,7 +57,67 @@
       </form>
     </div>
 
-      <h1> Bands in  <%= bands[0].state %> </h1>
+    <h1> <span class='stateDisplay' style='display:none; align:left'></span> <span><button class='btn' id='addBand'><i class="material-icons md-36" >add_circle</i></button></span></h1>
+
+    <form id='addBandForm' style='display:none;'>
+      <div class='form-row'>
+        <div class="input-group mb-3 col-2">
+          <div class="input-group-prepend">
+            <span class="input-group-text">State</span>
+          </div>
+            <select class="custom-select form-control stateSelector" name='state'></select>
+        </div>
+        <div class="input-group mb-3 col-2">
+          <div class="input-group-prepend">
+            <span class="input-group-text">City</span>
+          </div>
+          <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-2">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Band</span>
+          </div>
+          <input type="text" name='band' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-2">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Genre</span>
+          </div>
+          <input type="text" name='genre' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">URL</span>
+          </div>
+          <input type="text" name='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">FB</span>
+          </div>
+          <input type="text" name='fb' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-2">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Bandcamp</span>
+          </div>
+          <input type="text" name='bandcamp' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-2">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Spotify</span>
+          </div>
+          <input type="text" name='spotify' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+
+
+        <div class="col-1">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </form>
+
+
       <table class='table'>
         <thead>
           <tr>
@@ -64,7 +125,7 @@
             <th>city</th>
             <th>band</th>
             <th>genre</th>
-            <th>stars</th>
+            <!-- <th>stars</th> -->
             <th>url</th>
             <th>fb</th>
             <th>bandcamp</th>
@@ -83,7 +144,7 @@
                 <td><%= band.city %></td>
                 <td><%= band.band %></td>
                 <td><%= band.genre %></td>
-                <td><%= band.stars %></td>
+                <!-- <td><%= band.stars %></td> -->
                 <td><%- band.url && link_to(displayUrl, band.url, {target: '_blank'}) -%></td>
                 <td><%- band.fb && link_to('fb', band.fb, {target:'_blank'}) -%></td>
                 <td><%- band.bandcamp && link_to('bandcamp', band.bandcamp, {target:'_blank'}) -%></td>

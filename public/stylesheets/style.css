@@ -27,3 +27,11 @@ font-size: 48px !important;
 height: 48px !important;
 width: 48px !important;
 }
+
+.capSelector {
+  margin-right: 15px !important;
+}
+
+.form-check-label {
+  font-size: 0.8rem;
+}
