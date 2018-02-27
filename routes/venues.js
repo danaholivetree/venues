@@ -35,7 +35,7 @@ router.get('/q', function(req, res, next) {
     }
   }
 
-  if (req.query.capacity[0] !== 'Any') {
+  if (req.query.capacity[0] !== 'any') {
       req.query.capacity.forEach( cap => {
         if (cap === 'capxs') query.andWhere('capacity', '<', 101)
         if (cap === 'caps') query.orWhere('capacity', '>', 100).andWhere('capacity', '<', 251)
