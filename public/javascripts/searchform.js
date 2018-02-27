@@ -36,13 +36,14 @@ $(document).ready(function() {
         $('#venuesList').empty()
         data.venues.forEach( venue => {
           let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
+          let capText = venue.capacity ? venue.capacity : ''
           $('#venuesList').append($(`
             <tr>
               <td>${venue.state}</td>
               <td>${venue.city}</td>
               <td>${venue.venue}</td>
               <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
-              <td>${venue.capacity}</td>
+              <td>${capText}</td>
               <td>${venue.diy}</td>
               <td>${venue.up} <i class="material-icons md-18">thumb_up</i></td>
               <td>${venue.down} <i class="material-icons md-18">thumb_down</i></td>

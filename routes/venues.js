@@ -16,15 +16,25 @@ router.get('/q', function(req, res, next) {
   var query = knex('venues')
               .select('*')
 
-  if (req.query.state) {
+  if (req.query.state && req.query.state !== 'All') {
     query.where('state', req.query.state)
+    if (req.query.city) {
+      query.andWhere('city', 'ilike', `${req.query.city}%`)
+    }
+    if (req.query.venue) {
+      query.andWhere('venue', 'ilike', `%${req.query.venue}%`)
+    }
+  } else if (req.query.state === 'All') {
+    if (req.query.city) {
+      query.where('city', 'ilike', `${req.query.city}%`)
+      if (req.query.venue) {
+        query.andWhere('venue', 'ilike', `%${req.query.venue}%`)
+      }
+    } else if (req.query.venue) {
+      query.where('venue', 'ilike', `%${req.query.venue}%`)
+    }
   }
-  if (req.query.city) {
-    query.andWhere('city', 'ilike', `${req.query.city}%`)
-  }
-  if (req.query.venue) {
-    query.andWhere('venue', 'ilike', `%${req.query.venue}%`)
-  }
+
   if (req.query.capacity) {
     console.log(req.query.capacity)
   }

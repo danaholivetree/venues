@@ -60,3 +60,5 @@ typings/
 .DS_Store
 
 *.CSV
+
+psql_csv.txt

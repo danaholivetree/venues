@@ -151,7 +151,7 @@
             <td><%= venue.city %></td>
             <td><%= venue.venue %></td>
             <td><%- venue.url.split('/')[2] === 'www.facebook.com' ? link_to('facebook', venue.url, {target: "_blank"}) : link_to('website', venue.url, {target: "_blank"})-%></td>
-            <td><%= venue.capacity %></td>
+            <td><%- venue.capacity && venue.capacity -%></td>
             <td><%= venue.diy %></td>
             <td><%= venue.up %> <i class="material-icons md-18">thumb_up</i></td>
             <td><%= venue.down %> <i class="material-icons md-18">thumb_down</i></td>
