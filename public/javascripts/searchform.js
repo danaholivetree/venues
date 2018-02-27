@@ -21,10 +21,28 @@ $(document).ready(function() {
 
     let city = formData.city.value
     let venue = formData.venue.value
-    // let capacity = formData.capacity.value || 'any'
-    // console.log('capacity ',formData.capacity.value)
-    const params = {state, city, venue}
+    let capacity = []
+    if (formData.capAny.checked) {
+      capacity.push('Any')
+    }
+    if (formData.capxs.checked) {
+      capacity.push('capxs')
+    }
+    if (formData.caps.checked) {
+      capacity.push('caps')
+    }
+    if (formData.capm.checked) {
+      capacity.push('capm')
+    }
+    if (formData.capl.checked) {
+      capacity.push('capl')
+    }
+    if (formData.capxl.checked) {
+      capacity.push('capxl')
+    }
+    const params = {state, city, venue, capacity}
     const queryString = $.param(params)
+    console.log(queryString);
     $.get(`/venues/q?${queryString}`, (data, status) => {
       if (state !== 'All') {
         $('.stateDisplay').text(`Venues in ${state}`).show()

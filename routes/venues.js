@@ -35,8 +35,14 @@ router.get('/q', function(req, res, next) {
     }
   }
 
-  if (req.query.capacity) {
-    console.log(req.query.capacity)
+  if (req.query.capacity[0] !== 'Any') {
+      req.query.capacity.forEach( cap => {
+        if (cap === 'capxs') query.andWhere('capacity', '<', 101)
+        if (cap === 'caps') query.orWhere('capacity', '>', 100).andWhere('capacity', '<', 251)
+        if (cap === 'capm') query.orWhere('capacity', '>', 250).andWhere('capacity', '<', 601)
+        if (cap === 'capl') query.orWhere('capacity', '>', 600).andWhere('capacity', '<', 1201)
+        if (cap === 'capxl') query.orWhere('capacity', '>', 1200)
+      })
   }
     query.orderBy('city', 'asc')
     query.then( venues => {
@@ -69,13 +75,11 @@ router.post('/', (req, res, next) => {
         return knex('venues')
           .insert(newVenue, 'state')
           .then( state => {
-            console.log('state of added venue ', state[0])
             return knex('venues')
               .select('*')
               .where('state', state[0])
               .orderBy('id', 'desc')
               .then( venues => {
-                console.log('venues of that state ', venues);
                 res.send(venues)
               })
           })
