@@ -13,17 +13,51 @@ $(document).ready(function() {
     $('.stateSelector').append($(`<option value=${states[i]}>${states[i]}</option>`))
   }
 
+  let genres = [ 'Psych Rock','Americana','Indie Rock','Blues Rock','Bluegrass',
+  'Zombie Death Polka','Prog','Lo-fi Pop','Indie, Shoe-Gaze','Indie Folk',
+  'Glam Boys','Psychedelia','Experimental Folk','Slow folk','Rock\'n\'Roll',
+  'Eclectic Folk','prog folk','Orchestral Pop','Americana Rock','Cello Prog Pop',
+  'Orchestral folk','Folk/ ambient','Classic Pop','Rap / R&B','Folk',
+  'Americana / Folk','indie folk pop','Americana / Rock','dark dream pop',
+  'Indie electro','Power pop','Folk / country','Soft rock','Rock&Roll / Blues',
+  'indie rock','Indie Electro Surf','vintage pop','vintage pop/lo fi',
+  'Americana / Country / Folk','americana / alt. country','swing / blues / experimental']
+
+  let genreKeywords = [ 'Psych','Rock','Americana','Indie','Blues','Bluegrass',
+  'Zombie','Death','Polka','Prog','Lo-fi','Pop','Indie','Shoe-Gaze','Glam',
+  'Experimental','Slow','Eclectic','Orchestral','Cello','Folk',
+  'Ambient','Classic','Rap','R&B','Dark','Dream','Electro','Power','Soft',
+  'Rock & Roll','Surf','Vintage','Country','Swing','Blues','Experimental','Punk',
+  'Metal', 'Hardcore', 'Noise', 'Electronic', 'Jam', 'Classical',
+  'Singer-songwriter', 'Jazz' ]
+
+  genreKeywords.forEach( genre => {
+      $('#genreSelector').append($(`<div class="form-check form-check-inline" style='display:inline-flex;'>
+        <input class="form-check-input genre-selector" type="checkbox" value=${genre}>
+        <label class="form-check-label" for=${genre}>${genre}</label></div>`))
+  })
+
+  $('.genre-selector').click( e => {
+      console.log(e.target.value);
+  })
+
+  $('.notany').click( e => {
+    console.log('clicked ');
+    $('#capAny').removeAttr("checked")
+  })
 
   $('#venueSearchForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
     let state = formData.state.value
-
     let city = formData.city.value
     let venue = formData.venue.value
     let capacity = []
     if (formData.capAny.checked) {
       capacity.push('Any')
+    }
+    if (formData.unlabeled.checked) {
+      capacity.push('unlabeled')
     }
     if (formData.capxs.checked) {
       capacity.push('capxs')
@@ -42,7 +76,7 @@ $(document).ready(function() {
     }
     const params = {state, city, venue, capacity}
     const queryString = $.param(params)
-    console.log(queryString);
+
     $.get(`/venues/q?${queryString}`, (data, status) => {
       if (state !== 'All') {
         $('.stateDisplay').text(`Venues in ${state}`).show()
@@ -55,14 +89,17 @@ $(document).ready(function() {
         data.venues.forEach( venue => {
           let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
           let capText = venue.capacity ? venue.capacity : ''
+          let venueText = `${venue.venue}`
+          if (venue.diy) {
+            venueText = venueText + '*'
+          }
           $('#venuesList').append($(`
             <tr>
               <td>${venue.state}</td>
               <td>${venue.city}</td>
-              <td>${venue.venue}</td>
+              <td>${venueText}</td>
               <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
               <td>${capText}</td>
-              <td>${venue.diy}</td>
               <td>${venue.up} <i class="material-icons md-18">thumb_up</i></td>
               <td>${venue.down} <i class="material-icons md-18">thumb_down</i></td>
             </tr>
@@ -75,12 +112,20 @@ $(document).ready(function() {
 
   $('#bandSearchForm').submit( e => {
     e.preventDefault()
+    console.log('submitted form ');
+    var target = $( event.target )
     let formData = e.target.elements
     let state = formData.state.value
+    console.log('state ', state);
     let city = formData.city.value
+    console.log('city ', city);
     let band = formData.band.value
-    let genre = formData.genre.value
-    const params = {state, city, band, genre}
+    console.log('band ', band);
+    let genres = []
+    $('.genre-selector:checked').each( function() {
+        genres.push(this.value)
+    })
+    const params = {state, city, band, genres}
     const queryString = $.param(params)
     $.get(`/bands/q?${queryString}`, (data, status) => {
       if (state !== 'All') {
@@ -106,8 +151,6 @@ $(document).ready(function() {
             </tr>
           `))
         })
-
-
     })
   })
 

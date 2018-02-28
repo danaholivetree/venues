@@ -31,6 +31,9 @@ width: 48px !important;
 .capSelector {
   margin-right: 15px !important;
 }
+#genreSelector {
+  flex-wrap: wrap;
+}
 
 .form-check-label {
   font-size: 0.8rem;

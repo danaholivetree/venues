@@ -34,15 +34,49 @@ router.get('/q', function(req, res, next) {
     }
   }
 
-  if (req.query.genre) {
-    console.log(req.query.genre)
+  if (req.query.genres) {
+    req.query.genres.forEach( genre => {
+        query.where('genre', 'ilike', `%${genre}%`)
+    })
+
   }
     query.then( bands => {
-      console.log('bands came back from db', bands);
       res.setHeader('content-type', 'application/json')
       res.send(JSON.stringify({bands}))
     })
 });
+
+router.get('/genres', (req, res, next) => {
+  return knex('bands')
+    .select('genre')
+    .then( genres => {
+      let genreArray = genres.map( genre => {
+        return genre.genre
+      })
+      for (let i = 0; i < genreArray.length; i++) {
+        for (let j = i + 1; j < genreArray.length; j++) {
+          if (genreArray[i] == genreArray[j]) {
+            genreArray.splice(j, 1)
+            j--
+          }
+        }
+      }
+      let reduced = genreArray.reduce( (acc, curr) => {
+        return acc.concat(curr && ` ${curr}`)
+      })
+      reduced = reduced.split(' ')
+      for (let k = 0; k < reduced.length; k++) {
+        for (let l = k + 1; l < reduced.length; l++) {
+          if (reduced[k] === reduced[l]) {
+            reduced.splice(l, 1)
+            l--
+          }
+        }
+      }
+      console.log(reduced);
+      res.send(genreArray)
+    })
+})
 
 router.post('/', (req, res, next) => {
   const {state, city, band, url, fb, bandcamp, spotify, genre} = req.body

@@ -35,15 +35,27 @@ router.get('/q', function(req, res, next) {
     }
   }
 
+  // if (req.query.capacity[0] !== 'any') {
+  //     req.query.capacity.forEach( cap => {
+  //       if (cap === 'unlabeled') query.whereNull('capacity')
+  //       if (cap === 'capxs') query.andWhere('capacity', '<', 101)
+  //       if (cap === 'caps') query.orWhere('capacity', '>', 100).andWhere('capacity', '<', 251)
+  //       if (cap === 'capm') query.orWhere('capacity', '>', 250).andWhere('capacity', '<', 601)
+  //       if (cap === 'capl') query.orWhere('capacity', '>', 600).andWhere('capacity', '<', 1201)
+  //       if (cap === 'capxl') query.orWhere('capacity', '>', 1200)
+  //     })
+  // }
   if (req.query.capacity[0] !== 'any') {
       req.query.capacity.forEach( cap => {
-        if (cap === 'capxs') query.andWhere('capacity', '<', 101)
-        if (cap === 'caps') query.orWhere('capacity', '>', 100).andWhere('capacity', '<', 251)
-        if (cap === 'capm') query.orWhere('capacity', '>', 250).andWhere('capacity', '<', 601)
-        if (cap === 'capl') query.orWhere('capacity', '>', 600).andWhere('capacity', '<', 1201)
+        if (cap === 'unlabeled') query.whereNull('capacity')
+        if (cap === 'capxs') query.orWhereBetween('capacity', [0,100])
+        if (cap === 'caps') query.orWhereBetween('capacity', [101,250])
+        if (cap === 'capm') query.orWhereBetween('capacity', [251,600])
+        if (cap === 'capl') query.orWhereBetween('capacity', [601,1200])
         if (cap === 'capxl') query.orWhere('capacity', '>', 1200)
       })
   }
+
     query.orderBy('city', 'asc')
     query.then( venues => {
       res.setHeader('content-type', 'application/json')

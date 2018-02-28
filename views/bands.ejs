@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= title %></title>
+    <title>Tour Popsicle</title>
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' />
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
@@ -12,12 +12,12 @@
       <script src="./javascripts/addButton.js"></script>
   </head>
   <body>
-
-    <div class='searchbox'>
+    <div class='container-fluid'>
+    <div class='searchbox' >
       <p>Filter by:</p>
 
       <form id='bandSearchForm'>
-        <div class='form-row'>
+        <div class='form-row' >
           <div class="input-group mb-3 col-3">
             <div class="input-group-prepend">
               <span class="input-group-text" id="inputGroup-sizing-default">State</span>
@@ -37,18 +37,12 @@
             </div>
             <input type="text" name='band' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col-2">
-            <div class="input-group-prepend">
-              <span class="input-group-text">Genre</span>
+        </div>
+        <div class='row'>
+          <div class='input-group mb-3 col-12' >
+            <div class='input-group-text' id='genreSelector'>
+              <span class="capSelector">Genre</span>
             </div>
-              <select class="custom-select" name='genre'>
-                <option value='Any'>Any</option>
-                <option value='Americana'>Americana</option>
-                <option value='Indie'>Indie Rock/Pop</option>
-                <option value='Hardcore'>Hardcore/Metal/Punk</option>
-                <option value='Rap'>Rap / R&B</option>
-
-              </select>
           </div>
           <div class="col-1">
             <button type="submit" class="btn btn-primary">Submit</button>
@@ -154,5 +148,6 @@
           <% }); %>
         </tbody>
       </table>
+    </div>
   </body>
 </html>

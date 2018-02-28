@@ -3,7 +3,6 @@
   <head>
     <title>Tour Popsicle</title>
 
-
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' />
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
@@ -55,23 +54,27 @@
                 <label class="form-check-label" for="any">Any</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="capxs" value="xsmall">
+                <input class="form-check-input notany" type="checkbox" id="unlabeled" value="unlabeled">
+                <label class="form-check-label" for="unlabeled">Unknown</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input notany" type="checkbox" id="capxs" value="xsmall">
                 <label class="form-check-label" for="capxs">< 100</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="caps" value="small">
+                <input class="form-check-input notany" type="checkbox" id="caps" value="small">
                 <label class="form-check-label" for="caps">101< 250</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="capm" value="medium">
+                <input class="form-check-input notany" type="checkbox" id="capm" value="medium">
                 <label class="form-check-label" for="capm">251 < 600</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="capl" value="large">
+                <input class="form-check-input notany" type="checkbox" id="capl" value="large">
                 <label class="form-check-label" for="capl">601 < 1200</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="checkbox" id="capxl" value="xlarge">
+                <input class="form-check-input notany" type="checkbox" id="capxl" value="xlarge">
                 <label class="form-check-label" for="capxl">1200+</label>
               </div>
             </div>
@@ -149,10 +152,9 @@
           <tr>
             <td><%= venue.state %></td>
             <td><%= venue.city %></td>
-            <td><%= venue.venue %></td>
+            <td><%= venue.venue %><%- venue.diy && '*' -%></td>
             <td><%- venue.url.split('/')[2] === 'www.facebook.com' ? link_to('facebook', venue.url, {target: "_blank"}) : link_to('website', venue.url, {target: "_blank"})-%></td>
             <td><%- venue.capacity && venue.capacity -%></td>
-            <td><%= venue.diy %></td>
             <td><%= venue.up %> <i class="material-icons md-18">thumb_up</i></td>
             <td><%= venue.down %> <i class="material-icons md-18">thumb_down</i></td>
           </tr>
