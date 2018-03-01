@@ -17,26 +17,16 @@ router.get('/q', function(req, res, next) {
 
   if (req.query.state && req.query.state !== 'All') {
     query.where('state', req.query.state)
-    if (req.query.band) {
-      query.andWhere('band', 'ilike', `%${req.query.band}%`)
-    }
-    if (req.query.city) {
-      query.andWhere('city', 'ilike', `${req.query.city}%`)
-    }
-  } else if (req.query.state === 'All') {
-    if (req.query.band) {
-      query.where('band', 'ilike', `%${req.query.band}%`)
-      if (req.query.city) {
-        query.where('city', 'ilike', `${req.query.city}%`)
-      }
-    } else if (req.query.city) {
-      query.where('city', 'ilike', `${req.query.city}%`)
-    }
   }
-
+  if (req.query.city) {
+    query.andWhere('city', 'ilike', `${req.query.city}%`)
+  }
+  if (req.query.band) {
+      query.andWhere('band', 'ilike', `%${req.query.band}%`)
+  }
   if (req.query.genres) {
     req.query.genres.forEach( genre => {
-        query.where('genre', 'ilike', `%${genre}%`)
+        query.orWhere('genre', 'ilike', `%${genre}%`)
     })
 
   }
@@ -74,7 +64,7 @@ router.get('/genres', (req, res, next) => {
         }
       }
       console.log(reduced);
-      res.send(genreArray)
+      res.send(reduced)
     })
 })
 
@@ -107,13 +97,11 @@ router.post('/', (req, res, next) => {
         return knex('bands')
           .insert(newBand, 'state')
           .then( state => {
-            console.log('state of added band ', state[0])
             return knex('bands')
               .select('*')
               .where('state', state[0])
               .orderBy('id', 'desc')
               .then( bands => {
-                console.log('bands of that state ', bands);
                 res.send(bands)
               })
           })

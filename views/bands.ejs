@@ -130,7 +130,8 @@
         </thead>
         <tbody id='bandsList'>
           <% bands.forEach( band => { %>
-            <% let displayUrl = band.url && band.url.split('/')[2][0] === 'w' ? band.url.split('/')[2].split('.').slice(1).join('.') : band.url && band.url.split('/')[2][0] !== 'w' ? band.url.split('/')[2] : '' %>
+            <%- console.log(band.band)-%>
+            <% let displayUrl = (band.url) ? band.url.split('/')[2].split('.').slice(1).join('.') : '' %>
             <% let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : '' %>
             <% let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : '' %>
               <tr>

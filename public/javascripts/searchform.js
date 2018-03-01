@@ -13,23 +13,14 @@ $(document).ready(function() {
     $('.stateSelector').append($(`<option value=${states[i]}>${states[i]}</option>`))
   }
 
-  let genres = [ 'Psych Rock','Americana','Indie Rock','Blues Rock','Bluegrass',
-  'Zombie Death Polka','Prog','Lo-fi Pop','Indie, Shoe-Gaze','Indie Folk',
-  'Glam Boys','Psychedelia','Experimental Folk','Slow folk','Rock\'n\'Roll',
-  'Eclectic Folk','prog folk','Orchestral Pop','Americana Rock','Cello Prog Pop',
-  'Orchestral folk','Folk/ ambient','Classic Pop','Rap / R&B','Folk',
-  'Americana / Folk','indie folk pop','Americana / Rock','dark dream pop',
-  'Indie electro','Power pop','Folk / country','Soft rock','Rock&Roll / Blues',
-  'indie rock','Indie Electro Surf','vintage pop','vintage pop/lo fi',
-  'Americana / Country / Folk','americana / alt. country','swing / blues / experimental']
-
   let genreKeywords = [ 'Psych','Rock','Americana','Indie','Blues','Bluegrass',
   'Zombie','Death','Polka','Prog','Lo-fi','Pop','Indie','Shoe-Gaze','Glam',
   'Experimental','Slow','Eclectic','Orchestral','Cello','Folk',
-  'Ambient','Classic','Rap','R&B','Dark','Dream','Electro','Power','Soft',
+  'Ambient','Classic','Rap','R&B','Dark','Dream','Electro','Power',
   'Rock & Roll','Surf','Vintage','Country','Swing','Blues','Experimental','Punk',
   'Metal', 'Hardcore', 'Noise', 'Electronic', 'Jam', 'Classical',
-  'Singer-songwriter', 'Jazz' ]
+  'Singer-songwriter', 'Jazz', 'Math', 'Synth', 'Goth', 'Opera', 'Rockabilly',
+  'Swing', 'Ragtime', 'Post-rock', 'Steampunk', 'Avant', 'World', 'Emo' ]
 
   genreKeywords.forEach( genre => {
       $('#genreSelector').append($(`<div class="form-check form-check-inline" style='display:inline-flex;'>
@@ -37,15 +28,24 @@ $(document).ready(function() {
         <label class="form-check-label" for=${genre}>${genre}</label></div>`))
   })
 
-  $('.genre-selector').click( e => {
-      console.log(e.target.value);
-  })
-
   $('.notany').click( e => {
-    console.log('clicked ');
     $('#capAny').removeAttr("checked")
   })
 
+  $('.thumb-up').click( e => {
+    console.log(e.target.dataset.id)
+      $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId: 1, vote: 'up'}, (data, status) => {
+        console.log('data came back from post to votes', data);
+      })
+  })
+
+  $('.thumb-down').click( e => {
+    console.log(e.target.dataset)
+    $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId: 1, vote: 'down'}, (data, status) => {
+      console.log('data came back from post to votes', data);
+    })
+  })
+  
   $('#venueSearchForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
@@ -112,15 +112,11 @@ $(document).ready(function() {
 
   $('#bandSearchForm').submit( e => {
     e.preventDefault()
-    console.log('submitted form ');
     var target = $( event.target )
     let formData = e.target.elements
     let state = formData.state.value
-    console.log('state ', state);
     let city = formData.city.value
-    console.log('city ', city);
     let band = formData.band.value
-    console.log('band ', band);
     let genres = []
     $('.genre-selector:checked').each( function() {
         genres.push(this.value)

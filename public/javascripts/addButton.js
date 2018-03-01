@@ -92,7 +92,6 @@ $(document).ready( () => {
             <td>${venue.venue}</td>
             <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
             <td>${venue.capacity}</td>
-            <td>${venue.diy}</td>
             <td>${venue.up} <i class="material-icons md-18">thumb_up</i></td>
             <td>${venue.down} <i class="material-icons md-18">thumb_down</i></td>
           </tr>`))

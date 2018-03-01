@@ -142,21 +142,19 @@
           <th>venue</th>
           <th>url</th>
           <th>capacity</th>
-          <th>diy</th>
           <th><i class="material-icons md-24">thumb_up</i></th>
           <th><i class="material-icons md-24">thumb_down</i></th>
         </thead>
         <tbody id='venuesList'>
       <%venues.forEach( venue => { %>
-        <%-console.log(venue) -%>
           <tr>
             <td><%= venue.state %></td>
             <td><%= venue.city %></td>
-            <td><%= venue.venue %><%- venue.diy && '*' -%></td>
+            <td><%= venue.venue %><%- (venue.diy && (venue.diy != false)) ? '*' : '' -%></td>
             <td><%- venue.url.split('/')[2] === 'www.facebook.com' ? link_to('facebook', venue.url, {target: "_blank"}) : link_to('website', venue.url, {target: "_blank"})-%></td>
             <td><%- venue.capacity && venue.capacity -%></td>
-            <td><%= venue.up %> <i class="material-icons md-18">thumb_up</i></td>
-            <td><%= venue.down %> <i class="material-icons md-18">thumb_down</i></td>
+            <td><%= venue.up %> <i class="material-icons md-18 thumb-up" data-id=<%=venue.id%> >thumb_up</i></td>
+            <td><%= venue.down %> <i class="material-icons md-18 thumb-down" data-id=<%=venue.id%> >thumb_down</i></td>
           </tr>
 
     <%});%>
