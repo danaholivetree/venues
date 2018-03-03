@@ -15,7 +15,7 @@ $(document).ready(function() {
 
   let genreKeywords = [ 'Psych','Rock','Americana','Indie','Blues','Bluegrass',
   'Zombie','Death','Polka','Prog','Lo-fi','Pop','Indie','Shoe-Gaze','Glam',
-  'Experimental','Slow','Eclectic','Orchestral','Cello','Folk',
+  'Experimental','Slow','Eclectic','Orchestral','Cello', 'Freak', 'Folk',
   'Ambient','Classic','Rap','R&B','Dark','Dream','Electro','Power',
   'Rock & Roll','Surf','Vintage','Country','Swing','Blues','Experimental','Punk',
   'Metal', 'Hardcore', 'Noise', 'Electronic', 'Jam', 'Classical',
@@ -45,7 +45,7 @@ $(document).ready(function() {
       console.log('data came back from post to votes', data);
     })
   })
-  
+
   $('#venueSearchForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements

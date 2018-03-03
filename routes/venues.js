@@ -7,9 +7,9 @@ const boom = require('boom')
 router.get('/', function(req, res, next) {
   return knex('venues')
     .select('*')
-    .orderBy('state', 'asc')
-    .orderBy('city', 'asc')
     .orderBy('venue', 'asc')
+    .orderBy('city', 'asc')
+    .orderBy('state', 'asc')
     .then( venues => {
       res.render('venues', {venues, title: 'Venues'})
     })
@@ -136,16 +136,13 @@ router.post('/vote', (req, res, next) => {
             let oldVote =  (vote ==='up') ? 'down' : 'up'
             console.log('this vote ', thisVote);
             console.log('old vote ', oldVote);
-            return knex
-              .raw(`UPDATE venues SET ${thisVote} = ${thisVote} + 1`, `${oldVote} = ${oldVote} - 1 WHERE id = ${venueId} RETURNING *;`)
-              // .where('id', venueId)
-             // .increment(`${thisVote}`, 1)
-             // .decrement(`${oldVote}`, 1)
-             // .increment([(`${thisVote}`, 1), (`${oldVote}`, -1) ])
-             // .returning('*')
-             .then ( updated => {
-               res.send(updated[0])
-             })
+            return knex('venues')
+              .where('id', venueId)
+              .returning('*')
+              .then ( updated => {
+                 console.log(updated);
+                 res.send(updated)
+               })
 
           })
       }
