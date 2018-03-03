@@ -7,9 +7,11 @@ const boom = require('boom')
 router.get('/', function(req, res, next) {
   return knex('venues')
     .select('*')
+      .orderBy('state', 'asc')
+      .orderBy('city', 'asc')
     .orderBy('venue', 'asc')
-    .orderBy('city', 'asc')
-    .orderBy('state', 'asc')
+
+
     .then( venues => {
       res.render('venues', {venues, title: 'Venues'})
     })
