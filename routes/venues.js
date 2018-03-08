@@ -3,15 +3,12 @@ var router = express.Router();
 const knex = require('../knex')
 const boom = require('boom')
 
-/* GET home page. */
 router.get('/', function(req, res, next) {
   return knex('venues')
     .select('*')
-      .orderBy('state', 'asc')
-      .orderBy('city', 'asc')
+    .orderBy('state', 'asc')
+    .orderBy('city', 'asc')
     .orderBy('venue', 'asc')
-
-
     .then( venues => {
       res.render('venues', {venues, title: 'Venues'})
     })
@@ -20,7 +17,6 @@ router.get('/', function(req, res, next) {
 router.get('/q', function(req, res, next) {
   var query = knex('venues')
               .select('*')
-  console.log(typeof query)
   const addState = (state) => {
     if (state !== 'All') {
       return query.where('state', state)
@@ -42,13 +38,10 @@ router.get('/q', function(req, res, next) {
   if (req.query.venue) {
     addVenue(req.query.venue)
   }
-  // if (req.query.cap !== 'any') {
-  //   addCap(req.query.capacity)
-  // }
+
   var rawCapQuery = ''
   var rawBindings = []
   if (req.query.capacity[0] !== 'any') {
-    console.log('capacity[0] was not any capacity array was', req.query.capacity);
       req.query.capacity.forEach( (cap, i) => {
         if (i === 0) {
           if (cap !== 'capxl' && cap !== 'unlabeled') {
@@ -60,15 +53,11 @@ router.get('/q', function(req, res, next) {
           if (cap === 'unlabeled') {
             rawCapQuery += ' capacity IS NULL'
           }
-
           if (cap === 'capxs') rawBindings = rawBindings.concat([0, 100])
           if (cap === 'caps') rawBindings = rawBindings.concat([101, 250])
           if (cap === 'capm') rawBindings = rawBindings.concat([251, 600])
           if (cap === 'capl') rawBindings = rawBindings.concat([601, 1200])
           if (cap === 'capxl') rawBindings = rawBindings.concat([1200])
-          // if (cap === 'unlabeled') rawBindings = rawBindings.concat('capacity', 'NULL')
-          console.log('raw cap query ', rawCapQuery);
-          console.log('raw bindings ', rawBindings);
         }
         if (i > 0) {
           if (cap !== 'capxl' && cap !== 'unlabeled') {
@@ -80,7 +69,6 @@ router.get('/q', function(req, res, next) {
           if (cap === 'unlabeled') {
             rawCapQuery += ' capacity IS NULL'
           }
-
           if (cap === 'capxs') rawBindings = rawBindings.concat([0, 100])
           if (cap === 'caps') rawBindings = rawBindings.concat([101, 250])
           if (cap === 'capm') rawBindings = rawBindings.concat([251, 600])
@@ -149,7 +137,6 @@ router.post('/vote', (req, res, next) => {
               .where('id', venueId)
               .increment(`${vote}`, 1)
               .returning('*')
-
               .then( updated => {
                 console.log('updated ', updated);
                 res.send(updated[0])
@@ -163,17 +150,26 @@ router.post('/vote', (req, res, next) => {
           .where('user_id', userId).andWhere('venue_id', venueId)
           .update('vote', vote)
           .returning('*')
-          .then( updated => {
+          .then( blah => {
+
             let thisVote = (vote === 'up') ? 'up' : 'down'
             let oldVote =  (vote ==='up') ? 'down' : 'up'
+
+            // console.log('rawUpdate ', rawUpdate);
             console.log('this vote ', thisVote);
             console.log('old vote ', oldVote);
-            return knex('venues')
-              .where('id', venueId)
-              .returning('*')
+
+              return knex.raw('UPDATE venues SET ?? = ?? + 1, ?? = ?? - 1 WHERE ?? = ? RETURNING *', [thisVote, thisVote, oldVote, oldVote, 'id', venueId])
+              // return knex.raw('UPDATE venues SET up = up + 1, down = down - 1 WHERE ?? = ? RETURNING *', ['id', venueId])
+
+              // .where('id', venueId)
+              // .returning('*')
               .then ( updated => {
-                 console.log(updated);
-                 res.send(updated)
+                console.log('updated.rows ',updated.rows[0]);
+                 res.send(updated.rows[0])
+               }).catch( err => {
+                 console.log(err)
+                 return next(err)
                })
 
           })
