@@ -33,7 +33,7 @@ $(document).ready(function() {
   })
 
   $('.thumb-up').click( e => {
-    console.log(e.target.dataset.id)
+
       $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId: 1, vote: 'up'}, (data, status) => {
         $(`#upVote${data.id} span`).text(`${data.up}`)
         $(`#downVote${data.id} span`).text(`${data.down}`)
@@ -41,7 +41,7 @@ $(document).ready(function() {
   })
 
   $('.thumb-down').click( e => {
-    console.log(e.target.dataset)
+    
     $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId: 1, vote: 'down'}, (data, status) => {
       $(`#upVote${data.id} span`).text(`${data.up}`)
       $(`#downVote${data.id} span`).text(`${data.down}`)
@@ -107,8 +107,8 @@ $(document).ready(function() {
               <td>${venueText}</td>
               <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
               <td>${capText}</td>
-              <td id=upVote${venue.id}>${venue.up} <i class="material-icons md-18">thumb_up</i></td>
-              <td id=downVote${data.id}>${venue.down}<i class="material-icons md-18">thumb_down</i></td>
+              <td id=upVote${venue.id}>${venue.up} <button class='btn btn-default'> <i class="material-icons md-18">thumb_up</i></button></td>
+              <td id=downVote${data.id}>${venue.down}<button class='btn btn-default'><i class="material-icons md-18">thumb_down</i></button></td>
             </tr>
           `))
         })
