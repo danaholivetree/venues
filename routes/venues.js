@@ -159,13 +159,11 @@ router.post('/vote', (req, res, next) => {
             console.log('this vote ', thisVote);
             console.log('old vote ', oldVote);
 
-              return knex.raw('UPDATE venues SET ?? = ?? + 1, ?? = ?? - 1 WHERE ?? = ? RETURNING *', [thisVote, thisVote, oldVote, oldVote, 'id', venueId])
-              // return knex.raw('UPDATE venues SET up = up + 1, down = down - 1 WHERE ?? = ? RETURNING *', ['id', venueId])
-
-              // .where('id', venueId)
-              // .returning('*')
+            return knex.raw('UPDATE venues SET ?? = ?? + 1, ?? = ?? - 1 WHERE ?? = ? RETURNING *', [thisVote, thisVote, oldVote, oldVote, 'id', venueId])
               .then ( updated => {
-                console.log('updated.rows ',updated.rows[0]);
+                console.log('updated ', updated);
+                // console.log('updated.rows ',updated.rows[0]);
+                 // res.send(updated.rows[0])
                  res.send(updated.rows[0])
                }).catch( err => {
                  console.log(err)
