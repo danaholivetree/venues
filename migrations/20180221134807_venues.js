@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
     t.string('venue').defaultTo('').notNullable()
     t.string('url').defaultTo('')
     t.varchar('email').defaultTo('')
-    t.integer('capacity').defaultTo(0)
+    t.integer('capacity')
     t.string('seated').defaultTo('')
     t.boolean('diy').defaultTo(false)
     t.integer('up').defaultTo(0)

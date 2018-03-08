@@ -20,49 +20,79 @@ router.get('/', function(req, res, next) {
 router.get('/q', function(req, res, next) {
   var query = knex('venues')
               .select('*')
-
-  if (req.query.state && req.query.state !== 'All') {
-    query.where('state', req.query.state)
-    if (req.query.city) {
-      query.andWhere('city', 'ilike', `${req.query.city}%`)
-    }
-    if (req.query.venue) {
-      query.andWhere('venue', 'ilike', `%${req.query.venue}%`)
-    }
-  } else if (req.query.state === 'All') {
-    if (req.query.city) {
-      query.where('city', 'ilike', `${req.query.city}%`)
-      if (req.query.venue) {
-        query.andWhere('venue', 'ilike', `%${req.query.venue}%`)
-      }
-    } else if (req.query.venue) {
-      query.where('venue', 'ilike', `%${req.query.venue}%`)
+  console.log(typeof query)
+  const addState = (state) => {
+    if (state !== 'All') {
+      return query.where('state', state)
     }
   }
+  const addCity = (city) => {
+    return query.where('city', 'ilike', `${req.query.city}%`)
+  }
+  const addVenue = (venue) => {
+    return query.where('venue', 'ilike', `%${req.query.venue}%`)
+  }
 
-  // if (req.query.capacity[0] !== 'any') {
-  //     req.query.capacity.forEach( cap => {
-  //       if (cap === 'unlabeled') query.whereNull('capacity')
-  //       if (cap === 'capxs') query.andWhere('capacity', '<', 101)
-  //       if (cap === 'caps') query.orWhere('capacity', '>', 100).andWhere('capacity', '<', 251)
-  //       if (cap === 'capm') query.orWhere('capacity', '>', 250).andWhere('capacity', '<', 601)
-  //       if (cap === 'capl') query.orWhere('capacity', '>', 600).andWhere('capacity', '<', 1201)
-  //       if (cap === 'capxl') query.orWhere('capacity', '>', 1200)
-  //     })
+  if (req.query.state) {
+    addState(req.query.state)
+  }
+  if (req.query.city) {
+    addCity(req.query.city)
+  }
+  if (req.query.venue) {
+    addVenue(req.query.venue)
+  }
+  // if (req.query.cap !== 'any') {
+  //   addCap(req.query.capacity)
   // }
+  var rawCapQuery = ''
+  var rawBindings = []
   if (req.query.capacity[0] !== 'any') {
-      req.query.capacity.forEach( cap => {
-        if (cap === 'unlabeled') query.whereNull('capacity')
-        if (cap === 'capxs') query.orWhereBetween('capacity', [0,100])
-        if (cap === 'caps') query.orWhereBetween('capacity', [101,250])
-        if (cap === 'capm') query.orWhereBetween('capacity', [251,600])
-        if (cap === 'capl') query.orWhereBetween('capacity', [601,1200])
-        if (cap === 'capxl') query.orWhere('capacity', '>', 1200)
+    console.log('capacity[0] was not any capacity array was', req.query.capacity);
+      req.query.capacity.forEach( (cap, i) => {
+        if (i === 0) {
+          if (cap !== 'capxl' && cap !== 'unlabeled') {
+              rawCapQuery += ' capacity BETWEEN ? and ?'
+          }
+          if (cap === 'capxl') {
+            rawCapQuery += ' capacity > ?'
+          }
+          if (cap === 'unlabeled') {
+            rawCapQuery += ' capacity IS NULL'
+          }
+
+          if (cap === 'capxs') rawBindings = rawBindings.concat([0, 100])
+          if (cap === 'caps') rawBindings = rawBindings.concat([101, 250])
+          if (cap === 'capm') rawBindings = rawBindings.concat([251, 600])
+          if (cap === 'capl') rawBindings = rawBindings.concat([601, 1200])
+          if (cap === 'capxl') rawBindings = rawBindings.concat([1200])
+          // if (cap === 'unlabeled') rawBindings = rawBindings.concat('capacity', 'NULL')
+          console.log('raw cap query ', rawCapQuery);
+          console.log('raw bindings ', rawBindings);
+        }
+        if (i > 0) {
+          if (cap !== 'capxl' && cap !== 'unlabeled') {
+              rawCapQuery += ' OR capacity BETWEEN ? AND ?'
+          }
+          if (cap === 'capxl') {
+            rawCapQuery += ' OR capacity > ?'
+          }
+          if (cap === 'unlabeled') {
+            rawCapQuery += ' capacity IS NULL'
+          }
+
+          if (cap === 'capxs') rawBindings = rawBindings.concat([0, 100])
+          if (cap === 'caps') rawBindings = rawBindings.concat([101, 250])
+          if (cap === 'capm') rawBindings = rawBindings.concat([251, 600])
+          if (cap === 'capl') rawBindings = rawBindings.concat([601, 1200])
+          if (cap === 'capxl') rawBindings = rawBindings.concat(['capacity', 1200])
+        }
       })
   }
+  rawCapQuery = '(' + rawCapQuery + ')'
+  if (req.query.capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
 
-    query.orderBy('city', 'asc')
-    query.then( venues => {
+  query.orderBy('state', 'asc').orderBy('city', 'asc').then( venues => {
       res.setHeader('content-type', 'application/json')
       res.send(JSON.stringify({venues}))
     })
