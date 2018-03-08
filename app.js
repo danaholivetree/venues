@@ -10,6 +10,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var bands = require('./routes/bands');
 var venues = require('./routes/venues');
+var votes = require('./routes/votes');
 
 var app = express();
 helpers(app)
@@ -29,6 +30,7 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/bands', bands);
 app.use('/venues', venues);
+app.use('/votes', votes);
 
 
 // catch 404 and forward to error handler

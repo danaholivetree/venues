@@ -28,23 +28,38 @@ $(document).ready(function() {
         <label class="form-check-label" for=${genre}>${genre}</label></div>`))
   })
 
+  $.get(`/votes/1`, (data, status) => {
+    data.forEach( vote => {
+      console.log('vote.vote ', vote.vote);
+      console.log('vote.venue_id ', vote.venue_id);
+      if (vote.vote === 'up') {
+        $(`#upVote${vote.venue_id} button`).css("color", "green")
+      }
+      if (vote.vote === 'down') {
+        $(`#downVote${vote.venue_id} button`).css("color", "red")
+      }
+    })
+  })
+
   $('.notany').click( e => {
     $('#capAny').removeAttr("checked")
   })
 
   $('.thumb-up').click( e => {
-
       $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId: 1, vote: 'up'}, (data, status) => {
         $(`#upVote${data.id} span`).text(`${data.up}`)
+        $(`#upVote${data.id} button`).css("color", "green")
         $(`#downVote${data.id} span`).text(`${data.down}`)
+        $(`#downVote${data.id} button`).css("color", "black")
       })
   })
 
   $('.thumb-down').click( e => {
-    
     $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId: 1, vote: 'down'}, (data, status) => {
       $(`#upVote${data.id} span`).text(`${data.up}`)
+      $(`#upVote${data.id} button`).css("color", "black")
       $(`#downVote${data.id} span`).text(`${data.down}`)
+      $(`#downVote${data.id} button`).css("color", "red")
     })
   })
 

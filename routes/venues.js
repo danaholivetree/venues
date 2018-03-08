@@ -4,6 +4,7 @@ const knex = require('../knex')
 const boom = require('boom')
 
 router.get('/', function(req, res, next) {
+  let sendVenues = []
   return knex('venues')
     .select('*')
     .orderBy('state', 'asc')
