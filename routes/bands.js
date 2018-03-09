@@ -24,13 +24,30 @@ router.get('/q', function(req, res, next) {
   if (req.query.band) {
       query.andWhere('band', 'ilike', `%${req.query.band}%`)
   }
-  if (req.query.genres) {
-    req.query.genres.forEach( genre => {
-        query.orWhere('genre', 'ilike', `%${genre}%`)
-    })
 
+  var rawGenreQuery = ''
+  var rawBindings = []
+
+  if (req.query.genres.length > 0) {
+    req.query.genres.forEach( (genre, i) => {
+      if (i === 0) {
+        rawGenreQuery += `genre ilike '%${genre}%' `
+      }
+      if (i > 0) {
+        rawGenreQuery += `or genre ilike '%${genre}%' `
+      }
+      rawBindings.push(genre)
+      // query.orWhere('genre', 'ilike', `%${genre}%`)
+    })
   }
-    query.then( bands => {
+  rawGenreQuery = '(' + rawGenreQuery + ')'
+  console.log('rawGenreQuery ', rawGenreQuery);
+  console.log('rawBindings ', rawBindings);
+  query.andWhereRaw(rawGenreQuery)
+  .orderBy('state', 'asc')
+  .orderBy('city', 'asc')
+  .then( bands => {
+    console.log('got bands ', bands);
       res.setHeader('content-type', 'application/json')
       res.send(JSON.stringify({bands}))
     })
