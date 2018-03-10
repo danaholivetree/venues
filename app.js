@@ -1,3 +1,6 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -11,6 +14,7 @@ var users = require('./routes/users');
 var bands = require('./routes/bands');
 var venues = require('./routes/venues');
 var votes = require('./routes/votes');
+// var login = require('./routes/login');
 
 var app = express();
 helpers(app)
@@ -31,6 +35,7 @@ app.use('/users', users);
 app.use('/bands', bands);
 app.use('/venues', venues);
 app.use('/votes', votes);
+// app.use('/login', login);
 
 
 // catch 404 and forward to error handler

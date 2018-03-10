@@ -1,5 +1,7 @@
 body {
-  padding: 50px;
+  margin: 0;
+  padding: 0;
+  background-color:whitesmoke;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -7,10 +9,53 @@ a {
   color: #00B7FF;
 }
 
-.btn:focus {
+a:link {
+    color: black;
+}
+
+a:visited {
+    color: black;
+}
+
+a:focus {
   outline: none !important;
   box-shadow: none !important;
 }
+
+.btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: white !important;
+}
+
+.btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: white !important;
+}
+
+.btn:target {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.navbar {
+  margin-bottom: 0;
+  width: 100%;
+  color: black;
+  background: dimgrey;
+  border:0;
+  /* border-bottom: 1px solid pink; */
+}
+
+/* .nav-link>a {
+    color: grey;
+}
+
+.nav-link>a:hover {
+    color:teal;
+} */
+
 .material-icons.md-18 {
 font-size: 18px !important;
 height: 18px !important;
@@ -41,4 +86,29 @@ width: 48px !important;
 
 .form-check-label {
   font-size: 0.8rem;
+}
+
+.login {
+  margin-top:80px;
+  width: 75%;
+  /* display:inline-block; */
+}
+
+.half-login {
+  margin:30px;
+}
+
+.login .btn {
+  background-color: teal;
+  color: light-grey;
+}
+.login-form {
+  margin-top: 30px;
+}
+
+h1 {
+  text-align:center;
+}
+h3 {
+  text-align:center;
 }
