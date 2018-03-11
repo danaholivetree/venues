@@ -6,10 +6,23 @@ const secret = process.env.JWT_KEY
 const knex = require('../knex')
 const boom = require('boom')
 
-/* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('this was get users');
-});
+  knex('users')
+    .select('*')
+    .then( users => {
+      res.send(users)
+    })
+})
+
+router.get('/:id', function(req, res, next) {
+  knex('users')
+    .select('*')
+    .where('id', req.params.id)
+    .first()
+    .then( user => {
+      res.send(user)
+    })
+})
 
 router.post('/register', (req, res, next) => {
 
