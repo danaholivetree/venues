@@ -26,30 +26,24 @@ $(document).ready( () => {
   // }
   const addHttp = url => `http://${url}`
   const checkUrl = url => {
-
     const addWww = url => {
-      console.log(` url.split('/').slice(0,2).join('') `, url.split('/').slice(0,2).join(''));
-      console.log(`url.split('/').slice(2).join('') `, url.split('/').slice(2).join('') );
       return `${url.split('/').slice(0,2).join('/')}/www.${url.split('/').slice(2).join('')}`}
     if (url.split('/')[0] !== 'http:' && url.split('/')[0] !== 'https:') {
-      console.log(url.split('/')[0] , 'wasnt http:');
       url = addHttp(url)
-      console.log('url now ', url);
     }
     if (url.split('/')[2].slice(0,3) !== 'www' && url.split('/')[2].split('.')[1] !== 'bandcamp' && url.split('/')[2].split('.')[1] !== 'spotify') {
       url = addWww(url)
-      console.log('url now ', url);
     }
     return url
   }
 
   const checkEmail = email => {
     if (email.split('@').length !== 2 || email.split('@')[1].split('.').length !== 2) {
-      console.log('email is not an email!')
+      alert('that\'s not an email!')
+    } else {
+      return email
     }
-    return email
   }
-
 
   addVenueForm.submit( e => {
     e.preventDefault()
@@ -120,11 +114,8 @@ $(document).ready( () => {
       newBand.genre = formData.genre.value
     }
     newBand.url = formData.url && checkUrl(formData.url.value)
-    console.log('url ', newBand.url);
     newBand.fb = formData.fb && checkUrl(formData.fb.value)
-    console.log('fb ', newBand.fb);
     newBand.bandcamp = formData.bandcamp && checkUrl(formData.bandcamp.value)
-    console.log('bandcamp ', newBand.bandcamp);
     newBand.spotify = formData.spotify && checkUrl(formData.spotify.value)
     console.log('spotify ', newBand.spotify);
 
