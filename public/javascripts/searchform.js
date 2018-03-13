@@ -37,15 +37,12 @@ $(document).ready(function() {
     if ($('.notany:checked').length === 0) {
         $('#capAny').prop("checked", true)
     } else {
-        console.log('removing checked attr');
         $('#capAny').prop("checked", false)
-          console.log('any checked ? ', $('#capAny').prop("checked"));
     }
   })
 
   $('.thumb-up').click( e => {
       $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId, vote: 'up'}, (data, status) => {
-        console.log('status ', status)
         $(`#upVote${data.id} span`).text(`${data.up}`)
         $(`#upVote${data.id} button`).css("color", "green")
         $(`#downVote${data.id} span`).text(`${data.down}`)
@@ -55,7 +52,6 @@ $(document).ready(function() {
 
   $('.thumb-down').click( e => {
     $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId, vote: 'down'}, (data, status) => {
-      console.log('status ', status)
       $(`#upVote${data.id} span`).text(`${data.up}`)
       $(`#upVote${data.id} button`).css("color", "black")
       $(`#downVote${data.id} span`).text(`${data.down}`)
@@ -98,8 +94,8 @@ $(document).ready(function() {
     const params = {state, city, venue, capacity}
     const queryString = $.param(params)
 
-    $.get(`/venues/q?${queryString}`, (data, status) => {
-      console.log('data.venues.length ', data.venues.length);
+    $.get(`/api/venues/q?${queryString}`, (data, status) => {
+      console.log('data length ', data.venues.length);
       if (state !== 'All') {
         $('.stateDisplay').text(`Venues in ${state}`).show()
       } else if (city) {
@@ -146,7 +142,7 @@ $(document).ready(function() {
     })
     const params = {state, city, band, genres}
     const queryString = $.param(params)
-    $.get(`/bands/q?${queryString}`, (data, status) => {
+    $.get(`/api/bands/q?${queryString}`, (data, status) => {
       if (state !== 'All') {
         $('.stateDisplay').text(`Bands in ${state}`).show()
       } else if (city) {
@@ -155,7 +151,7 @@ $(document).ready(function() {
         $('.stateDisplay').text(`Bands matching '${band}'`).show()
       }
         $('#bandsList').empty()
-        data.bands.forEach( band => {
+        data.forEach( band => {
           let displayUrl = band.url && band.url.split('/')[2][0] === 'w' ? band.url.split('/')[2].split('.').slice(1).join('.') : band.url && band.url.split('/')[2][0] !== 'w' ? band.url.split('/')[2] : ''
           $('#bandsList').append($(`
             <tr>

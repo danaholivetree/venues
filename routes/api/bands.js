@@ -7,11 +7,12 @@ router.get('/', function(req, res, next) {
   return knex('bands')
     .select('*')
     .then( bands => {
-      res.render('bands', {bands, title: 'Bands'})
+      res.send(bands)
     })
 });
 
 router.get('/q', function(req, res, next) {
+
   var query = knex('bands')
               .select('*')
 
@@ -25,10 +26,12 @@ router.get('/q', function(req, res, next) {
       query.andWhere('band', 'ilike', `%${req.query.band}%`)
   }
 
-  var rawGenreQuery = ''
-  var rawBindings = []
+  console.log('got to before genres, finished wheres req.query.genres ', req.query.genres);
 
-  if (req.query.genres.length > 0) {
+  if (req.query.genres) {
+    console.log('there are genres');
+    var rawGenreQuery = ''
+    var rawBindings = []
     req.query.genres.forEach( (genre, i) => {
       if (i === 0) {
         rawGenreQuery += `genre ilike '%${genre}%' `
@@ -39,17 +42,19 @@ router.get('/q', function(req, res, next) {
       rawBindings.push(genre)
       // query.orWhere('genre', 'ilike', `%${genre}%`)
     })
+
+    rawGenreQuery = '(' + rawGenreQuery + ')'
+    console.log('rawGenreQuery ', rawGenreQuery);
+    console.log('rawBindings ', rawBindings);
+    query.andWhereRaw(rawGenreQuery)
   }
-  rawGenreQuery = '(' + rawGenreQuery + ')'
-  console.log('rawGenreQuery ', rawGenreQuery);
-  console.log('rawBindings ', rawBindings);
-  query.andWhereRaw(rawGenreQuery)
-  .orderBy('state', 'asc')
+  console.log('got past genres');
+  query.orderBy('state', 'asc')
   .orderBy('city', 'asc')
   .then( bands => {
     console.log('got bands ', bands);
-      res.setHeader('content-type', 'application/json')
-      res.send(JSON.stringify({bands}))
+      // res.setHeader('content-type', 'application/json')
+      res.send(bands)
     })
 });
 

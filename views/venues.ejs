@@ -134,24 +134,13 @@
           <th><i class="material-icons md-24">thumb_down</i></th>
         </thead>
         <tbody id='venuesList'>
-      <%venues.forEach( venue => { %>
-
-          <tr>
-            <td><%= venue.state %></td>
-            <td><%= venue.city %></td>
-            <td><%= venue.venue %><%- (venue.diy && (venue.diy != false)) ? '*' : '' -%></td>
-            <td><%- venue.url.split('/')[2] === 'www.facebook.com' ? link_to('facebook', venue.url, {target: "_blank"}) : link_to('website', venue.url, {target: "_blank"})-%></td>
-            <td><%- venue.capacity && venue.capacity -%></td>
-            <td id=upVote<%=venue.id%>><span><%= venue.up %></span> <button class='btn btn-default'><i class="material-icons md-18 thumb-up" data-id=<%=venue.id%> >thumb_up</i></button></td>
-            <td id=downVote<%=venue.id%>><span><%= venue.down %></span> <button class='btn btn-default'><i class="material-icons md-18 thumb-down" data-id=<%=venue.id%> >thumb_down</i></button></td>
-          </tr>
-
-    <%});%>
+    
         </tbody>
       </table>
 
       <script src="./javascripts/searchform.js"></script>
       <script src="./javascripts/addButton.js"></script>
+      <script src="./javascripts/loadVenues.js"></script>
 
   </body>
 </html>

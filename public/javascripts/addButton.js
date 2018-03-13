@@ -1,6 +1,7 @@
 $(document).ready( () => {
   const addVenueForm = $('#addVenueForm')
   const addBandForm = $('#addBandForm')
+  const { abbrState } = usStates
 
   $('#addVenue').click( e => {
     e.preventDefault()
@@ -75,13 +76,13 @@ $(document).ready( () => {
     }
     newVenue.diy = formData.diy.value === 'diy' ? true : false
 
-    $.post(`/venues`, newVenue, (venues, status) => {
+    $.post(`/api/venues`, newVenue, (venues, status) => {
       $('#venuesList').empty()
       venues.forEach( venue => {
         let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
         $('#venuesList').append($(`
           <tr>
-            <td>${venue.state}</td>
+            <td>${abbrState(venue.state, 'abbr')}</td>
             <td>${venue.city}</td>
             <td>${venue.venue}</td>
             <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
@@ -119,7 +120,7 @@ $(document).ready( () => {
     newBand.spotify = formData.spotify && checkUrl(formData.spotify.value)
     console.log('spotify ', newBand.spotify);
 
-    $.post(`/bands`, newBand, (bands, status) => {
+    $.post(`/api/bands`, newBand, (bands, status) => {
       $('#bandsList').empty()
       bands.forEach( band => {
         let displayUrl = band.url ? band.url.split('/')[2].split('.').slice(1).join('.') : ''
@@ -127,7 +128,7 @@ $(document).ready( () => {
         let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : ''
         $('#bandsList').append($(`
           <tr>
-            <td>${band.state}</td>
+            <td>${abbrState(band.state, 'abbr')}</td>
             <td>${band.city}</td>
             <td>${band.band}</td>
             <td>${band.genre}</td>

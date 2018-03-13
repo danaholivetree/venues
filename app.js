@@ -17,6 +17,8 @@ var users = require('./routes/users');
 var bands = require('./routes/bands');
 var venues = require('./routes/venues');
 var votes = require('./routes/votes');
+var venueApi = require('./routes/api/venues')
+var bandApi = require('./routes/api/bands')
 var auth = require('./routes/auth')
 
 // var login = require('./routes/login');
@@ -56,6 +58,8 @@ app.use('/users', users);
 app.use('/bands', bands);
 app.use('/venues', venues);
 app.use('/votes', votes);
+app.use('/api/venues', venueApi)
+app.use('/api/bands', bandApi)
 // app.use('/login', login);
 
 

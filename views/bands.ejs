@@ -118,28 +118,12 @@
 
         </thead>
         <tbody id='bandsList'>
-          <% bands.forEach( band => { %>
-            <%- console.log(band.band)-%>
-            <% let displayUrl = (band.url) ? band.url.split('/')[2].split('.').slice(1).join('.') : '' %>
-            <% let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : '' %>
-            <% let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : '' %>
-              <tr>
-                <td><%= band.state %></td>
-                <td><%= band.city %></td>
-                <td><%= band.band %></td>
-                <td><%= band.genre %></td>
-                <!-- <td><%= band.stars %></td> -->
-                <td><%- band.url && link_to(displayUrl, band.url, {target: '_blank'}) -%></td>
-                <td><%- band.fb && link_to('fb', band.fb, {target:'_blank'}) -%></td>
-                <td><%- band.bandcamp && link_to('bandcamp', band.bandcamp, {target:'_blank'}) -%></td>
-                <td><%- band.spotify && link_to('spotify', band.spotify, {target:'_blank'}) -%></td>
-              </tr>
 
-          <% }); %>
         </tbody>
       </table>
     </div>
     <script src="./javascripts/searchform.js"></script>
     <script src="./javascripts/addButton.js"></script>
+    <script src="./javascripts/loadBands.js"></script>
   </body>
 </html>
