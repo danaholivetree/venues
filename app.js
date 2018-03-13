@@ -19,9 +19,9 @@ var venues = require('./routes/venues');
 var votes = require('./routes/votes');
 var venueApi = require('./routes/api/venues')
 var bandApi = require('./routes/api/bands')
+var userApi = require('./routes/api/users')
 var auth = require('./routes/auth')
 
-// var login = require('./routes/login');
 
 var app = express();
 helpers(app)
@@ -60,7 +60,8 @@ app.use('/venues', venues);
 app.use('/votes', votes);
 app.use('/api/venues', venueApi)
 app.use('/api/bands', bandApi)
-// app.use('/login', login);
+app.use('/api/users', userApi)
+
 
 
 // catch 404 and forward to error handler

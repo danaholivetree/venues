@@ -45,30 +45,36 @@ $(document).ready( () => {
       return email
     }
   }
+  const endMessage  = () => {
+    setTimeout(function() {
+      $(".alert").alert('close')
+     }, 2000)
+  }
 
   addVenueForm.submit( e => {
     e.preventDefault()
     let formData = e.target.elements
     const newVenue = {}
     newVenue.state = formData.state.value
-    if (!formData.city.value) {
-      // return error alert
+    if (!formData.city.value || formData.city.value == 'All') {
+      $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
+      // endMessage()
     } else {
       newVenue.city = makeUppercase(formData.city.value)
     }
     if (!formData.venue.value) {
-        // return error alert
+        $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a venue name</div>`)
+        // endMessage()
     } else {
       newVenue.venue = makeUppercase(formData.venue.value)
     }
     if (!formData.url.value) {
-      //return error alert
+        $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a url</div>`)
+        // endMessage()
     } else {
       newVenue.url = checkUrl(formData.url.value)
     }
-    if (!formData.email.value) {
-      //return warning?
-    } else {
+    if (formData.email.value) {
       newVenue.email = checkEmail(formData.email.value)
     }
     if (formData.capacity.value) {
@@ -76,22 +82,22 @@ $(document).ready( () => {
     }
     newVenue.diy = formData.diy.value === 'diy' ? true : false
 
-    $.post(`/api/venues`, newVenue, (venues, status) => {
-      $('#venuesList').empty()
-      venues.forEach( venue => {
-        let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
-        $('#venuesList').append($(`
-          <tr>
-            <td>${abbrState(venue.state, 'abbr')}</td>
-            <td>${venue.city}</td>
-            <td>${venue.venue}</td>
-            <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
-            <td>${venue.capacity}</td>
-            <td>${venue.up} <i class="material-icons md-18">thumb_up</i></td>
-            <td>${venue.down} <i class="material-icons md-18">thumb_down</i></td>
-          </tr>`))
-      })
-    }) //end post
+    // $.post(`/api/venues`, newVenue, (venues, status) => {
+    //   $('#venuesList').empty()
+    //   venues.forEach( venue => {
+    //     let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
+    //     $('#venuesList').append($(`
+    //       <tr>
+    //         <td>${abbrState(venue.state, 'abbr')}</td>
+    //         <td>${venue.city}</td>
+    //         <td>${venue.venue}</td>
+    //         <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
+    //         <td>${venue.capacity}</td>
+    //         <td>${venue.up} <i class="material-icons md-18">thumb_up</i></td>
+    //         <td>${venue.down} <i class="material-icons md-18">thumb_down</i></td>
+    //       </tr>`))
+    //   })
+    // }) //end post
   }) //end submit form
 
   addBandForm.submit( e => {

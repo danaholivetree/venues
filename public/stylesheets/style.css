@@ -112,3 +112,6 @@ h1 {
 h3 {
   text-align:center;
 }
+.alert {
+  margin-bottom: 0;
+}

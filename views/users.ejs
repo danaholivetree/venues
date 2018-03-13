@@ -2,12 +2,24 @@
   <% include ./partials/nav.ejs %>
   <body>
 
-    <div class='login container-fluid'>
+    <div class='container-fluid'>
 
-    users will render here
+      <h1> Tour Popsicle Users </h1>
+      <table class='table' style='width:300px'>
+        <thead>
+          <tr>
+            <th>name</th>
+            <th>contributions</th>
+          </tr>
+
+        </thead>
+        <tbody id='usersList'>
+
+        </tbody>
+      </table>
     </div>
 
-<script src="./javascripts/users.js"></script>
+<script src="./javascripts/loadUsers.js"></script>
 
   </body>
 

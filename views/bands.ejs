@@ -1,26 +1,26 @@
   <% include ./partials/header.ejs %>
   <% include ./partials/nav.ejs %>
   <body>
-    <div class='container-fluid'>
-    <div class='searchbox' >
-      <p>Filter by:</p>
+    <div class='container'>
+      <div class='searchbox container-fluid' >
+      <p>Search for Bands:</p>
 
       <form id='bandSearchForm'>
         <div class='form-row' >
-          <div class="input-group mb-3 col-3">
+          <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text" id="inputGroup-sizing-default">State</span>
             </div>
               <select class="custom-select form-control stateSelector" name='state' default='Colorado'></select>
           </div>
 
-          <div class="input-group mb-3 col-3">
+          <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text">City</span>
             </div>
             <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col-3">
+          <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text">Band</span>
             </div>
@@ -40,7 +40,7 @@
       </form>
     </div>
 
-    <h1> <span class='stateDisplay' style='display:none; align:left'></span> <span><button class='btn' id='addBand'><i class="material-icons md-36" >add_circle</i></button></span></h1>
+    <h1> <span class='stateDisplay' style='display:none'></span> <span><button class='btn' id='addBand'><i class="material-icons md-36" >add_circle</i></button></span></h1>
 
     <form id='addBandForm' style='display:none;'>
       <div class='form-row'>
@@ -122,6 +122,7 @@
         </tbody>
       </table>
     </div>
+
     <script src="./javascripts/searchform.js"></script>
     <script src="./javascripts/addButton.js"></script>
     <script src="./javascripts/loadBands.js"></script>
