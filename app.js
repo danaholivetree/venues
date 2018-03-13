@@ -8,12 +8,17 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helpers = require('express-helpers')
+const jwt = require('jsonwebtoken')
+const secret = process.env.JWT_KEY
+const bcrypt = require('bcrypt')
 
 var index = require('./routes/index');
 var users = require('./routes/users');
 var bands = require('./routes/bands');
 var venues = require('./routes/venues');
 var votes = require('./routes/votes');
+var auth = require('./routes/auth')
+
 // var login = require('./routes/login');
 
 var app = express();
@@ -30,6 +35,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const authorize = (req, res, next) => {
+  jwt.verify(req.cookies.token, secret, (err, payload) => {
+  console.log('there was an error ', err);
+
+  if (!req.cookies.token) {
+    console.log('no token rendering login');
+    res.render("login")
+  } else {
+  console.log('  token matched!')
+    console.log('payload ', payload);
+    next()
+  }
+  })
+}
+app.use('/auth', auth)
+app.use(authorize)
 app.use('/', index);
 app.use('/users', users);
 app.use('/bands', bands);

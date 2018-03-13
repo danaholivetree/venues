@@ -5,7 +5,7 @@ $(document).ready(() => {
     console.log('name ', $('#regName').val());
     console.log('email ',  $('#regEmail').val());
     console.log('pw ',   $('#regPw').val());
-    $.post('/users/register',
+    $.post('/auth/register',
       {
         name: $('#regName').val(),
         email: $('#regEmail').val(),
