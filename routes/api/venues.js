@@ -4,6 +4,7 @@ const knex = require('../../knex')
 const boom = require('boom')
 
 router.get('/', function(req, res, next) {
+  console.log('req.cookies ', req.cookies);
   return knex('venues')
     .select('*')
     .orderBy('state', 'asc')
@@ -13,6 +14,20 @@ router.get('/', function(req, res, next) {
       res.send(venues)
     })
 });
+
+// router.get('/', function(req, res, next) {
+//   return knex('venues')
+//     .outerJoin('venue_votes', 'venues.id', 'venue_votes.venue_id')
+//     .where('venue_votes.user_id', 14)
+//     .select(['venues.id', 'state', 'city', 'venue', 'capacity', 'diy', 'seated', 'up', 'down', 'vote'])
+//     .orderBy('state', 'asc')
+//     .orderBy('city', 'asc')
+//     .orderBy('venue', 'asc')
+//     .then( venues => {
+//       console.log('venues ', venues);
+//       res.send(venues)
+//     })
+// });
 
 router.get('/q', function(req, res, next) {
   var query = knex('venues')

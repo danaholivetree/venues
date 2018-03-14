@@ -1,6 +1,15 @@
 $(document).ready(function() {
   const {abbrState} = usStates
-
+  // $.get(`/api/votes`, (data, status) => {
+  //   data.forEach( vote => {
+  //     if (vote.vote === 'up') {
+  //       $(`#upVote${vote.venue_id} button`).css("color", "green")
+  //     }
+  //     if (vote.vote === 'down') {
+  //       $(`#downVote${vote.venue_id} button`).css("color", "red")
+  //     }
+  //   })
+  // })
   $.get(`/api/venues`, (data, status) => {
     data.forEach( venue => {
       let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
@@ -9,6 +18,8 @@ $(document).ready(function() {
       if (venue.diy) {
         venueText = venueText + '*'
       }
+
+
 
       $('#venuesList').append($(`
         <tr>
@@ -24,9 +35,7 @@ $(document).ready(function() {
     })
 
     $('.thumb-up').click( e => {
-      console.log('e.target.dataset.id ', e.target.dataset.id);
         $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'up'}, data => {
-            console.log('data.up ', data.up , 'data.down ', data.down);
           $(`#upVote${data.id} span`).text(`${data.up}`)
           $(`#upVote${data.id} button`).css("color", "green")
           $(`#downVote${data.id} span`).text(`${data.down}`)
@@ -36,7 +45,6 @@ $(document).ready(function() {
 
     $('.thumb-down').click( e => {
       $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'down'}, data => {
-          console.log('data.up ', data.up , 'data.down ', data.down);
         $(`#upVote${data.id} span`).text(`${data.up}`)
         $(`#upVote${data.id} button`).css("color", "black")
         $(`#downVote${data.id} span`).text(`${data.down}`)

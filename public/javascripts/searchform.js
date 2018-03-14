@@ -22,16 +22,6 @@ $(document).ready(function() {
         <label class="form-check-label" for=${genre}>${genre}</label></div>`))
   })
 
-  // $.get(`/api/votes`, (data, status) => {
-  //   data.forEach( vote => {
-  //     if (vote.vote === 'up') {
-  //       $(`#upVote${vote.venue_id} button`).css("color", "green")
-  //     }
-  //     if (vote.vote === 'down') {
-  //       $(`#downVote${vote.venue_id} button`).css("color", "red")
-  //     }
-  //   })
-  // })
 
   $('.notany').click( e => {
     if ($('.notany:checked').length === 0) {
@@ -40,8 +30,6 @@ $(document).ready(function() {
         $('#capAny').prop("checked", false)
     }
   })
-
-
 
   $('#venueSearchForm').submit( e => {
     e.preventDefault()

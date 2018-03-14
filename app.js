@@ -16,7 +16,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var bands = require('./routes/bands');
 var venues = require('./routes/venues');
-var votes = require('./routes/votes');
+// var votes = require('./routes/votes');
 var venueApi = require('./routes/api/venues')
 var bandApi = require('./routes/api/bands')
 var userApi = require('./routes/api/users')
@@ -40,25 +40,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const authorize = (req, res, next) => {
   jwt.verify(req.cookies.token, secret, (err, payload) => {
-  console.log('there was an error ', err);
-
-  if (!req.cookies.token) {
-    console.log('no token rendering login');
-    res.render("login")
-  } else {
-  console.log('  token matched!')
-    console.log('payload ', payload);
-    next()
-  }
+    if (!req.cookies.token) {
+      res.render("login")
+    } else {
+      next()
+    }
   })
 }
+
 app.use('/auth', auth)
 app.use(authorize)
 app.use('/', index);
 app.use('/users', users);
 app.use('/bands', bands);
 app.use('/venues', venues);
-app.use('/votes', votes);
+// app.use('/votes', votes);
 app.use('/api/venues', venueApi)
 app.use('/api/bands', bandApi)
 app.use('/api/users', userApi)
@@ -75,14 +71,16 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+  if (err.output) {
+      const {statusCode, error, message} = err.output.payload
+  }
 
-  const {statusCode, error, message} = err.output.payload
   // set locals, only providing error in development
-  res.locals.message = message;
-  res.locals.error = req.app.get('env') === 'development' ? error : {};
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || statusCode || 500);
+  res.status(err.status || 500);
   res.render('error');
 });
 

@@ -6,30 +6,14 @@ const secret = process.env.JWT_KEY;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  jwt.verify(req.cookies.token, secret, (err, payload) => {
-    console.log('there was an error ', err);
-
-    if (!req.cookies.token) {
-      console.log('no token rendering login');
-      res.render("login")
-    } else {
-    console.log('  token matched!')
-      console.log('payload ', payload);
-      return knex('users')
-        .where('id', payload.userId)
-        .select('name')
-        .first()
-        .then( name => {
-          console.log('name ', name);
-          res.render('./', {
-            userId: payload.userId,
-            admin: payload.admin,
-            name
-          })
-        })
-
-    }
-  })
-});
+  // jwt.verify(req.cookies.token, secret, (err, payload) => {
+  //   if (!req.cookies.token) {
+  //     res.render('login')
+  //   } else {
+  //     res.render('index')
+  //   }
+  // })
+  res.render('index')
+})
 
 module.exports = router;

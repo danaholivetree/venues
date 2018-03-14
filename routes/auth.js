@@ -9,8 +9,6 @@ const boom = require('boom')
 
 
 router.post('/register', (req, res, next) => {
-
-  console.log('here we are in the register route');
   if (!req.body.email || !req.body.password || !req.body.name) {
     return next(boom.badRequest('Please fill out all fields'))
   }
@@ -26,7 +24,6 @@ router.post('/register', (req, res, next) => {
         .where('email', email)
         .first()
         .then( exists => {
-          console.log('exists ', exists);
           if (exists) {
             return next(boom.badRequest('Registered user already exists with that email address'))
           }
@@ -37,12 +34,17 @@ router.post('/register', (req, res, next) => {
               hashed_pw: hash
             }, ['id', 'admin'])
             .then( user => {
-              console.log('user ', user);
               let token = jwt.sign({
                 userId: user[0].id,
                 admin: user[0].admin
               }, secret)
               res.cookie('token', token, {
+                httpOnly: true
+              })
+              res.cookie('user', {
+                id: user[0].id,
+                admin: user[0].admin
+              }, {
                 httpOnly: true
               })
               res.send({redirectURL: './'})
@@ -52,7 +54,6 @@ router.post('/register', (req, res, next) => {
 })
 
 router.post('/login', (req, res, next) => {
-  console.log('made it to post users/login ', req.body);
     if (!req.body.email || !req.body.password) {
       return next(boom.badRequest('Please fill out both fields'))
     }
@@ -60,17 +61,21 @@ router.post('/login', (req, res, next) => {
       .where('email', req.body.email)
       .first()
       .then( foundUser => {
-        console.log('foundUser from login request ', foundUser);
         if (!foundUser) {
           next(boom.badRequest(`${req.body.email} is not a registered user`))
         }
         bcrypt.compare(req.body.password, foundUser.hashed_pw).then( compares => {
-          console.log('password good? ', compares)
             if (compares) {
               let token = jwt.sign({
                 userId: foundUser.id,
                 admin: foundUser.admin
               }, secret)
+              res.cookie('user', {
+                id: foundUser.id,
+                admin: foundUser.admin
+              }, {
+                httpOnly: true
+              })
               res.cookie('token', token, {httpOnly:true}).send({
                 redirectURL: './'
               })
@@ -86,9 +91,8 @@ router.post('/login', (req, res, next) => {
   })
 
 router.post('/logout', (req, res, next) => {
-  console.log('in logout route');
   res.clearCookie('token')
-  console.log('cleared cookie token ' );
+  res.clearCookie('user')
   res.send({
     redirectURL: './'
   })
