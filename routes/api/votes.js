@@ -82,4 +82,24 @@ router.post('/', (req, res, next) => {
 
 })
 
+router.delete('/', (req, res, next) => {
+  jwt.verify(req.cookies.token, secret, (err, payload) => {
+    return knex('venue_votes')
+      .where({user_id: payload.userId, venue_id: Number(req.body.id)})
+      .del()
+      .returning('vote')
+      .then( vote => {
+        let oldVote = vote[0]
+        console.log('oldVote ', oldVote);
+        knex('venues')
+          .decrement(`${oldVote}`, 1)
+          .where('id', Number(req.body.id))
+          .returning(`*`)
+          .then( updatedVenue => {
+            res.send(updatedVenue[0])
+          })
+      })
+    })
+})
+
 module.exports = router;
