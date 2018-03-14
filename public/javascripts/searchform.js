@@ -1,6 +1,6 @@
 
 $(document).ready(function() {
-  let userId = 1
+
   const { states, abbrState } = usStates
 
   for (let i = 0; i < states.length; i++ ) {
@@ -22,16 +22,16 @@ $(document).ready(function() {
         <label class="form-check-label" for=${genre}>${genre}</label></div>`))
   })
 
-  $.get(`/votes/${userId}`, (data, status) => {
-    data.forEach( vote => {
-      if (vote.vote === 'up') {
-        $(`#upVote${vote.venue_id} button`).css("color", "green")
-      }
-      if (vote.vote === 'down') {
-        $(`#downVote${vote.venue_id} button`).css("color", "red")
-      }
-    })
-  })
+  // $.get(`/api/votes`, (data, status) => {
+  //   data.forEach( vote => {
+  //     if (vote.vote === 'up') {
+  //       $(`#upVote${vote.venue_id} button`).css("color", "green")
+  //     }
+  //     if (vote.vote === 'down') {
+  //       $(`#downVote${vote.venue_id} button`).css("color", "red")
+  //     }
+  //   })
+  // })
 
   $('.notany').click( e => {
     if ($('.notany:checked').length === 0) {
@@ -41,23 +41,7 @@ $(document).ready(function() {
     }
   })
 
-  $('.thumb-up').click( e => {
-      $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId, vote: 'up'}, (data, status) => {
-        $(`#upVote${data.id} span`).text(`${data.up}`)
-        $(`#upVote${data.id} button`).css("color", "green")
-        $(`#downVote${data.id} span`).text(`${data.down}`)
-        $(`#downVote${data.id} button`).css("color", "black")
-      })
-  })
 
-  $('.thumb-down').click( e => {
-    $.post(`/venues/vote`, {venueId: e.target.dataset.id, userId, vote: 'down'}, (data, status) => {
-      $(`#upVote${data.id} span`).text(`${data.up}`)
-      $(`#upVote${data.id} button`).css("color", "black")
-      $(`#downVote${data.id} span`).text(`${data.down}`)
-      $(`#downVote${data.id} button`).css("color", "red")
-    })
-  })
 
   $('#venueSearchForm').submit( e => {
     e.preventDefault()
@@ -119,12 +103,28 @@ $(document).ready(function() {
               <td>${venueText}</td>
               <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
               <td>${capText}</td>
-              <td id=upVote${venue.id}>${venue.up} <button class='btn btn-default'> <i class="material-icons md-18">thumb_up</i></button></td>
-              <td id=downVote${data.id}>${venue.down}<button class='btn btn-default'><i class="material-icons md-18">thumb_down</i></button></td>
+              <td id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb-up' data-id=${venue.id}> <i class="material-icons md-18" data-id=${venue.id}>thumb_up</i></button></td>
+              <td id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
             </tr>
           `))
         })
+        $('.thumb-up').click( e => {
+            $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'up'}, data => {
+              $(`#upVote${data.id} span`).text(`${data.up}`)
+              $(`#upVote${data.id} button`).css("color", "green")
+              $(`#downVote${data.id} span`).text(`${data.down}`)
+              $(`#downVote${data.id} button`).css("color", "black")
+            })
+        })
 
+        $('.thumb-down').click( e => {
+          $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'down'}, data => {
+            $(`#upVote${data.id} span`).text(`${data.up}`)
+            $(`#upVote${data.id} button`).css("color", "black")
+            $(`#downVote${data.id} span`).text(`${data.down}`)
+            $(`#downVote${data.id} button`).css("color", "red")
+          })
+        })
 
     })
   })

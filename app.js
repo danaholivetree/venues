@@ -20,6 +20,7 @@ var votes = require('./routes/votes');
 var venueApi = require('./routes/api/venues')
 var bandApi = require('./routes/api/bands')
 var userApi = require('./routes/api/users')
+var voteApi = require('./routes/api/votes')
 var auth = require('./routes/auth')
 
 
@@ -61,6 +62,7 @@ app.use('/votes', votes);
 app.use('/api/venues', venueApi)
 app.use('/api/bands', bandApi)
 app.use('/api/users', userApi)
+app.use('/api/votes', voteApi)
 
 
 
@@ -73,12 +75,14 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+
+  const {statusCode, error, message} = err.output.payload
   // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.message = message;
+  res.locals.error = req.app.get('env') === 'development' ? error : {};
 
   // render the error page
-  res.status(err.status || 500);
+  res.status(err.status || statusCode || 500);
   res.render('error');
 });
 

@@ -17,11 +17,35 @@ $(document).ready(function() {
           <td>${venueText}</td>
           <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
           <td>${capText}</td>
-          <td id=upVote${venue.id}>${venue.up} <button class='btn btn-default'> <i class="material-icons md-18">thumb_up</i></button></td>
-          <td id=downVote${data.id}>${venue.down}<button class='btn btn-default'><i class="material-icons md-18">thumb_down</i></button></td>
+          <td id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
+          <td id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
         </tr>
       `))
     })
 
+    $('.thumb-up').click( e => {
+      console.log('e.target.dataset.id ', e.target.dataset.id);
+        $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'up'}, data => {
+            console.log('data.up ', data.up , 'data.down ', data.down);
+          $(`#upVote${data.id} span`).text(`${data.up}`)
+          $(`#upVote${data.id} button`).css("color", "green")
+          $(`#downVote${data.id} span`).text(`${data.down}`)
+          $(`#downVote${data.id} button`).css("color", "black")
+        })
+    })
+
+    $('.thumb-down').click( e => {
+      $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'down'}, data => {
+          console.log('data.up ', data.up , 'data.down ', data.down);
+        $(`#upVote${data.id} span`).text(`${data.up}`)
+        $(`#upVote${data.id} button`).css("color", "black")
+        $(`#downVote${data.id} span`).text(`${data.down}`)
+        $(`#downVote${data.id} button`).css("color", "red")
+      })
+    })
+
   })
+
+
+
 })
