@@ -6,17 +6,30 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_KEY
 
 /* GET votes by user. */
+// router.get('/', function(req, res, next) {
+//   console.log('req.cookies.user.id ', req.cookies.user.id);
+//     let subquery = knex('venue_votes').select('venue_id').where('user_id', req.cookies.user.id)
+//     knex('venues')
+//       .select(['venues.id as id', 'venue_votes.user_id as user', 'venues.venue', 'venue_votes.vote'])
+//       .join('venue_votes', 'venue_id', 'venues.id')
+//       .whereIn('venues.id', subquery)
+//       .then( venues => {
+//         console.log('votes ', venues);
+//         res.send(venues)
+//       })
+// })
+
 router.get('/', function(req, res, next) {
-    let subquery = knex('venue_votes').select('venue_id').where('user_id', req.cookies.user.id)
-    knex('venues')
+    return knex('venues')
       .select(['venues.id as id', 'venues.venue', 'venue_votes.vote'])
-      .innerJoin('venue_votes', 'venue_id', 'venues.id')
-      .whereIn('venues.id', subquery)
-      .then( venues => {
+      .innerJoin('venue_votes', function() {
+        this.on('venue_id', '=', 'venues.id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+      }).then( venues => {
         console.log('votes ', venues);
         res.send(venues)
       })
 })
+
 
 router.post('/', (req, res, next) => {
     const {venueId, vote} = req.body

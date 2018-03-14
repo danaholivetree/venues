@@ -6,8 +6,6 @@ const secret = process.env.JWT_KEY
 const knex = require('../knex')
 const boom = require('boom')
 
-
-
 router.post('/register', (req, res, next) => {
   if (!req.body.email || !req.body.password || !req.body.name) {
     return next(boom.badRequest('Please fill out all fields'))

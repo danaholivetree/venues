@@ -3,31 +3,36 @@ var router = express.Router();
 const knex = require('../../knex')
 const boom = require('boom')
 
-router.get('/', function(req, res, next) {
-  console.log('req.cookies ', req.cookies);
-  return knex('venues')
-    .select('*')
-    .orderBy('state', 'asc')
-    .orderBy('city', 'asc')
-    .orderBy('venue', 'asc')
-    .then( venues => {
-      res.send(venues)
-    })
-});
-
 // router.get('/', function(req, res, next) {
 //   return knex('venues')
-//     .outerJoin('venue_votes', 'venues.id', 'venue_votes.venue_id')
-//     .where('venue_votes.user_id', 14)
-//     .select(['venues.id', 'state', 'city', 'venue', 'capacity', 'diy', 'seated', 'up', 'down', 'vote'])
+//     .select('*')
 //     .orderBy('state', 'asc')
 //     .orderBy('city', 'asc')
 //     .orderBy('venue', 'asc')
 //     .then( venues => {
-//       console.log('venues ', venues);
 //       res.send(venues)
 //     })
 // });
+
+knex.select('*').from('users').rightJoin('accounts', function() {
+  this.on('accounts.id', '=', 'users.account_id').orOn('accounts.owner_id', '=', 'users.id')
+})
+
+router.get('/', function(req, res, next) {
+  return knex('venue_votes')
+    .select(['venues.id', 'state', 'url', 'city', 'venue', 'capacity', 'diy', 'seated', 'up', 'down', 'vote'])
+    // .where('venue_votes.user_id', req.cookies.user.id)
+    .rightOuterJoin('venues', function() {
+      this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+    })
+    .orderBy('state', 'asc')
+    .orderBy('city', 'asc')
+    .orderBy('venue', 'asc')
+    .then( venues => {
+      console.log('venues ', venues);
+      res.send(venues)
+    })
+});
 
 router.get('/q', function(req, res, next) {
   var query = knex('venues')

@@ -32,6 +32,13 @@ $(document).ready(function() {
           <td id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
         </tr>
       `))
+
+      if (venue.vote === 'up') {
+        $(`#upVote${venue.id} button`).css("color", "green")
+      }
+      if (venue.vote === 'down') {
+        $(`#downVote${venue.id} button`).css("color", "red")
+      }
     })
 
     $('.thumb-up').click( e => {

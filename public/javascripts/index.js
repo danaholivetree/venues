@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
   $.get('/api/votes', data => {
+    console.log('data ' , data);
     if (data.length === 0) {
         $('#dashVotes').append($(`<tr><td>No votes</td></tr>`))
     } else {
@@ -10,7 +11,6 @@ $(document).ready(function() {
 
       $('.close').click( e => {
         e.preventDefault()
-        console.log(  'e.target.dataset.id', e.target.dataset.id)
         $.ajax({
             url: "/api/votes",
             method: 'DELETE',
@@ -19,7 +19,6 @@ $(document).ready(function() {
             $(`#dashVoteRow${data.id}`).remove()
           });
       })
-
     }
   })
 })
