@@ -1,17 +1,27 @@
 $(document).ready( () => {
-  const addVenueForm = $('#addVenueForm')
-  const addBandForm = $('#addBandForm')
+
   const { abbrState } = usStates
 
   $('#addVenue').click( e => {
     e.preventDefault()
-    addVenueForm.toggle()
+    $('.searchbox').toggle(false)
+    $('#addVenueForm').toggle(true)
+  })
+  $('#searchVenues').click( e => {
+    e.preventDefault()
+    $('.searchbox').toggle(true)
+    $('#addVenueForm').toggle(false)
   })
 
+  $('#searchBands').click( e => {
+    e.preventDefault()
+      $('.searchbox').toggle(true)
+      $('#addBandForm').toggle(false)
+  })
   $('#addBand').click( e => {
     e.preventDefault()
-    console.log('clicked add band button');
-    addBandForm.toggle()
+      $('.searchbox').toggle(false)
+      $('#addBandForm').toggle(true)
   })
 
   const makeUppercase = str => str.split(' ').map( word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
@@ -51,7 +61,7 @@ $(document).ready( () => {
      }, 2000)
   }
 
-  addVenueForm.submit( e => {
+  $('#addVenueForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
     const newVenue = {}
@@ -100,7 +110,7 @@ $(document).ready( () => {
     // }) //end post
   }) //end submit form
 
-  addBandForm.submit( e => {
+  $('#addBandForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
     const newBand = {}

@@ -2,9 +2,8 @@
   <% include ./partials/nav.ejs %>
   <body>
     <div class='container'>
+      <div class='button-header'><button class='btn' id='searchVenues'>SEARCH VENUES</button>  <button class='btn' id='addVenue'>ADD A VENUE</button></div>
       <div class='searchbox container-fluid' >
-        <p>Search for venues:</p>
-
         <form id='venueSearchForm'>
           <div class='form-row'>
             <div class="input-group mb-3 col">
@@ -70,35 +69,35 @@
         </form>
       </div>
 
-      <h1> <span class='stateDisplay' style='display:none'></span> <span><button class='btn' id='addVenue'><i class="material-icons md-36" >add_circle</i></button></span></h1>
-
       <form id='addVenueForm' style='display:none;'>
         <div class='form-row'>
-          <div class="input-group mb-3 col-2">
+          <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text">State</span>
             </div>
               <select class="custom-select form-control stateSelector" name='state'></select>
           </div>
-          <div class="input-group mb-3 col-2">
+          <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text">City</span>
             </div>
             <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col-2">
+          <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text">Venue</span>
             </div>
             <input type="text" name='venue' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col-3">
+        </div>
+        <div class='form-row'>
+          <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text">URL</span>
             </div>
             <input type="text" name='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col-3">
+          <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text">Booking Email</span>
             </div>
@@ -121,7 +120,7 @@
           <div id='errorMessage'></div>
         </div>
       </form>
-
+      <h1> <span class='stateDisplay' style='display:none'></span> </h1>
 
         <table class='table'>
           <thead>

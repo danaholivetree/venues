@@ -53,7 +53,6 @@ router.get('/q', function(req, res, next) {
   .orderBy('city', 'asc')
   .then( bands => {
     console.log('got bands ', bands);
-      // res.setHeader('content-type', 'application/json')
       res.send(bands)
     })
 });

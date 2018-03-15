@@ -80,7 +80,7 @@ width: 48px !important;
 .capSelector {
   margin-right: 15px !important;
 }
-#genreSelector {
+.genres {
   flex-wrap: wrap;
 }
 
@@ -114,4 +114,7 @@ h3 {
 }
 .alert {
   margin-bottom: 0;
+}
+.button-header {
+  margin:30px 0;
 }

@@ -17,7 +17,7 @@ $(document).ready(function() {
   'Swing', 'Ragtime', 'Post-rock', 'Steampunk', 'Avant', 'World', 'Emo' ]
 
   genreKeywords.forEach( genre => {
-      $('#genreSelector').append($(`<div class="form-check form-check-inline" style='display:inline-flex;'>
+      $('.genres').append($(`<div class="form-check form-check-inline" style='display:inline-flex;'>
         <input class="form-check-input genre-selector" type="checkbox" value=${genre}>
         <label class="form-check-label" for=${genre}>${genre}</label></div>`))
   })

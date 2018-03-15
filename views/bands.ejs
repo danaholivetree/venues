@@ -2,11 +2,10 @@
   <% include ./partials/nav.ejs %>
   <body>
     <div class='container'>
+      <div class='button-header'><button class='btn' id='searchBands'>SEARCH BANDS</button>  <button class='btn' id='addBand'>ADD A BAND</button></div>
       <div class='searchbox container-fluid' >
-      <p>Search for Bands:</p>
-
-      <form id='bandSearchForm'>
-        <div class='form-row' >
+      <form id='bandSearchForm' style='display:inline;'>
+        <div class='form-row'>
           <div class="input-group mb-3 col">
             <div class="input-group-prepend">
               <span class="input-group-text" id="inputGroup-sizing-default">State</span>
@@ -28,8 +27,8 @@
           </div>
         </div>
         <div class='row'>
-          <div class='input-group mb-3 col-12' >
-            <div class='input-group-text' id='genreSelector'>
+          <div class='input-group mb-3 col-11' >
+            <div class='input-group-text genres' id='genreSelector'>
               <span class="capSelector">Genre</span>
             </div>
           </div>
@@ -40,58 +39,63 @@
       </form>
     </div>
 
-    <h1> <span class='stateDisplay' style='display:none'></span> <span><button class='btn' id='addBand'><i class="material-icons md-36" >add_circle</i></button></span></h1>
+
 
     <form id='addBandForm' style='display:none;'>
       <div class='form-row'>
-        <div class="input-group mb-3 col-2">
+        <div class="input-group mb-3 col">
           <div class="input-group-prepend">
             <span class="input-group-text">State</span>
           </div>
             <select class="custom-select form-control stateSelector" name='state'></select>
         </div>
-        <div class="input-group mb-3 col-2">
+        <div class="input-group mb-3 col">
           <div class="input-group-prepend">
             <span class="input-group-text">City</span>
           </div>
           <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div class="input-group mb-3 col-2">
+        <div class="input-group mb-3 col">
           <div class="input-group-prepend">
             <span class="input-group-text">Band</span>
           </div>
           <input type="text" name='band' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div class="input-group mb-3 col-2">
-          <div class="input-group-prepend">
-            <span class="input-group-text">Genre</span>
-          </div>
-          <input type="text" name='genre' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-        </div>
-        <div class="input-group mb-3 col-3">
+      </div>
+
+      <div class='form-row'>
+        <div class="input-group mb-3 col">
           <div class="input-group-prepend">
             <span class="input-group-text">URL</span>
           </div>
           <input type="text" name='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div class="input-group mb-3 col-3">
+        <div class="input-group mb-3 col">
           <div class="input-group-prepend">
             <span class="input-group-text">FB</span>
           </div>
           <input type="text" name='fb' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div class="input-group mb-3 col-2">
+        <div class="input-group mb-3 col">
           <div class="input-group-prepend">
             <span class="input-group-text">Bandcamp</span>
           </div>
           <input type="text" name='bandcamp' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div class="input-group mb-3 col-2">
+        <div class="input-group mb-3 col">
           <div class="input-group-prepend">
             <span class="input-group-text">Spotify</span>
           </div>
           <input type="text" name='spotify' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
+      </div>
+      <div class='form-row'>
+        <div class="input-group mb-3 col-11">
+          <div class='input-group-text genres'>
+            <span class="capSelector">Genre</span>
+          </div>
+        </div>
+
 
 
         <div class="col-1">
@@ -100,6 +104,7 @@
       </div>
     </form>
 
+    <h1> <span class='stateDisplay' style='display:none'></span></h1>
 
       <table class='table'>
         <thead>
