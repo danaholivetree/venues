@@ -2,23 +2,8 @@ var express = require('express');
 var router = express.Router();
 const knex = require('../../knex')
 const Boom = require('boom')
-const jwt = require('jsonwebtoken')
-const secret = process.env.JWT_KEY
 
-/* GET votes by user. */
-// router.get('/', function(req, res, next) {
-//   console.log('req.cookies.user.id ', req.cookies.user.id);
-//     let subquery = knex('venue_votes').select('venue_id').where('user_id', req.cookies.user.id)
-//     knex('venues')
-//       .select(['venues.id as id', 'venue_votes.user_id as user', 'venues.venue', 'venue_votes.vote'])
-//       .join('venue_votes', 'venue_id', 'venues.id')
-//       .whereIn('venues.id', subquery)
-//       .then( venues => {
-//         console.log('votes ', venues);
-//         res.send(venues)
-//       })
-// })
-
+//get votes by user, for dash
 router.get('/', function(req, res, next) {
     return knex('venues')
       .select(['venues.id as id', 'venues.venue', 'venue_votes.vote'])
@@ -30,7 +15,7 @@ router.get('/', function(req, res, next) {
       })
 })
 
-
+//user clicked thumb up or thumb down
 router.post('/', (req, res, next) => {
     const {venueId, vote} = req.body
     const userId = req.cookies.user.id
@@ -47,7 +32,6 @@ router.post('/', (req, res, next) => {
                 .increment(`${vote}`, 1)
                 .returning('*')
                 .then( updated => {
-                  console.log('updated ', updated);
                   res.send(updated[0])
                 })
             })
@@ -66,7 +50,6 @@ router.post('/', (req, res, next) => {
                 .then ( updated => {
                    res.send(updated.rows[0])
                  }).catch( err => {
-                   console.log(err)
                    return next(err)
                  })
             })
@@ -74,15 +57,14 @@ router.post('/', (req, res, next) => {
       })
 })
 
+//user clicked x next to venue vote on dash
 router.delete('/', (req, res, next) => {
-  console.log('req.cookies.user.id ', req.cookies.user.id);
     return knex('venue_votes')
       .where({user_id: req.cookies.user.id, venue_id: Number(req.body.id)})
       .del()
       .returning('vote')
       .then( vote => {
         let oldVote = vote[0]
-        console.log('oldVote ', oldVote);
         knex('venues')
           .decrement(`${oldVote}`, 1)
           .where('id', Number(req.body.id))

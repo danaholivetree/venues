@@ -1,15 +1,6 @@
 $(document).ready(function() {
   const {abbrState} = usStates
-  // $.get(`/api/votes`, (data, status) => {
-  //   data.forEach( vote => {
-  //     if (vote.vote === 'up') {
-  //       $(`#upVote${vote.venue_id} button`).css("color", "green")
-  //     }
-  //     if (vote.vote === 'down') {
-  //       $(`#downVote${vote.venue_id} button`).css("color", "red")
-  //     }
-  //   })
-  // })
+
   $.get(`/api/venues`, (data, status) => {
     data.forEach( venue => {
       let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
@@ -18,8 +9,6 @@ $(document).ready(function() {
       if (venue.diy) {
         venueText = venueText + '*'
       }
-
-
 
       $('#venuesList').append($(`
         <tr>

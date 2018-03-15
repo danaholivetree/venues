@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const knex = require('../../knex')
 
-/* GET home page. */
+/* GET bands page. */
 router.get('/', function(req, res, next) {
   return knex('bands')
     .select('*')
@@ -23,7 +23,7 @@ router.get('/q', function(req, res, next) {
     query.andWhere('city', 'ilike', `${req.query.city}%`)
   }
   if (req.query.band) {
-      query.andWhere('band', 'ilike', `%${req.query.band}%`)
+    query.andWhere('band', 'ilike', `%${req.query.band}%`)
   }
 
   console.log('got to before genres, finished wheres req.query.genres ', req.query.genres);
