@@ -12,7 +12,8 @@ exports.up = function(knex, Promise) {
     t.boolean('diy').defaultTo(false)
     t.integer('up').defaultTo(0)
     t.integer('down').defaultTo(0)
-    t.integer('contributed_by')
+    t.integer('contributed_by').references('users.id')
+    // .notNullable().onDelete('CASCADE')
     t.timestamps(true, true)
   })
 };
