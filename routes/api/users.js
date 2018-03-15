@@ -15,6 +15,7 @@ router.get('/', function(req, res, next) {
 })
 
 router.get('/:id', function(req, res, next) {
+  console.log('got to :id route in users ', req.params.id);
   knex('users')
     .select('*')
     .where('id', req.params.id)
