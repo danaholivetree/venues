@@ -109,7 +109,11 @@ $(document).ready( () => {
     //   })
     // }) //end post
   }) //end submit form
-
+  $('.genre-selector').on('change', function() {
+   if($('.genre-selector:checked').length > 4) {
+       this.checked = false;
+   }
+});
   $('#addBandForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
