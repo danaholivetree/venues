@@ -60,13 +60,20 @@ $(document).ready(function() {
 
   $('#searchBands').click( e => {
     e.preventDefault()
-      $('.searchbox').toggle(true)
+    console.log('clicked search bands');
+      $('#bandSearchForm').toggle(true)
       $('#addBandForm').toggle(false)
+      $('#searchBands').css('background-color', 'lightblue')
+      $('#addBand').css('background-color', 'white')
   })
+
   $('#addBand').click( e => {
     e.preventDefault()
-      $('.searchbox').toggle(false)
+    console.log('clicked add band');
+      $('#bandSearchForm').toggle(false)
       $('#addBandForm').toggle(true)
+      $('#addBand').css('background-color', 'lightblue')
+      $('#searchBands').css('background-color', 'white')
   })
 
 
@@ -93,13 +100,10 @@ $(document).ready(function() {
       newBand.band = formData.band.value
     }
     let selectedGenres = []
-    console.log('selectedGenres ', selectedGenres);
     $.each($( ".genre-selector:checked" ), function (index, element) {
       selectedGenres.push(element.value)
     })
-    console.log('selectedGenres ', selectedGenres);
     newBand.genres = selectedGenres
-    console.log('newBand.genres ', newBand.genres);
     newBand.url = formData.url.value && checkUrl(formData.url.value)
     newBand.fb = formData.fb.value && checkUrl(formData.fb.value)
     newBand.bandcamp = formData.bandcamp.value && checkUrl(formData.bandcamp.value)
@@ -111,6 +115,7 @@ $(document).ready(function() {
       url: '/api/bands',
       dataType: 'json',
       success: function (data) {
+        $('#addBandForm').clear()
         $('#bandsList').empty()
         listBands(data)
               },

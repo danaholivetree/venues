@@ -115,15 +115,21 @@ $(document).ready(function() {
     })
   })
 
-  $('#addVenue').click( e => {
-    e.preventDefault()
-    $('.searchbox').toggle(false)
-    $('#addVenueForm').toggle(true)
-  })
   $('#searchVenues').click( e => {
     e.preventDefault()
-    $('.searchbox').toggle(true)
-    $('#addVenueForm').toggle(false)
+      $('#venueSearchForm').toggle(true)
+      $('#addVenueForm').toggle(false)
+      $('#searchVenues').css('background-color', 'lightblue')
+      $('#addVenue').css('background-color', 'white')
+  })
+
+  $('#addVenue').click( e => {
+    e.preventDefault()
+    console.log('clicked add venue');
+      $('#venueSearchForm').toggle(false)
+      $('#addVenueForm').toggle(true)
+      $('#addVenue').css('background-color', 'lightblue')
+      $('#searchVenues').css('background-color', 'white')
   })
 
   $('#addVenueForm').submit( e => {

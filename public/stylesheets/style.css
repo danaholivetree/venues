@@ -21,17 +21,22 @@ a:focus {
   outline: none !important;
   box-shadow: none !important;
 }
-
+#searchBands {
+  background-color: lightblue;
+}
+#searchVenues {
+  background-color: lightblue;
+}
 .btn:focus {
   outline: none !important;
   box-shadow: none !important;
-  background-color: white !important;
+  /* background-color: white !important; */
 }
 
 .btn:active {
   outline: none !important;
   box-shadow: none !important;
-  background-color: white !important;
+  /* background-color: white !important; */
 }
 
 .btn:target {
