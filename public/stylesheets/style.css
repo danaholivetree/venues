@@ -118,3 +118,9 @@ h3 {
 .button-header {
   margin:30px 0;
 }
+.url {
+  font-size:0.8rem;
+}
+.genreList {
+  max-width:50px;
+}

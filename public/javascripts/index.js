@@ -1,7 +1,6 @@
 $(document).ready(function() {
 
   $.get('/api/votes', data => {
-    console.log('data ' , data);
     if (data.length === 0) {
         $('#dashVotes').append($(`<tr><td>No votes</td></tr>`))
     } else {

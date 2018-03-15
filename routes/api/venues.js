@@ -84,8 +84,7 @@ router.get('/q', function(req, res, next) {
   if (req.query.capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
 
   query.orderBy('state', 'asc').orderBy('city', 'asc').then( venues => {
-      res.setHeader('content-type', 'application/json')
-      res.send(JSON.stringify({venues}))
+      res.send(venues)
     })
 });
 

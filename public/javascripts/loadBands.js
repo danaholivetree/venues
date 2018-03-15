@@ -1,7 +1,9 @@
 $(document).ready(function() {
   const {abbrState} = usStates
+  const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
 
-  $.get(`/api/bands`, (data, status) => {
+
+  const listBands = (data) => {
     data.forEach( band => {
       let displayUrl = band.url ? band.url.split('/')[2].split('.').slice(1).join('.') : ''
       let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : ''
@@ -14,13 +16,106 @@ $(document).ready(function() {
           <td>${abbrState(band.state, 'abbr')}</td>
           <td>${band.city}</td>
           <td>${band.band}</td>
-          <td>${band.genre}</td>
-          <td><a href=${band.url} target='_blank'>${displayUrl}</a></td>
+          <td class="genreList">${band.genre}</td>
+          <td><i class="material-icons">star</i></td>
+          <td class='url'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
           <td>${displayFb}</td>
           <td>${displayBandcamp}</td>
           <td>${displaySpotify}</td>
         </tr>`))
     })
+  }
+
+  $.get(`/api/bands`, (data, status) => {
+    listBands(data)
   })
+
+  $('#bandSearchForm').submit( e => {
+    e.preventDefault()
+    var target = $( event.target )
+    let formData = e.target.elements
+    let state = formData.state.value
+    let city = formData.city.value
+    let band = formData.band.value
+    let genres = []
+    $('.genre-selector:checked').each( function() {
+        genres.push(this.value)
+    })
+    const params = {state, city, band, genres}
+    const queryString = $.param(params)
+    $.get(`/api/bands/q?${queryString}`, (data, status) => {
+      console.log('bands data ', data);
+      if (state !== 'All') {
+        $('.stateDisplay').text(`Bands in ${state}`).show()
+      } else if (city) {
+        $('.stateDisplay').text(`Bands in ${city}`).show()
+      } else if (band) {
+        $('.stateDisplay').text(`Bands matching '${band}'`).show()
+      }
+        $('#bandsList').empty()
+        listBands(data)
+
+    })
+  })
+
+  $('#searchBands').click( e => {
+    e.preventDefault()
+      $('.searchbox').toggle(true)
+      $('#addBandForm').toggle(false)
+  })
+  $('#addBand').click( e => {
+    e.preventDefault()
+      $('.searchbox').toggle(false)
+      $('#addBandForm').toggle(true)
+  })
+
+
+  $('.genre-selector').on('change', function() {
+    if($('.genre-selector:checked').length > 4) {
+       this.checked = false;
+     }
+  })
+
+  $('#addBandForm').submit( e => {
+    e.preventDefault()
+    let formData = e.target.elements
+
+    const newBand = {}
+    newBand.state = formData.state.value
+    if (!formData.city.value) {
+      $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
+    } else {
+      newBand.city = makeUppercase(formData.city.value)
+    }
+    if (!formData.band.value) {
+        $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a band name</div>`)
+    } else {
+      newBand.band = formData.band.value
+    }
+    let selectedGenres = []
+    console.log('selectedGenres ', selectedGenres);
+    $.each($( ".genre-selector:checked" ), function (index, element) {
+      selectedGenres.push(element.value)
+    })
+    console.log('selectedGenres ', selectedGenres);
+    newBand.genres = selectedGenres
+    console.log('newBand.genres ', newBand.genres);
+    newBand.url = formData.url.value && checkUrl(formData.url.value)
+    newBand.fb = formData.fb.value && checkUrl(formData.fb.value)
+    newBand.bandcamp = formData.bandcamp.value && checkUrl(formData.bandcamp.value)
+    newBand.spotify = formData.spotify.value && checkUrl(formData.spotify.value)
+    console.log('newBand ', newBand);
+
+    $.ajax({
+      method: 'POST',
+      url: '/api/bands',
+      dataType: 'json',
+      success: function (data) {
+        $('#bandsList').empty()
+        listBands(data)
+              },
+      data: {newBand: JSON.stringify(newBand)}
+    })
+  }) //end submit form
 
 })

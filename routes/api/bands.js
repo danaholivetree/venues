@@ -90,39 +90,52 @@ router.get('/genres', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
-  const {state, city, band, url, fb, bandcamp, spotify, genre} = req.body
+  console.log('req.body ', req.body.newBand);
+  let data = JSON.parse(req.body.newBand)
+  console.log('data ', data);
+  const {state, city, band, url, fb, bandcamp, spotify, genres} = data
+  console.log('genres ', genres);
+
   var newBand = {state, city, band}
+  console.log('newBand with just state city and band ', newBand);
   if (url) {
+    console.log('there was a url ', url);
     newBand.url = url
   }
   if (fb) {
+    console.log('there was a fb ', fb);
     newBand.fb = fb
   }
   if (bandcamp) {
+    console.log('there was a bandcamp ', bandcamp);
     newBand.bandcamp = bandcamp
   }
   if (spotify) {
     newBand.spotify = spotify
   }
-  if (genre) {
-    newBand.genre = genre
+  if (genres.length > 0) {
+    console.log(genres.join(' '));
+    newBand.genre = genres.join(' ')
   }
 
   return knex('bands')
     .select('*')
     .where('band', newBand.band)
     .then( exists => {
+      console.log('exists ', exists);
       if (exists[0]) {
         throw boom.badRequest('band already exists in db')
       } else {
         return knex('bands')
           .insert(newBand, 'state')
           .then( state => {
+            console.log('state[0] ', state[0] );
             return knex('bands')
               .select('*')
               .where('state', state[0])
               .orderBy('id', 'desc')
               .then( bands => {
+                console.log('bands ', bands);
                 res.send(bands)
               })
           })
