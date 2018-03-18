@@ -48,7 +48,7 @@ a:focus {
   margin-bottom: 0;
   width: 100%;
   color: black;
-  background: dimgrey;
+  background-color:whitesmoke;
   border:0;
   /* border-bottom: 1px solid pink; */
 }

@@ -7,7 +7,7 @@
     <h3> Settings</h3>
 
     <h5>Your Account</h5>
-      <div>Name: <span id='userName'>user name wil go here</span></div>
+      <div>Name: <span id='userName'><%=userId%></span></div>
       <div>Email: <span id='userEmail'>user email will go here</span></div>
     <h5>Your Profile</h5>
       <div>Bio: <span id='userBio'>user Bio will go here</span></div>
@@ -19,8 +19,11 @@
 
 
   </div>
-
-  <script src="./javascripts/settings.js"></script>
+  <script>
+  const userId = '<%= userId%>'
+  console.log('userId all the way in client side js', userId);
+  </script>
+  <script src="../../javascripts/settings.js"></script>
 
   </body>
 

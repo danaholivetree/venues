@@ -100,7 +100,7 @@ $(document).ready(function() {
     const queryString = $.param(params)
 
     $.get(`/api/venues/q?${queryString}`, (data, status) => {
-      console.log('data length ', data.venues.length);
+      console.log('data length ', data.length);
       if (state !== 'All') {
         $('.stateDisplay').text(`Venues in ${state}`).show()
       } else if (city) {
@@ -159,7 +159,10 @@ $(document).ready(function() {
     if (formData.capacity.value) {
       newVenue.capacity = formData.capacity.value
     }
-    newVenue.diy = formData.diy.value === 'diy' ? true : false
+    console.log('formData.diy.value ', formData.diy.value);
+    console.log('formData.checked.diy ', formData.diy.checked);
+    newVenue.diy = formData.diy.checked ? true : false
+    console.log('newVenue.diy should be true or false' , newVenue.diy);
 
     $.post(`/api/venues`, newVenue, (data, status) => {
       $('#venuesList').empty()

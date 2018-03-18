@@ -18,18 +18,22 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/q', function(req, res, next) {
+  console.log(req.query);
   var query = knex('venues')
               .select('*')
   const addState = (state) => {
     if (state !== 'All') {
+      console.log('adding state ', state);
       return query.where('state', state)
     }
   }
   const addCity = (city) => {
-    return query.where('city', 'ilike', `${req.query.city}%`)
+    console.log('adding city ', city);
+    return query.where('city', 'ilike', `${city}%`)
   }
   const addVenue = (venue) => {
-    return query.where('venue', 'ilike', `%${req.query.venue}%`)
+    console.log('adding venue ', venue);
+    return query.where('venue', 'ilike', `%${venue}%`)
   }
 
   if (req.query.state) {
@@ -84,6 +88,7 @@ router.get('/q', function(req, res, next) {
   if (req.query.capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
 
   query.orderBy('state', 'asc').orderBy('city', 'asc').then( venues => {
+    console.log('venues matched', venues);
       res.send(venues)
     })
 });
@@ -98,9 +103,12 @@ router.post('/', (req, res, next) => {
     newVenue.email = email
   }
   if (diy) {
+    console.log('diy was true ', diy);
     newVenue.diy = diy
+    console.log('set newVenue.diy to true ', newVenue.diy);
   } else {
     newVenue.diy = false
+    console.log('set newVenue.diy to false ' , newVenue.diy);
   }
   return knex('venues')
     .select('*')
