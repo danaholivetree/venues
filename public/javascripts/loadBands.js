@@ -53,6 +53,9 @@ $(document).ready(function() {
         $('.stateDisplay').text(`Bands matching '${band}'`).show()
       }
         $('#bandsList').empty()
+        $('.genre-selector').prop('checked', false) //maybe dont want these three
+        $('input[type="text"], textarea').val('');
+        $('#state').val('All');
         listBands(data)
 
     })
@@ -115,7 +118,10 @@ $(document).ready(function() {
       url: '/api/bands',
       dataType: 'json',
       success: function (data) {
-        $('#addBandForm').clear()
+        // $('#addBandForm').clear()
+        $('input[type="text"], textarea').val('');
+        $('.genre-selector').prop('checked', false)
+        $('#state').val('All');
         $('#bandsList').empty()
         listBands(data)
               },

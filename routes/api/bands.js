@@ -126,17 +126,21 @@ router.post('/', (req, res, next) => {
       if (exists[0]) {
         throw boom.badRequest('band already exists in db')
       } else {
-        return knex('bands')
-          .insert(newBand, 'state')
-          .then( state => {
-            console.log('state[0] ', state[0] );
+        return knex('users')
+          .where('id', req.cookies.user.id)
+          .increment('contributions', 1)
+          .then( () => {
             return knex('bands')
-              .select('*')
-              .where('state', state[0])
-              .orderBy('id', 'desc')
-              .then( bands => {
-                console.log('bands ', bands);
-                res.send(bands)
+              .insert(newBand, 'state')
+              .then( state => {
+                console.log('state[0] ', state[0] );
+                return knex('bands')
+                  .select('*')
+                  .where('state', state[0])
+                  .orderBy('id', 'desc')
+                  .then( bands => {
+                    res.send(bands)
+                  })
               })
           })
       }

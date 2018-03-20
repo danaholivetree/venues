@@ -84,8 +84,8 @@
     }
 
     exports.genreKeywords = [ 'Psych','Rock','Americana','Indie','Blues','Bluegrass',
-    'Zombie','Death','Polka','Prog','Lo-fi','Pop','Indie','Shoe-Gaze','Glam',
-    'Experimental','Slow','Eclectic','Orchestral','Cello', 'Freak', 'Folk',
+    'Folk', 'Zombie','Death','Polka','Prog','Lo-fi','Pop','Shoe-Gaze','Glam',
+    'Experimental','Slow','Eclectic','Orchestral','Cello', 'Freak',
     'Ambient','Classic','Rap','R&B','Hip-hop','Dark','Dream','Electro','Power',
     'Rock & Roll','Surf','Vintage','Country','Swing','Blues','Experimental','Punk',
     'Metal', 'Hardcore', 'Noise', 'Electronic', 'Jam', 'Classical',

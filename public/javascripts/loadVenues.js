@@ -109,6 +109,10 @@ $(document).ready(function() {
         $('.stateDisplay').text(`Venues matching '${venue}'`).show()
       }
         $('#venuesList').empty()
+        $('input[type="checkbox"]').prop('checked', false);
+        $('#capAny').prop('checked', true) //maybe dont want these three
+        $('input[type="text"], textarea').val('');
+        $('#venueState').val('All');
         console.log('data' , data);
         listVenues(data)
         setThumbListener()
@@ -165,6 +169,8 @@ $(document).ready(function() {
     console.log('newVenue.diy should be true or false' , newVenue.diy);
 
     $.post(`/api/venues`, newVenue, (data, status) => {
+      $('input[type="text"], textarea').val('');
+      $('#state').val('All');
       $('#venuesList').empty()
       listVenues(data)
     }) //end post

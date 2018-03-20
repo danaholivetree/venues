@@ -117,17 +117,24 @@ router.post('/', (req, res, next) => {
       if (exists[0]) {
         throw boom.badRequest('venue already exists in db')
       } else {
-        return knex('venues')
-          .insert(newVenue, 'state')
-          .then( state => {
+        console.log('req.cookies.user.id ', req.cookies.user.id);
+        return knex('users')
+          .where('id', req.cookies.user.id)
+          .increment('contributions', 1)
+          .then( () => {
             return knex('venues')
-              .select('*')
-              .where('state', state[0])
-              .orderBy('id', 'desc')
-              .then( venues => {
-                res.send(venues)
+              .insert(newVenue, 'state')
+              .then( state => {
+                return knex('venues')
+                  .select('*')
+                  .where('state', state[0])
+                  .orderBy('id', 'desc')
+                  .then( venues => {
+                    res.send(venues)
+                  })
               })
           })
+
       }
     })
 })
