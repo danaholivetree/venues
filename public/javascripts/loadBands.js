@@ -11,6 +11,7 @@ $(document).ready(function() {
       let displaySpotify = band.spotify ? `<a href=${band.spotify} target='_blank'>spotify</a>` : ``
       let displayBandcamp = band.bandcamp ? `<a href=${band.bandcamp} target='_blank'>bandcamp</a>` : ``
       let displayFb = band.fb ? `<a href=${band.fb} target='_blank'>fb</a>` : ''
+      let showSpotify = band.spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
       $('#bandsList').append($(`
         <tr>
           <td>${abbrState(band.state, 'abbr')}</td>
@@ -21,14 +22,56 @@ $(document).ready(function() {
           <td class='url'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
           <td>${displayFb}</td>
           <td>${displayBandcamp}</td>
-          <td>${displaySpotify}</td>
+          <td><button class='playSpotify btn' data-name='${band.band}'>play</button></td>
         </tr>`))
     })
   }
 
   $.get(`/api/bands`, (data, status) => {
-    listBands(data)
+    listBands(data.slice(0,20))
+    $('.playSpotify').click( e => {
+      e.preventDefault()
+      let targ = e.target
+      console.log(targ);
+      $.ajax({
+        method: 'GET',
+        url: `https://api.spotify.com/v1/search?q=${e.target.dataset.name}&type=artist&market=US&limit=1&offset=0`,
+        accepts: "application/json",
+        contentType: "application/json",
+        headers : {
+          'Authorization': "Bearer BQCoqdsPww7NKFiDVZeD45ibIKtFEjDUKon6SxcN9diDo4HBOlNg5_uzR6d-U5yBeUO2X8RiMThNHoCbNQohiYSxlyWAGM2vjg4EZyf5NBUgcHbWG3wIeBZKz0ZYKajnvORGehdus0OB8bMj"
+        },
+        success : data => {
+          let artistId = data.artists.items[0].id
+          let artistHref = data.artists.items[0].href
+          let showSpotify = `<iframe src=https://open.spotify.com/embed?uri=spotify:artist:${artistId}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`
+          $(showSpotify).insertAfter($(targ))
+          $(targ).hide()
+
+        }
+      })
+    })
   })
+
+  // $('.playSpotify').click( e => {
+  //   e.preventDefault()
+  //   console.log('clicked');
+  //   $.ajax({
+  //     method: 'GET',
+  //     url: `https://api.spotify.com/v1/search?q=${dataset.name}&type=artist&market=US&limit=1&offset=0`,
+  //     accepts: "application/json",
+  //     contentType: "application/json",
+  //     // crossDomain: true,
+  //     headers : {
+  //       'Authorization': "Bearer BQCoqdsPww7NKFiDVZeD45ibIKtFEjDUKon6SxcN9diDo4HBOlNg5_uzR6d-U5yBeUO2X8RiMThNHoCbNQohiYSxlyWAGM2vjg4EZyf5NBUgcHbWG3wIeBZKz0ZYKajnvORGehdus0OB8bMj"
+  //     },
+  //     success : (data) => {
+  //       console.log('data ', data);
+  //       console.log('data.href ' ,data.href);
+  //     }
+  //   })
+  // })
+
 
   $('#bandSearchForm').submit( e => {
     e.preventDefault()
