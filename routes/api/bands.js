@@ -5,7 +5,7 @@ const knex = require('../../knex')
 /* GET bands page. */
 router.get('/', function(req, res, next) {
   return knex('band_stars')
-    .select(['bands.id', 'state', 'url', 'bandcamp', 'spotify', 'city', 'band', 'genre', 'stars', 'band_stars.band_id as starred'])
+    .select(['bands.id', 'state', 'url', 'bandcamp', 'fb', 'spotify', 'city', 'band', 'genre', 'stars', 'band_stars.band_id as starred'])
     .rightOuterJoin('bands', function() {
       this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
     })
