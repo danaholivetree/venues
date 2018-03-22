@@ -4,13 +4,14 @@ $(document).ready(function() {
 
   const listVenues = (data) => {
     data.forEach( venue => {
-      let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
+      // let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
       let capText = venue.capacity ? venue.capacity : ''
-      let venueText = `${venue.venue}`
-      if (venue.diy) {
-        venueText = venueText + '*'
-      }
-      let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}</a>`
+      // let venueText = `${venue.venue}`
+      // if (venue.diy) {
+      //   venueText = venueText + '*'
+      // }
+      let diyStar = venue.diy ? '*' : ''
+      let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${diyStar}</a>`
 
       $('#venuesList').append($(`
         <tr>
@@ -18,8 +19,8 @@ $(document).ready(function() {
           <td>${venue.city}</td>
           <td>${displayVenue}</td>
           <td>${capText}</td>
-          <td id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
-          <td id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
+          <td id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
+          <td id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
         </tr>
       `))
 

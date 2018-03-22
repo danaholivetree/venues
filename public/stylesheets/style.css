@@ -50,6 +50,10 @@ a:focus {
   box-shadow: none !important;
 }
 
+.thumb {
+  background-color:whitesmoke;
+}
+
 .navbar {
   margin-bottom: 0;
   width: 100%;
