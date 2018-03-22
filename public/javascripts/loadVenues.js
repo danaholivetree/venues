@@ -10,13 +10,13 @@ $(document).ready(function() {
       if (venue.diy) {
         venueText = venueText + '*'
       }
+      let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}</a>`
 
       $('#venuesList').append($(`
         <tr>
           <td>${abbrState(venue.state, 'abbr')}</td>
           <td>${venue.city}</td>
-          <td>${venueText}</td>
-          <td><a href=${venue.url} target='_blank'>${urlText}</a></td>
+          <td>${displayVenue}</td>
           <td>${capText}</td>
           <td id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
           <td id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
@@ -60,7 +60,7 @@ $(document).ready(function() {
   })
 
   $.get(`/api/venues`, (data, status) => {
-    listVenues(data)
+    listVenues(data.slice(0,20))
     setThumbListener()
   })
 

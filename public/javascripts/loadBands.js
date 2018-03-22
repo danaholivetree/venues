@@ -33,7 +33,7 @@ $(document).ready(function() {
   const listBands = (data) => {
     data.forEach( band => {
       // let displayUrl = band.url ? band.url.split('/')[2].split('.').slice(1).join('.') : ''
-      let displayUrl = band.url  ? `<a href=${band.url} target='_blank'>website</a>` : ``
+      let displayUrl = band.url  ? `<a href=${band.url} target='_blank'>www</a>` : ``
       let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : ''
       let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : ''
       let displaySpotify = band.spotify ? `<a href=${band.spotify} target='_blank'>spotify</a>` : ``
