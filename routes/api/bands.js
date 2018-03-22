@@ -4,8 +4,14 @@ const knex = require('../../knex')
 
 /* GET bands page. */
 router.get('/', function(req, res, next) {
-  return knex('bands')
-    .select('*')
+  return knex('band_stars')
+    .select(['bands.id', 'state', 'url', 'bandcamp', 'spotify', 'city', 'band', 'genre', 'stars', 'band_stars.band_id as starred'])
+    .rightOuterJoin('bands', function() {
+      this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
+    })
+    .orderBy('state', 'asc')
+    .orderBy('city', 'asc')
+    .orderBy('band', 'asc')
     .then( bands => {
       res.send(bands)
     })

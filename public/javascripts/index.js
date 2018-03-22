@@ -20,4 +20,27 @@ $(document).ready(function() {
       })
     }
   })
+
+  $.get('/api/stars', data => {
+    if (data.length === 0) {
+        $('#dashStars').append($(`<tr><td>No starred bands</td></tr>`))
+    } else {
+      data.forEach( star => {
+        $('#dashStars').append($(`<tr id=dashStarRow${star.id}><td class="voteVenue">${star.band}</td><td><a href="#" class="close" data-id=${star.id} aria-label="close">&times;</a></td>`))
+      })
+
+      $('.close').click( e => {
+        e.preventDefault()
+        $.ajax({
+            url: "/api/stars",
+            method: 'DELETE',
+            data: {id: e.target.dataset.id}
+          }).done( data => {
+            $(`#dashStarRow${data.id}`).remove()
+          });
+      })
+    }
+  })
+
+
 })

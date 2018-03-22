@@ -32,12 +32,13 @@ $(document).ready(function() {
 
   const listBands = (data) => {
     data.forEach( band => {
-
       let displayUrl = band.url ? band.url.split('/')[2].split('.').slice(1).join('.') : ''
       let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : ''
       let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : ''
       let displaySpotify = band.spotify ? `<a href=${band.spotify} target='_blank'>spotify</a>` : ``
       let displayBandcamp = band.bandcamp ? `<a href=${band.bandcamp} target='_blank'>bandcamp</a>` : ``
+      // let displayBandcampWidget = band.bandcamp ? `<iframe style="border: 0; width: 370px; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=260781898/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/transparent=true/" seamless><a href=${band.bandcamp}>${band.band}</a></iframe>` : ''
+      // let testBandcamp = band.bandcamp ? `<button class='btn bandcamp' data-id=${band.id} data-url=${band.bandcamp}>load widg</button>` : ''
       let displayBand = band.fb ? `<a href=${band.fb} target='_blank'>${band.band}</a>` : `${band.band}`
       let showSpotify = band.spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
       $('#bandsList').append($(`
@@ -46,11 +47,15 @@ $(document).ready(function() {
           <td>${band.city}</td>
           <td>${displayBand}</td>
           <td class="genreList">${band.genre}</td>
-          <td align='center'><i class="material-icons star" data-id=${band.id}>star</i><br><span>${band.stars}</span></td>
+          <td class=star_col${band.id} align='center'><i class="material-icons star" data-id=${band.id}>star</i><br><span>${band.stars}</span></td>
           <td class='url'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
           <td>${displayBandcamp}</td>
           <td><button class='playSpotify btn' data-name='${band.band}'>play</button></td>
         </tr>`))
+        if (band.starred) {
+          console.log('band.starred ', band.starred);
+         $(`.star_col${band.starred} i`).css("color", "pink")
+        }
     })
 
     $('.star').click( e => {
@@ -58,10 +63,19 @@ $(document).ready(function() {
       let targ = e.target
       $.post(`/api/stars`, {bandId: e.target.dataset.id}, data => {
         console.log('data came back from post stars ', data);
-        $(targ + ` span`).text(`${data.stars}`)
-        $(targ).css("color", "pink")
+        $(`.star_col${data.id} span`).text(`${data.stars}`)
+        $(`.star_col${data.id} i`).css("color", "pink")
       })
     })
+
+    // $('.bandcamp').click( e => {
+    //   e.preventDefault()
+    //   console.log('e.target.dataset.url ', e.target.dataset.url);
+    //   let targ = e.target
+    //   $.get(`https://harmalaska.bandcamp.com`, data => {
+    //     console.log('data ', data);
+    //   })
+    // })
   }
 
   $.get(`/api/bands`, (data, status) => {
@@ -72,26 +86,20 @@ $(document).ready(function() {
 
       const getAccessToken = () => {
         if (!localStorage.getItem('pa_token')) {
-          console.log('there was no token');
           return ''
         }
-        console.log('there was a token ');
         let expires = Number(localStorage.getItem('pa_expires'))
         if ((new Date()).getTime() > expires) {
           console.log('expired');
           return '';
         }
-        console.log('was not expired ');
         var token = localStorage.getItem('pa_token');
         return token;
       }
 
       let accessToken = getAccessToken()
-      console.log('accessToken from getAccessToken()' , accessToken);
       if (!accessToken || accessToken == '') {
-        console.log('this should only happen if there was no token ');
         $.get('/token', (data) => {
-          console.log('went to go get a token');
           localStorage.setItem('pa_token', data.access_token)
           localStorage.setItem('pa_expires', 1000*(data.expires_in) + (new Date()).getTime())
           accessToken = data.access_token
@@ -125,25 +133,6 @@ $(document).ready(function() {
 
     })
   })
-
-  // $('.playSpotify').click( e => {
-  //   e.preventDefault()
-  //   console.log('clicked');
-  //   $.ajax({
-  //     method: 'GET',
-  //     url: `https://api.spotify.com/v1/search?q=${dataset.name}&type=artist&market=US&limit=1&offset=0`,
-  //     accepts: "application/json",
-  //     contentType: "application/json",
-  //     // crossDomain: true,
-  //     headers : {
-  //       'Authorization': "Bearer BQCoqdsPww7NKFiDVZeD45ibIKtFEjDUKon6SxcN9diDo4HBOlNg5_uzR6d-U5yBeUO2X8RiMThNHoCbNQohiYSxlyWAGM2vjg4EZyf5NBUgcHbWG3wIeBZKz0ZYKajnvORGehdus0OB8bMj"
-  //     },
-  //     success : (data) => {
-  //       console.log('data ', data);
-  //       console.log('data.href ' ,data.href);
-  //     }
-  //   })
-  // })
 
 
   $('#bandSearchForm').submit( e => {
