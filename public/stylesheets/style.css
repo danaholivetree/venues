@@ -30,6 +30,9 @@ a:focus {
 #searchVenues {
   background-color: lightblue;
 }
+/* .btn {
+  color:lightblue;
+} */
 .btn:focus {
   outline: none !important;
   box-shadow: none !important;

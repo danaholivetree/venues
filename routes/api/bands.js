@@ -32,10 +32,7 @@ router.get('/q', function(req, res, next) {
     query.andWhere('band', 'ilike', `%${req.query.band}%`)
   }
 
-  console.log('got to before genres, finished wheres req.query.genres ', req.query.genres);
-
   if (req.query.genres) {
-    console.log('there are genres');
     var rawGenreQuery = ''
     var rawBindings = []
     req.query.genres.forEach( (genre, i) => {
@@ -50,15 +47,11 @@ router.get('/q', function(req, res, next) {
     })
 
     rawGenreQuery = '(' + rawGenreQuery + ')'
-    console.log('rawGenreQuery ', rawGenreQuery);
-    console.log('rawBindings ', rawBindings);
     query.andWhereRaw(rawGenreQuery)
   }
-  console.log('got past genres');
   query.orderBy('state', 'asc')
   .orderBy('city', 'asc')
   .then( bands => {
-    console.log('got bands ', bands);
       res.send(bands)
     })
 });
@@ -90,37 +83,27 @@ router.get('/genres', (req, res, next) => {
           }
         }
       }
-      console.log(reduced);
       res.send(reduced)
     })
 })
 
 router.post('/', (req, res, next) => {
-  console.log('req.body ', req.body.newBand);
   let data = JSON.parse(req.body.newBand)
-  console.log('data ', data);
   const {state, city, band, url, fb, bandcamp, spotify, genres} = data
-  console.log('genres ', genres);
-
   var newBand = {state, city, band}
-  console.log('newBand with just state city and band ', newBand);
   if (url) {
-    console.log('there was a url ', url);
     newBand.url = url
   }
   if (fb) {
-    console.log('there was a fb ', fb);
     newBand.fb = fb
   }
   if (bandcamp) {
-    console.log('there was a bandcamp ', bandcamp);
     newBand.bandcamp = bandcamp
   }
   if (spotify) {
     newBand.spotify = spotify
   }
   if (genres.length > 0) {
-    console.log(genres.join(' '));
     newBand.genre = genres.join(' ')
   }
 
@@ -128,7 +111,6 @@ router.post('/', (req, res, next) => {
     .select('*')
     .where('band', newBand.band)
     .then( exists => {
-      console.log('exists ', exists);
       if (exists[0]) {
         throw boom.badRequest('band already exists in db')
       } else {
@@ -139,7 +121,6 @@ router.post('/', (req, res, next) => {
             return knex('bands')
               .insert(newBand, 'state')
               .then( state => {
-                console.log('state[0] ', state[0] );
                 return knex('bands')
                   .select('*')
                   .where('state', state[0])

@@ -32,11 +32,12 @@ $(document).ready(function() {
 
   const listBands = (data) => {
     data.forEach( band => {
-      let displayUrl = band.url ? band.url.split('/')[2].split('.').slice(1).join('.') : ''
+      // let displayUrl = band.url ? band.url.split('/')[2].split('.').slice(1).join('.') : ''
+      let displayUrl = band.url  ? `<a href=${band.url} target='_blank'>website</a>` : ``
       let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : ''
       let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : ''
       let displaySpotify = band.spotify ? `<a href=${band.spotify} target='_blank'>spotify</a>` : ``
-      let displayBandcamp = band.bandcamp ? `<a href=${band.bandcamp} target='_blank'>bandcamp</a>` : ``
+      let displayBandcamp = band.bandcamp ? `<span align='center' ><a href=${band.bandcamp} target='_blank'><img src='images/bandcamp-button-bc-circle-aqua-32.png'></a></span>` : ``
       // let displayBandcampWidget = band.bandcamp ? `<iframe style="border: 0; width: 370px; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=260781898/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/transparent=true/" seamless><a href=${band.bandcamp}>${band.band}</a></iframe>` : ''
       // let testBandcamp = band.bandcamp ? `<button class='btn bandcamp' data-id=${band.id} data-url=${band.bandcamp}>load widg</button>` : ''
       let displayBand = band.fb ? `<a href=${band.fb} target='_blank'>${band.band}</a>` : `${band.band}`
@@ -54,7 +55,7 @@ $(document).ready(function() {
         </tr>`))
         if (band.starred) {
           console.log('band.starred ', band.starred);
-         $(`.star_col${band.starred} i`).css("color", "pink")
+         $(`.star_col${band.starred} i`).css("color", "lightblue")
         }
     })
 
@@ -64,7 +65,7 @@ $(document).ready(function() {
       $.post(`/api/stars`, {bandId: e.target.dataset.id}, data => {
         console.log('data came back from post stars ', data);
         $(`.star_col${data.id} span`).text(`${data.stars}`)
-        $(`.star_col${data.id} i`).css("color", "pink")
+        $(`.star_col${data.id} i`).css("color", "lightblue")
       })
     })
 
