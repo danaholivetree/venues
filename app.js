@@ -12,11 +12,14 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_KEY
 const bcrypt = require('bcrypt')
 
+
 var renders = require('./routes/renders')
 var venueApi = require('./routes/api/venues')
 var bandApi = require('./routes/api/bands')
 var userApi = require('./routes/api/users')
 var voteApi = require('./routes/api/votes')
+var starApi = require('./routes/api/stars')
+var token = require('./routes/token')
 var auth = require('./routes/auth')
 
 
@@ -47,10 +50,12 @@ const authorize = (req, res, next) => {
 app.use('/auth', auth)
 app.use(authorize)
 app.use('/', renders)
+app.use('/token', token)
 app.use('/api/venues', venueApi)
-app.use('/api/bands', bandApi)
 app.use('/api/users', userApi)
 app.use('/api/votes', voteApi)
+app.use('/api/bands', bandApi)
+app.use('/api/stars', starApi)
 
 
 
