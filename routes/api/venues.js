@@ -18,11 +18,10 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/:id', function(req, res, next) {
-
   return knex('venues')
     .where('venues.id', Number(req.params.id))
-    .innerJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
-    .select('venues.id as id', 'venue', 'state', 'city', 'genres_booked as genres', 'capacity', 'seated', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo', 'diy')
+    .leftOuterJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
+    .select('venues.id as id', 'venue', 'state', 'url', 'email', 'city', 'genres_booked as genres', 'capacity', 'seated', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo', 'diy')
     .first()
     .then( venue => {
       console.log('got the venue ', venue);
@@ -150,6 +149,84 @@ router.post('/', (req, res, next) => {
 
       }
     })
+})
+
+router.put('/:id', (req, res, next) => {
+  console.log(Number(req.params.id));
+  const {url, email, capacity, genres, type, crowd, ages, accessibility, pay, promo} = req.body
+  let toVenues = {}
+  let toProfile = {}
+  if (url) {
+    toVenues.url = url
+  }
+  if (email) {
+    toVenues.email = email
+  }
+  if (capacity) {
+    toVenues.capacity = capacity
+  }
+  if (genres) {
+    toProfile.genres_booked = genres
+  }
+  if (type) {
+    toProfile.type = type
+  }
+  if (crowd) {
+    toProfile.crowd = crowd
+  }
+  if (ages) {
+    toProfile.ages = ages
+  }
+  if (accessibility) {
+    toProfile.accessibility = accessibility
+  }
+  if (pay) {
+    toProfile.pay = pay
+  }
+  if (promo) {
+    toProfile.promo = promo
+  }
+  let updatedVenue = {}
+  return knex('venues')
+    .where('id', Number(req.params.id))
+    .update(toVenues)
+    .returning('*')
+    .then ( venue => {
+      updatedVenue = venue[0]
+      // let profileQuery = knex('venue_profiles').where('venue_id', Number(req.params.id))
+      return knex('venue_profiles')
+        .where('venue_id', Number(req.params.id))
+        .first()
+        .then (exists => {
+          if (exists) {
+            return knex('venue_profiles')
+              .where('venue_id', Number(req.params.id))
+              .update(toProfile)
+              .returning(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo'])
+              .then( newData => {
+                for (let key in newData[0]) {
+                  updatedVenue[key] = newData[0][key]
+                }
+                res.send(updatedVenue)
+              })
+          } else {
+            toProfile.venue_id = Number(req.params.id)
+            return knex('venue_profiles')
+              .insert(toProfile)
+              .returning(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo'])
+              .then( newData => {
+                console.log(newData[0]);
+                for (let key in newData[0]) {
+                  updatedVenue[key] = newData[0][key]
+                }
+                res.send(updatedVenue)
+              })
+          }
+        })
+    })
+
+
+
 })
 
 module.exports = router;

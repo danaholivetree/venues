@@ -63,7 +63,7 @@ app.use('/api/stars', starApi)
 app.use(function(req, res, next) {
   // var err = new Error('Not Found');
   // err.status = 404;
-  next(boom.create(404, 'Not Found'));
+  res.status(404).send('Not Found')
 });
 
 // error handler

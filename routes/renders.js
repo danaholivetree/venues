@@ -11,6 +11,10 @@ router.get('/bands', function(req, res, next) {
 router.get('/venues', function(req, res, next) {
   res.render('venues')
 })
+router.get('/venues/:id/edit', function(req, res, next) {
+  let id = Number(req.params.id)
+  res.render(`editVenue`)
+})
 router.get('/venues/:id', function(req, res, next) {
   let id = Number(req.params.id)
   res.render(`venue`)

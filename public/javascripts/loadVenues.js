@@ -4,16 +4,15 @@ $(document).ready(function() {
 
   const listVenues = (data) => {
     data.forEach( venue => {
-      let capText = venue.capacity ? venue.capacity : ''
-      let diyStar = venue.diy ? '*' : ''
-      let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${diyStar}</a>`
+
+      let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
 
       $('#venuesList').append($(`
         <tr onclick="window.location='/venues/${venue.id}'" data-id=${venue.id} class='venue-row'>
           <td>${abbrState(venue.state, 'abbr')}</td>
           <td>${venue.city}</td>
           <td>${displayVenue}</td>
-          <td>${capText}</td>
+          <td>${venue.capacity ? venue.capacity : ''}</td>
           <td id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
           <td id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
         </tr>
