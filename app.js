@@ -61,16 +61,21 @@ app.use('/api/stars', starApi)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+  // var err = new Error('Not Found');
+  // err.status = 404;
+  next(boom.create(404, 'Not Found'));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
   if (err.output) {
-      const {statusCode, error, message} = err.output.payload
+    // console.log('err.output ', err.output);
+    const {statusCode, error, message} = err.output.payload
+    console.log('statusCode ', statusCode);
+    console.log('message ', message);
+    res.status(statusCode).send(message)
   }
+  console.log('boom res should have been sent, other error ', err.status, err.message );
 
   // set locals, only providing error in development
   res.locals.message = err.message;

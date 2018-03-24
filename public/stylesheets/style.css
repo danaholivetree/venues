@@ -30,9 +30,7 @@ a:focus {
 #searchVenues {
   background-color: lightblue;
 }
-/* .btn {
-  color:lightblue;
-} */
+
 .btn:focus {
   outline: none !important;
   box-shadow: none !important;
@@ -53,6 +51,14 @@ a:focus {
 .thumb {
   background-color:whitesmoke;
 }
+
+#errorMessage {
+  width: 200px;
+
+}
+/* .thumb:hover {
+  box-shadow:none !important;
+} */
 
 .navbar {
   margin-bottom: 0;
@@ -128,7 +134,8 @@ h3 {
   text-align:center;
 }
 .alert {
-  margin-bottom: 0;
+  /* margin-bottom: 0; */
+  /* display: inline-block; */
 }
 .button-header {
   margin:30px 0;

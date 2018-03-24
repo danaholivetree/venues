@@ -16,6 +16,21 @@ router.post('/register', (req, res, next) => {
     password
   } = req.body;
 
+  if (name.split(' ').length < 2) {
+    return next(boom.badRequest('Please provide a first and last name'))
+  }
+
+  let badPasswords = ['123456', 'password', '12345678', 'qwerty', '12345', '123456789', 'letmein',
+'1234567', 'football', 'iloveyou', 'admin', 'welcome', 'monkey', 'login', 'abc123', 'starwars', '123123',
+'dragon', 'passw0rd', 'master', 'hello', 'freedom', 'whatever', 'qazwsx', 'trustno1', 'password1', '654321']
+
+  if (badPasswords.includes(password.toLowerCase())) {
+    return next(boom.badRequest(`That's a terrible password. Please pick a new one.`))
+  }
+  if (password.length < 8) {
+    return next(boom.badRequest('Please use a password with at least 8 characters'))
+  }
+
   bcrypt.hash(password, 10)
     .then( hash => {
       return knex('users')
@@ -60,7 +75,8 @@ router.post('/login', (req, res, next) => {
       .first()
       .then( foundUser => {
         if (!foundUser) {
-          next(boom.badRequest(`${req.body.email} is not a registered user`))
+          return next(boom.badRequest(`${req.body.email} is not a registered user`))
+          // res.send(`${req.body.email} is not a registered user`)
         }
         bcrypt.compare(req.body.password, foundUser.hashed_pw).then( compares => {
             if (compares) {
@@ -79,7 +95,8 @@ router.post('/login', (req, res, next) => {
               })
             }
             else {
-              next(boom.badRequest('Bad password'))
+              return next(boom.badRequest('Bad password'))
+              // res.send('Incorrect Password')
             }
           })
           .catch((err) => {
