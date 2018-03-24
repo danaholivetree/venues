@@ -4,17 +4,12 @@ $(document).ready(function() {
 
   const listVenues = (data) => {
     data.forEach( venue => {
-      // let urlText = (venue.url.split('/')[2] === 'www.facebook.com') ? 'facebook' : 'website'
       let capText = venue.capacity ? venue.capacity : ''
-      // let venueText = `${venue.venue}`
-      // if (venue.diy) {
-      //   venueText = venueText + '*'
-      // }
       let diyStar = venue.diy ? '*' : ''
       let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${diyStar}</a>`
 
       $('#venuesList').append($(`
-        <tr>
+        <tr onclick="window.location='/venues/${venue.id}'" data-id=${venue.id} class='venue-row'>
           <td>${abbrState(venue.state, 'abbr')}</td>
           <td>${venue.city}</td>
           <td>${displayVenue}</td>
@@ -52,6 +47,20 @@ $(document).ready(function() {
     })
   }
 
+  // const setIndividualListener = () => {
+  //   $('.venue-row').click( e => {
+  //     e.preventDefault()
+  //     console.log('redirecting to /currentTarget.dataset.id', e.currentTarget.dataset.id);
+  //     window.location = `/venues/${e.currentTarget.dataset.id}`
+  //     $.get(`/api/venues/${e.currentTarget.dataset.id}`, data => {
+  //       console.log('got data from venue ', data);
+  //     }).fail( err => {
+  //       console.log('error ' ,err);
+  //     })
+  //
+  //   })
+  // }
+
   $('.notany').click( e => {
     if ($('.notany:checked').length === 0) {
         $('#capAny').prop("checked", true)
@@ -63,6 +72,7 @@ $(document).ready(function() {
   $.get(`/api/venues`, (data, status) => {
     listVenues(data.slice(0,20))
     setThumbListener()
+    // setIndividualListener()
   })
 
   $('#venueSearchForm').submit( e => {
@@ -164,17 +174,14 @@ $(document).ready(function() {
     if (formData.capacity.value) {
       newVenue.capacity = formData.capacity.value
     }
-    console.log('formData.diy.value ', formData.diy.value);
-    console.log('formData.checked.diy ', formData.diy.checked);
     newVenue.diy = formData.diy.checked ? true : false
-    console.log('newVenue.diy should be true or false' , newVenue.diy);
 
     $.post(`/api/venues`, newVenue, (data, status) => {
       $('input[type="text"], textarea').val('');
       $('#state').val('All');
       $('#venuesList').empty()
       listVenues(data)
-    }) //end post
+    })
   })
 
 

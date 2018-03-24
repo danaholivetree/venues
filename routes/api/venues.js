@@ -17,6 +17,19 @@ router.get('/', function(req, res, next) {
     })
 });
 
+router.get('/:id', function(req, res, next) {
+
+  return knex('venues')
+    .where('venues.id', Number(req.params.id))
+    .innerJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
+    .select('venues.id as id', 'venue', 'state', 'city', 'genres_booked as genres', 'capacity', 'seated', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo', 'diy')
+    .first()
+    .then( venue => {
+      console.log('got the venue ', venue);
+      res.send(venue)
+    })
+});
+
 router.get('/q', function(req, res, next) {
   console.log(req.query);
   var query = knex('venues')
