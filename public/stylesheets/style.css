@@ -59,6 +59,13 @@ a:focus {
 .edit-btn {
   padding: 0;
   font-size: 0.65rem;
+  margin: 0 auto;
+  display:block;
+}
+
+.edit-all-btn {
+  padding:3px;
+  font-size:0.85rem;
 }
 
 #errorMessage {
@@ -155,4 +162,14 @@ h3 {
 .genreList {
   max-width:75px;
   min-width:75px;
+}
+.form-control-static {
+  padding: 7px 15px;
+}
+
+#venueInfo {
+  padding: 10px 60px;
+}
+.form-group {
+  margin-bottom: 0.5rem !important;
 }

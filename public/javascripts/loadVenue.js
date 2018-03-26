@@ -7,26 +7,155 @@ $(document).ready(function() {
     console.log('error ' , err);
   })
 
-
+{/* <h3> ${venue} </h3> */}
+{/* <button id='editVenue' class='btn btn-default'>Edit All</button> */}
   const showVenue = data => {
-    const {id, venue, url, state, city, capacity, email, genres, type, crowd, ages, pay, promo, accessibility} = data
+    const {id, venue, url, state, city, capacity, email, genres, type, crowd, ages, pay, promo, accessibility, contributedBy} = data
 
+    $('#venueInfo').before($(`<div class='container' style="padding: 30px 0 0 ;"><h3> ${venue} </h3></div>`))
     $('#venueInfo').append($(`
-     <h3> ${venue} </h3>
-       <button id='editVenue' class='btn default'>Edit All</button>
-      <form id='editVenueForm'>
-        <p> <strong> Location: </strong> ${city}, ${state} </p>
-        <p> <strong> Website: </strong> ${url}  <input type="text" id='url' value=${url} class="form-control edit-form aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editUrl' class='btn default edit-btn'>Edit</button> </p>
-        <p> <strong> Booking: </strong> ${email ? email : ''} <input type="email" id='email' class="form-control edit-form " aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editEmail' class='btn default edit-btn'>Edit</button></p>
-        <p> <strong> Capacity: </strong> ${capacity ? capacity : ''} <input type="number" id='capacity'  class="form-control edit-form" aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editCap' class='btn default edit-btn'>Edit</button></p>
-        <p> <strong> Genres booked: </strong >${genres ? genres : ''} <input type="text" id='genres' class="form-control edit-form" aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editGenres' class='btn default edit-btn'>Edit</button></p>
-        <p> <strong> Type of venue: </strong> ${type ? type : ''} <input type="text" id='type' class="form-control edit-form" aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editType' class='btn default edit-btn'>Edit</button></p>
-        <p> <strong> Type of crowd: </strong> ${crowd ? crowd : ''} <input type="text" id='crowd' class="form-control edit-form" aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editCrowd' class='btn default edit-btn'>Edit</button></p>
-        <p> <strong> Ages: </strong> ${ages ? ages : ''} <input type="text" id='ages' class="form-control edit-form" aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editAges' class='btn default edit-btn'>Edit</button></p>
-        <p> <strong> Pay structure: </strong> ${pay ? pay : ''} <input type="text" id='pay' class="form-control edit-form" aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editPay' class='btn default edit-btn'>Edit</button></p>
-        <p> <strong> Promo info: </strong> ${promo ? promo : ''} <input type="text" id='promo' class="form-control edit-form" aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editPromo' class='btn default edit-btn'>Edit</button></p>
-        <p> <strong> Accessibility: </strong> ${accessibility ? accessibility : ''} <input type="text" id='access' class="form-control edit-form" aria-label="Default" aria-describedby="inputGroup-sizing-default" /> <button id='editAccess' class='btn default edit-btn'>Edit</button></p>
-        <button id='submitEdits' type='submit' class='btn default edit-form'>Save Edits</button>
+
+      <div class='row'>
+        <div class="col-4 offset-sm-8">
+          <div> ${city}, ${state} </div>
+          <div> Contributed By: ${contributedBy}</div>
+        </div>
+      </div>
+
+
+      <form class="form-horizontal" id="editVenueForm">
+        <div class="form-group row">
+          <div class='col offset-sm-6'>
+            <button id='editVenue' class='btn btn-default edit-all-btn'>Edit All</button>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="url">Website:</label>
+            <div class=" col-4">
+              <p class="info form-control-static"> ${url}  </p>
+            </div>
+            <div class='col-1'>
+              <button id='editUrl' class='btn input-group-btn btn-default edit-btn '>Edit</button>
+            </div>
+            <div class='col-5'>
+              <input type="text" id='url' value=${url} class="form-control edit-form" />
+            </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="booking">Booking:</label>
+
+          <div class=" col-4">
+            <p class="info form-control-static">${email ? email : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editUrl' class='btn input-group-btn btn-default edit-btn '>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="email" id='email' class="form-control edit-form" />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="capacity">Capacity:</label>
+          <div class="col-4">
+            <p class="form-control-static">${capacity ? capacity : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editCap' class='btn btn-default edit-btn'>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="number" id='capacity'  class="form-control edit-form" />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="genres">Genres booked:</label>
+          <div class='col-4'>
+            <p class="form-control-static"> ${genres ? genres : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editGenres' class='btn btn-default edit-btn'>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="text" id='genres' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="type">Type of venue:</label>
+          <div class='col-4'>
+            <p class="form-control-static"> ${type ? type : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editType' class='btn btn-default edit-btn'>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="text" id='type' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="crowd">Type of crowd:</label>
+          <div class="col-4">
+            <p class="form-control-static">${crowd ? crowd : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editCrowd' class='btn btn-default edit-btn'>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="text" id='crowd' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="ages">Ages: </label>
+          <div class="col-4">
+            <p class="form-control-static">${ages ? ages : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editAges' class='btn btn-default edit-btn'>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="text" id='ages' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="pay">Pay structure: </label>
+          <div class="col-4">
+            <p class="form-control-static">${pay ? pay : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editPay' class='btn btn-default edit-btn'>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="text"  id='pay'  class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label  col-2 col-form-label" for="promo">Promo info: </label>
+          <div class="col-4">
+            <p class="form-control-static">${promo ? promo : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editPromo' class='btn btn-default edit-btn'>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="text"  id='promo'  class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label  col-2 col-form-label" for="access">Accessibility: </label>
+          <div class="col-4">
+            <p class="form-control-static">${accessibility ? accessibility : ''}</p>
+          </div>
+          <div class='col-1'>
+            <button id='editAccess' class='btn btn-default edit-btn'>Edit</button>
+          </div>
+          <div class='col-5'>
+            <input type="text"  id='access'  class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-lg-offset-2 col-2">
+            <button id='submitEdits' type='submit' class='btn btn-default edit-form'>Save Edits</button>
+          </div>
+        </div>
+
       </form>
     `))
     //set autofill values for form inputs
@@ -42,7 +171,12 @@ $(document).ready(function() {
     })
     $('.edit-btn').click( e => {
       e.preventDefault()
-      $(e.currentTarget).prev().show()
+      $(e.currentTarget).closest('div').next().children('input').show()
+      // $(e.currentTarget).closest('p').hide()
+
+    // $(e.currentTarget).parent().next().show()
+
+
     })
 
     $('#editVenueForm').submit( e => {

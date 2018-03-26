@@ -21,7 +21,8 @@ router.get('/:id', function(req, res, next) {
   return knex('venues')
     .where('venues.id', Number(req.params.id))
     .leftOuterJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
-    .select('venues.id as id', 'venue', 'state', 'url', 'email', 'city', 'genres_booked as genres', 'capacity', 'seated', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo', 'diy')
+    .rightOuterJoin('users', 'users.id', 'venues.contributed_by')
+    .select('venues.id as id', 'venue', 'state', 'url', 'venues.email', 'city', 'genres_booked as genres', 'capacity', 'seated', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo', 'diy', 'users.name as contributedBy')
     .first()
     .then( venue => {
       console.log('got the venue ', venue);
