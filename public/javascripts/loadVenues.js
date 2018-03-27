@@ -69,6 +69,7 @@ $(document).ready(function() {
   })
 
   $.get(`/api/venues`, (data, status) => {
+    console.log('got data ', data);
     listVenues(data.slice(0,20))
     setThumbListener()
     // setIndividualListener()

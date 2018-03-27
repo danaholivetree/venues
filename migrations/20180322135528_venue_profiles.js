@@ -8,6 +8,7 @@ exports.up = function(knex, Promise) {
     t.string('crowd')
     t.string('pay')
     t.string('promo')
+    t.string('sound')
     t.string('accessibility')
     t.string('ages')
   })
