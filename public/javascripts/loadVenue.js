@@ -224,15 +224,11 @@ $(document).ready(function() {
 
       } else if (targ.hasClass('save')) {
           origVal = data[$(thisInput).prop('id')]
-          console.log('origVal ', origVal);
           let editedVenue = {}
           if ($(thisInput).prop('id') === 'diy' && data['diy'] !== $(thisInput).prop('checked')) {
-            console.log('this inputs checked ', $(thisInput).prop('checked'));
             editedVenue['diy'] = !data['diy']
           } else if ($(thisInput).val() !== origVal) {
-            console.log('this inputs val ', $(thisInput).val())
             let field = $(thisInput).prop('id')
-            console.log('edited field ', field);
             editedVenue[field] = $(thisInput).val()
           }
             console.log('editedVenue to be sent to server ', editedVenue);
@@ -250,15 +246,10 @@ $(document).ready(function() {
       let inputs = $(this).find('input')
       let editedVenue = {}
       $(inputs).each(function (i, val) {
-        // console.log('original data data[val.id] ', data[val.id])
-        // console.log('val.value in form ', val.value);
         if (val.id !== 'diy' && val.value != data[val.id]) {
           editedVenue[val.id] = val.value
         }
         if (val.id === 'diy' && val.checked !== data['diy']) {
-          console.log('val.id === diy');
-          console.log('val.checked ', val.checked);
-          console.log('data["diy"] ', data['diy']);
           editedVenue['diy'] = val.checked
         }
       })
