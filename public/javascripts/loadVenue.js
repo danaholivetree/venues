@@ -11,6 +11,7 @@ $(document).ready(function() {
 {/* <h3> ${venue} </h3> */}
 {/* <button id='editVenue' class='btn btn-default'>Edit All</button> */}
   const showVenue = data => {
+    console.log('gotData ', data);
     const {id, venue, url, state, city, diy, capacity, email, sound, genres, type, crowd, ages, pay, promo, accessibility, contributedBy} = data
 
     $('#venueInfo').append($(`
