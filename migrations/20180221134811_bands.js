@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
     t.string('spotify').defaultTo('')
     t.string('genre').defaultTo('')
     t.integer('stars').defaultTo(0)
-    t.integer('contributed_by').references('users.id')
+
     // .notNullable().onDelete('CASCADE')
     t.timestamps(true, true)
   });
