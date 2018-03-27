@@ -8,11 +8,10 @@ exports.up = function(knex, Promise) {
     t.string('url').defaultTo('')
     t.varchar('email').defaultTo('')
     t.integer('capacity')
-    t.string('seated').defaultTo('')
     t.boolean('diy').defaultTo(false)
     t.integer('up').defaultTo(0)
     t.integer('down').defaultTo(0)
-    t.integer('contributed_by').references('users.id')
+  
     // .notNullable().onDelete('CASCADE')
     t.timestamps(true, true)
   })
