@@ -152,19 +152,23 @@ $(document).ready(function() {
     let formData = e.target.elements
     const newVenue = {}
     newVenue.state = formData.state.value
-    if (!formData.city.value || formData.city.value == 'All') {
-      $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
+    if (!formData.state.value || formData.state.value == 'All') {
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a state</div>`)
+    } else {
+      newVenue.state = formData.state.value
+    }
+    if (!formData.city.value || formData.city === '') {
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
     } else {
       newVenue.city = makeUppercase(formData.city.value)
     }
-    if (!formData.venue.value) {
-        $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a venue name</div>`)
+    if (!formData.venue.value || formData.venue === '') {
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a venue</div>`)
     } else {
       newVenue.venue = makeUppercase(formData.venue.value)
     }
     if (!formData.url.value) {
-        $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a url</div>`)
-        // endMessage()
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a url</div>`)
     } else {
       newVenue.url = checkUrl(formData.url.value)
     }

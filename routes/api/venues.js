@@ -108,6 +108,7 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
+  console.log('post');
   const {state, city, venue, capacity, email, url, diy} = req.body
   var newVenue = {state, city, venue, url, contributed_by: req.cookies.user.id}
   if (capacity) {
@@ -148,10 +149,6 @@ router.post('/', (req, res, next) => {
       }
     })
 })
-
-
-
-
 
 router.put('/:id', (req, res, next) => {
   console.log('put route by id ',  Number(req.params.id));
