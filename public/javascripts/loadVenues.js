@@ -108,7 +108,7 @@ $(document).ready(function() {
     }
     const params = {state, city, venue, capacity}
     const queryString = $.param(params)
-
+    console.log('queryString ', queryString);
     $.get(`/api/venues/q?${queryString}`, (data, status) => {
       console.log('data length ', data.length);
       if (state !== 'All') {
