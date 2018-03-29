@@ -46,13 +46,13 @@ $(document).ready(function() {
       let showSpotify = band.spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
       $('#bandsList').append($(`
         <tr>
-          <td>${abbrState(band.state, 'abbr')}</td>
+          <td class='d-none d-md-table-cell'>${abbrState(band.state, 'abbr')}</td>
           <td>${band.city}</td>
           <td>${displayBand}</td>
-          <td class="genreList">${band.genre}</td>
-          <td class=star_col${band.id} align='center'><i class="material-icons star" data-id=${band.id}>star</i><br><span>${band.stars}</span></td>
-          <td class='url'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
-          <td>${displayBandcamp}</td>
+          <td class="genreList d-none d-md-table-cell">${band.genre}</td>
+          <td class='star_col${band.id} d-none d-md-table-cell' align='center'><i class="material-icons star" data-id=${band.id}>star</i><br><span>${band.stars}</span></td>
+          <td class='url d-none d-md-table-cell'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
+          <td class='d-none d-md-table-cell'>${displayBandcamp}</td>
           <td><button class='playSpotify btn' data-name='${band.band}'>play</button></td>
         </tr>`))
         if (band.starred) {

@@ -8,14 +8,16 @@ $(document).ready(function() {
       let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
 
       $('#venuesList').append($(`
-        <tr onclick="window.location='/venues/${venue.id}'" data-id=${venue.id} class='venue-row'>
-          <td>${abbrState(venue.state, 'abbr')}</td>
-          <td>${venue.city}</td>
-          <td>${displayVenue}</td>
-          <td>${venue.capacity ? venue.capacity : ''}</td>
-          <td id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
-          <td id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
+
+        <tr scope='row' onclick="window.location='/venues/${venue.id}'" data-id=${venue.id} class='venue-row'>
+          <td >${abbrState(venue.state, 'abbr')}</td>
+          <td >${venue.city}</td>
+          <td >${displayVenue}</td>
+          <td class='d-none d-md-table-cell'>${venue.capacity ? venue.capacity : ''}</td>
+          <td class='d-none d-md-table-cell' id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
+          <td class='d-none d-md-table-cell' id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
         </tr>
+
       `))
 
       if (venue.vote === 'up') {
