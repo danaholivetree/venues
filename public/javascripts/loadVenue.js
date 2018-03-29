@@ -67,7 +67,6 @@ $(document).ready(function() {
 
       $.get(`/token/facebook/venues/${fbid}`, data => {
         console.log('data' , data);
-        console.log('data.events.data' , data.events.data);
         getEvents(data.events.data)
         checkForBookingEmail(data.about)
         if (data.emails) {
@@ -110,12 +109,10 @@ $(document).ready(function() {
       let targ = $(e.currentTarget)
       let thisInput = targ.closest('div').next().children('input')
       if (targ.hasClass('edit')) {
-        console.log('was edit');
         thisInput.show()
         targ.next().attr( "style", "display: block;" )
         targ.text('Save').toggleClass('save').toggleClass('edit')
       } else if (targ.hasClass('save')) {
-        console.log('was save');
         let origVal = venueData[$(thisInput).prop('id')]
         let editedVenue = {}
         if (thisInput.prop('id') === 'diy' && venueData['diy'] !== $(thisInput).prop('checked')) {
@@ -134,7 +131,6 @@ $(document).ready(function() {
           targ.next().hide()
           targ.closest('div').next().children('input').hide()
       } else if (targ.hasClass('cancel-edit')) {
-          console.log('was cancel');
           targ.closest('div').next().children('input').hide()
           targ.closest('div').children('.save').text('Edit').toggleClass('save').toggleClass('edit')
           targ.hide()

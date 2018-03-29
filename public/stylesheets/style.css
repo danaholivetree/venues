@@ -95,13 +95,16 @@ a:focus {
   font-size: 0.65rem;
   margin: 0 auto;
   display:block;
+  border: 1px solid lightblue;
+  /* color: lightblue; */
 }
 
 .btn.cancel-edit {
   display:none;
-  padding: 0;
+  padding: 4px;
   font-size: 0.65rem;
-  margin: 0 auto;
+  margin: 5px auto 0;
+  /* display:block; */
 }
 
 .submit-or-cancel {
@@ -109,7 +112,7 @@ a:focus {
   margin-top:30px;
 }
 
-#editVenueForm button {
+#editVenueForm .big-btn {
   background-color:lightblue;
 }
 

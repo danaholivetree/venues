@@ -93,8 +93,6 @@ router.get('/q', (req, res, next) => {
     })
 });
 
-
-
 router.get('/:id', (req, res, next) => {
   console.log('Getting venue ', Number(req.params.id));
   return knex('venues')
@@ -108,18 +106,6 @@ router.get('/:id', (req, res, next) => {
       res.send(venue)
     })
 });
-
-// router.get('/:id', (req, res, next) => {
-//   console.log('Getting venue ', Number(req.params.id));
-//   return knex('venues')
-//     .where('venues.id', Number(req.params.id))
-//     .select('*')
-//     .first()
-//     .then( venue => {
-//       console.log('got the venue ', venue);
-//       res.send(venue)
-//     })
-// });
 
 router.post('/', (req, res, next) => {
   console.log('post');
@@ -148,16 +134,21 @@ router.post('/', (req, res, next) => {
           .increment('contributions', 1)
           .then( () => {
             return knex('venues')
-              .insert(newVenue, 'state')
-              .then( state => {
-                return knex('venues')
-                  .select('*')
-                  .where('state', state[0])
-                  .orderBy('id', 'desc')
-                  .then( venues => {
-                    res.send(venues)
-                  })
+              .insert(newVenue, '*')
+              .then( venue => {
+                console.log('venue', venue[0]);
+                res.send(venue[0])
               })
+              // .insert(newVenue, 'state')
+              // .then( state => {
+              //   return knex('venues')
+              //     .select('*')
+              //     .where('state', state[0])
+              //     .orderBy('id', 'desc')
+              //     .then( venues => {
+              //       res.send(venues)
+              //     })
+              // })
           })
 
       }

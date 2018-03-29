@@ -163,12 +163,15 @@ $(document).ready(function() {
       newVenue.capacity = formData.capacity.value
     }
     newVenue.diy = formData.diy.checked ? true : false
+    console.log('newVenue.id', newVenue.id);
+    console.log('type of  ', typeof newVenue.id);
 
     $.post(`/api/venues`, newVenue, (data, status) => {
-      $('input[type="text"], textarea').val('');
-      $('#state').val('All');
-      $('#venuesList').empty()
-      listVenues(data)
+      // $('input[type="text"], textarea').val('');
+      // $('#state').val('All');
+      // $('#venuesList').empty()
+      // listVenues(data)
+      window.location=`/venues/${data.id}`
     })
   })
 
