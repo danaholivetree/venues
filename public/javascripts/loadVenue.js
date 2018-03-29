@@ -5,7 +5,7 @@ $(document).ready(function() {
   $.get(`/api/venues/${venueId}`, data => {
     venueData = data
     showVenue(data)
-    getFbInfo(data.url)
+    getFbInfo(data.url) //maybe not have to do this more than once?
 
   }).fail( err => {
     console.log('error ' , err);
@@ -42,26 +42,29 @@ $(document).ready(function() {
     // let book = /(booking)/gi
     let booking = clean.split(' ').find( el => el.match(em))
     console.log('booking ', booking);
-    if (booking) {
+    if (booking && venueData.email !== booking) {
       $('#email').show().val(booking)
       let thisButton = $('#email').closest('div').prev('div').children().first()
       thisButton.text('Save').toggleClass('save').toggleClass('edit')
       thisButton.next().attr( "style", "display: block;" )
-        // thisButton.closest('div').append($(`<button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>`))
-
-
   }
 }
 
   const getFbInfo = url => {
+    let fbid
     if (url.split('.')[1] === 'facebook') {
-      let fbid = url.split('/')[3]
+      fbid = url.split('/')[3]
       if (fbid.split('-').length > 1) {
         fbid = fbid.split('-')
         fbid = fbid[fbid.length-1]
       }
-
       console.log('fbid ', fbid);
+    } else {
+      fbid = url.split('.')[1]
+      console.log('trying fbid ', fbid);
+    }
+
+
       $.get(`/token/facebook/venues/${fbid}`, data => {
         console.log('data' , data);
         console.log('data.events.data' , data.events.data);
@@ -70,9 +73,7 @@ $(document).ready(function() {
         if (data.emails) {
           data.emails.filter( email => checkForBookingEmail(email))
         }
-
       })
-    }
   }
 
   const showVenue = data => {
@@ -106,35 +107,25 @@ $(document).ready(function() {
 
     $('.edit-btn').click( e => {
       e.preventDefault()
-      console.log('venueData is accessible ', venueData);
       let targ = $(e.currentTarget)
-      console.log('current target was ', targ);
       let thisInput = targ.closest('div').next().children('input')
-      console.log('thisInput ', thisInput);
-      console.log("targ.hasClass('edit') ", targ.hasClass('edit'));
-      console.log("targ.hasClass('save') ", targ.hasClass('save'));
-      console.log("targ.hasClass('cancel-edit') ", targ.hasClass('cancel-edit'));
       if (targ.hasClass('edit')) {
         console.log('was edit');
-        console.log('showing input field');
         thisInput.show()
-        console.log('showing cancel button');
         targ.next().attr( "style", "display: block;" )
-        console.log('target becomes save button');
         targ.text('Save').toggleClass('save').toggleClass('edit')
       } else if (targ.hasClass('save')) {
         console.log('was save');
         let origVal = venueData[$(thisInput).prop('id')]
-        console.log('origVal ', origVal);
         let editedVenue = {}
         if (thisInput.prop('id') === 'diy' && venueData['diy'] !== $(thisInput).prop('checked')) {
           editedVenue['diy'] = !venueData['diy']
         } else if ($(thisInput).val() !== origVal) {
+          console.log('origVal ', origVal);
           console.log('currentVal is different', $(thisInput).val());
           let field = $(thisInput).prop('id')
           editedVenue[field] = $(thisInput).val()
         }
-          console.log('editedVenue ', editedVenue);
           if (Object.keys(editedVenue).length > 0) {
             console.log('editedVenue had keys, sending to server ');
             sendEditToServer(venueId, editedVenue)
@@ -143,17 +134,12 @@ $(document).ready(function() {
           targ.next().hide()
           targ.closest('div').next().children('input').hide()
       } else if (targ.hasClass('cancel-edit')) {
-        console.log('was cancel');
+          console.log('was cancel');
           targ.closest('div').next().children('input').hide()
           targ.closest('div').children('.save').text('Edit').toggleClass('save').toggleClass('edit')
           targ.hide()
       }
     })
-
-
-
-
-
 
     $('#editVenueForm').submit(e => {
       e.preventDefault()
@@ -161,20 +147,27 @@ $(document).ready(function() {
       let inputs = $(this).find('input')
       let editedVenue = {}
       $(inputs).each(function (i, val) {
+        let field = val.id
+        let newValue = val.value
+        let origValue = venueData[field]
         console.log('capacity ', capacity);
-        if (val.id === 'capacity' && val.value != '' && val.value != data[capacity]) {
-          console.log('actually editing capacity setting it to ', val.value);
-          editedVenue[val.id] = val.value
+        if (field === 'capacity' && newValue != '' && newValue != origValue) {
+          console.log('actually editing capacity setting it to ', newValue);
+          editedVenue[field] = newValue
         }
-        if (val.id !== 'diy' && val.value != data[val.id]) {
-          editedVenue[val.id] = val.value
+        if (field === 'diy' && val.checked !== origValue) {
+          console.log('diy changed ', diy);
+          editedVenue[field] = val.checked
         }
-        if (val.id === 'diy' && val.checked !== data['diy']) {
-          editedVenue['diy'] = val.checked
+        if (field !== 'diy' && val.value != origValue) {
+          console.log('something other than cap or diy changed ', newValue);
+          editedVenue[field] = newValue
         }
       })
       console.log('editedVenue to be sent to server ', editedVenue);
       sendEditToServer(venueId, editedVenue)
+      inputs.hide()
+      $('.edit').show()
     })
 
 
