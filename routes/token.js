@@ -34,7 +34,7 @@ router.get('/facebook/venues/:qs', (req, res, next) => {
   const app_secret = process.env.FACEBOOK_APP_SECRET;
   const query = req.params.qs
   let uri = `https://graph.facebook.com/v2.12/${query}?`
-  let qs = `fields=name,about, website,single_line_address,emails,location,events.limit(10){name,start_time,id}`
+  let qs = `fields=name,about, website,single_line_address,emails,location,events{name,start_time,id}`
   // let auth = `&access_token=${app_id}|${app_secret}`
   let auth = `&access_token=${process.env.TEMP_TOKEN}`
   request.get({url: uri+qs+auth, json: true}, (error, response, data) => {

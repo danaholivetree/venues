@@ -3,6 +3,201 @@
   <body>
 
     <div id='venueInfo' class='container'>
+      <div class='container' style="padding: 30px 0 0 ;"><h3></h3></div>
+
+       <div class='row'>
+          <div class='col-2'>
+            <a href='/venues'><i class="material-icons">arrow_back</i></a> Search Venues
+          </div>
+        </div>
+
+
+     <form class="form-horizontal" id="editVenueForm">
+        <div class="form-group row">
+          <div class='col-2 offset-md-6 offset-10'>
+            <button id='editVenue' class='btn btn-default edit-all-btn'>Edit All</button>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" >Location:</label>
+            <div class="col-md-4 col-8">
+              <p class="info location form-control-static">  </p>
+              <p id='contributedBy' class="info form-control-static">  </p>
+            </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="url">Website:</label>
+            <div class="col-md-4 col-8">
+              <p class="info url form-control-static"> <a href=${url} target='_blank'></a>  </p>
+            </div>
+            <div class='col-1'>
+              <button id='editUrl' class='btn input-group-btn btn-default edit-btn edit '>Edit</button>
+              <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+            </div>
+            <div class='col-lg-5'>
+              <input type="text" id='url' value=${url} class="form-control edit-form" />
+            </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="booking">Booking:</label>
+
+          <div class="col-md-4 col-8">
+            <p class="info email form-control-static"></p>
+          </div>
+          <div class='col-1'>
+            <button id='editEmail' class='btn input-group-btn btn-default edit-btn edit '>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="email" id='email' class="form-control edit-form" />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="capacity">Capacity:</label>
+          <div class="col-md-4 col-8">
+            <p class="info capacity form-control-static"></p>
+          </div>
+          <div class='col-1'>
+            <button id='editCap' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="number" id='capacity'  class="form-control edit-form" />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="genres">Genres booked:</label>
+          <div class='col-md-4 col-8'>
+            <p class="info genres form-control-static"> </p>
+          </div>
+          <div class='col-1'>
+            <button id='editGenres' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="text" id='genres' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="type">Type of venue:</label>
+          <div class='col-md-4 col-8'>
+            <p class="info type form-control-static"></p>
+          </div>
+          <div class='col-1'>
+            <button id='editType' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="text" id='type' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="diyChange">DIY Status:</label>
+          <div class='col-md-4 col-8'>
+            <p class="info diy form-control-static">  </p>
+          </div>
+
+          <div class='col-1'>
+            <button id='editType' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='form-check col-lg-5'>
+            <input type="checkbox" id='diy' class="form-check edit-form" />
+            <label class=" form-check-label edit-form" for="diy">
+
+            </label>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="sound">Sound: </label>
+          <div class="col-md-4 col-8">
+            <p class="info sound form-control-static"</p>
+          </div>
+          <div class='col-1'>
+            <button id='editSound' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="text" id='sound' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="crowd">Type of crowd:</label>
+          <div class="col-md-4 col-8">
+            <p class="info crowd form-control-static"></p>
+          </div>
+          <div class='col-1'>
+            <button id='editCrowd' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="text" id='crowd' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="ages">Ages: </label>
+          <div class="col-md-4 col-8">
+            <p class="info ages form-control-static"></p>
+          </div>
+          <div class='col-1'>
+            <button id='editAges' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="text" id='ages' class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label col-2 col-form-label" for="pay">Pay structure: </label>
+          <div class="col-md-4 col-8">
+            <p class="info pay form-control-static"></p>
+          </div>
+          <div class='col-1'>
+            <button id='editPay' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="text"  id='pay'  class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label  col-2 col-form-label" for="promo">Promo info: </label>
+          <div class="col-md-4 col-8">
+            <p class="info promo form-control-static"></p>
+          </div>
+          <div class='col-1'>
+            <button id='editPromo' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="text"  id='promo'  class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="control-label  col-2 col-form-label" for="accessibility">Accessibility: </label>
+          <div class="col-md-4 col-8">
+            <p class="info accessibility form-control-static"></p>
+          </div>
+          <div class='col-1'>
+            <button id='editAccess' class='btn btn-default edit-btn edit'>Edit</button>
+            <button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>
+          </div>
+          <div class='col-lg-5'>
+            <input type="text"  id='accessibility'  class="form-control edit-form"  />
+          </div>
+        </div>
+        <div class="form-group row">
+          <div class="col-lg-offset-2 col-2">
+            <button id='submitEdits' type='submit' class='btn btn-default edit-form'>Save Edits</button>
+          </div>
+        </div>
+
+      </form>
+      <div class='row' style='margin-top: 25px;'>
+        <div class='col-2'>Upcoming Facebook events:</div>
+        <div id='displayEvents' class='col-md-auto col-8'><ul></ul></dvi>
+      </div>
+
     </div>
 
 <script src="../javascripts/loadVenue.js"></script>

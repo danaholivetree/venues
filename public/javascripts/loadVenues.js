@@ -46,20 +46,6 @@ $(document).ready(function() {
     })
   }
 
-  // const setIndividualListener = () => {
-  //   $('.venue-row').click( e => {
-  //     e.preventDefault()
-  //     console.log('redirecting to /currentTarget.dataset.id', e.currentTarget.dataset.id);
-  //     window.location = `/venues/${e.currentTarget.dataset.id}`
-  //     $.get(`/api/venues/${e.currentTarget.dataset.id}`, data => {
-  //       console.log('got data from venue ', data);
-  //     }).fail( err => {
-  //       console.log('error ' ,err);
-  //     })
-  //
-  //   })
-  // }
-
   $('.notany').click( e => {
     if ($('.notany:checked').length === 0) {
         $('#capAny').prop("checked", true)
@@ -69,10 +55,9 @@ $(document).ready(function() {
   })
 
   $.get(`/api/venues`, (data, status) => {
-    console.log('got data ', data);
+    // console.log('got data ', data);
     listVenues(data.slice(0,20))
     setThumbListener()
-    // setIndividualListener()
   })
 
   $('#venueSearchForm').submit( e => {
@@ -124,7 +109,6 @@ $(document).ready(function() {
         $('#capAny').prop('checked', true) //maybe dont want these three
         $('input[type="text"], textarea').val('');
         $('#venueState').val('All');
-        console.log('data' , data);
         listVenues(data)
         setThumbListener()
     })

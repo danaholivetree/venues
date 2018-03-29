@@ -1,7 +1,9 @@
 $(document).ready(function() {
   let venueId = document.location.href.match(/(\d+)$/)[0]
+  let venueData = {}
 
   $.get(`/api/venues/${venueId}`, data => {
+    venueData = data
     showVenue(data)
     getFbInfo(data.url)
 
@@ -11,29 +13,64 @@ $(document).ready(function() {
 
 {/* <h3> ${venue} </h3> */}
 {/* <button id='editVenue' class='btn btn-default'>Edit All</button> */}
+  const getEvents = events => {
+    let upcomingEvents = events.filter( event => (new Date(event.start_time) > new Date()))
+    if (upcomingEvents.length > 0) {
+      let displayEvents = upcomingEvents.map( event => {
+        return `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`
+      })
+      displayEvents.forEach( event => {
+        $('#displayEvents ul').prepend(event)
+      })
+    } else {
+      if (events.length > 0) {
+        let displayEvents = events.map( event => `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`)
+        displayEvents.forEach( event => {
+          $('#displayEvents ul').append(event)
+        })
+        $('#displayEvents').prev('div').text('Past FB events:')
+      }
+    }
+
+
+
+  }
+
+  const checkForBookingEmail = (field) => {
+    let clean = field.replace(/(\r\n|\n|\r)/gm, " ");
+    let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
+    // let book = /(booking)/gi
+    let booking = clean.split(' ').find( el => el.match(em))
+    console.log('booking ', booking);
+    if (booking) {
+      $('#email').show().val(booking)
+      let thisButton = $('#email').closest('div').prev('div').children().first()
+      thisButton.text('Save').toggleClass('save').toggleClass('edit')
+      thisButton.next().attr( "style", "display: block;" )
+        // thisButton.closest('div').append($(`<button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>`))
+
+
+  }
+}
 
   const getFbInfo = url => {
-    // console.log('url ', url);
-    // console.log('url.split(".")[1] ', url.split('.')[1]);
     if (url.split('.')[1] === 'facebook') {
       let fbid = url.split('/')[3]
-      // console.log("url.split('/')[3] ", url.split('/')[3])
+      if (fbid.split('-').length > 1) {
+        fbid = fbid.split('-')
+        fbid = fbid[fbid.length-1]
+      }
+
+      console.log('fbid ', fbid);
       $.get(`/token/facebook/venues/${fbid}`, data => {
         console.log('data' , data);
-        let events = data.events.data
+        console.log('data.events.data' , data.events.data);
+        getEvents(data.events.data)
+        checkForBookingEmail(data.about)
+        if (data.emails) {
+          data.emails.filter( email => checkForBookingEmail(email))
+        }
 
-        let upcomingEvents = events.filter( event => {
-          return (new Date(event.start_time) > new Date())
-        })
-        let displayEvents = upcomingEvents.map( event => {
-          // let time = event.start_time
-          // let dateString = new Date(time).toDateString();
-          return `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id}>${event.name}</a></li>`
-        })
-        displayEvents.forEach( event => {
-          $('#displayEvents ul').prepend(event)
-        })
-        // console.log('displayevents ' , displayEvents);
       })
     }
   }
@@ -41,242 +78,94 @@ $(document).ready(function() {
   const showVenue = data => {
     console.log('gotData ', data);
     const {id, venue, url, state, city, diy, capacity, email, sound, genres, type, crowd, ages, pay, promo, accessibility, contributedBy} = data
-    $('#venueInfo').append($(`
-      <div class='container' style="padding: 30px 0 0 ;"><h3>${venue}</h3></div>
 
-      <div class='row'>
-          <div class='col-2'>
-            <i class="material-icons">arrow_back</i> Search Venues
-          </div>
-          <div class="col-md-3 col-6 offset-md-8 offset-6">
+    $('.container > h3').empty().append(venue)
+    $('.info.location').empty().append(`${city}, ${state}`)
+    $('.info.url').empty().append(`<a href=${url} target='_blank'>${url}</a>`)
+    $('.info.email').empty().append(`${email ? email : ''}`)
+    $('.info.capacity').empty().append(`${capacity !== 0 ? capacity : ''}`)
+    $('.info.genres').empty().append(`${genres ? genres : ''}`)
+    $('.info.type').empty().append(`${type ? type : ''}`)
+    $('.info.crowd').empty().append(`${crowd ? crowd : ''}`)
+    $('.info.sound').empty().append(`${sound ? sound : ''}`)
+    $('.info.accessibility').empty().append(`${accessibility ? accessibility : ''}`)
+    $('.info.ages').empty().append(`${ages ? ages : ''}`)
+    $('.info.pay').empty().append(`${pay ? pay : ''}`)
+    $('.info.promo').empty().append(`${promo ? promo : ''}`)
+    $('.info.diy').empty().append(`${diy ? 'This is a diy or not-for-profit venue.' : 'This is not a DIY venue'}`)
+    $('#diy').prop('checked', diy )
+    $('#diy').next('label').empty().append(`${diy ?  'This is a diy or not-for-profit venue. Uncheck to mark as not DIY' : 'This is not a DIY venue. Check to mark as DIY.'}`)
 
-                ${city}, ${state}
-                Contributed By: ${contributedBy}
-
-
-          </div>
-
-      </div>
-
-
-      <form class="form-horizontal" id="editVenueForm">
-        <div class="form-group row">
-          <div class='col-2 offset-md-6 offset-10'>
-            <button id='editVenue' class='btn btn-default edit-all-btn'>Edit All</button>
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="url">Website:</label>
-            <div class="col-md-4 col-8">
-              <p class="info form-control-static"> <a href=${url}>${url}</a>  </p>
-            </div>
-            <div class='col-1'>
-              <button id='editUrl' class='btn input-group-btn btn-default edit-btn edit '>Edit</button>
-            </div>
-            <div class='col-lg-5'>
-              <input type="text" id='url' value=${url} class="form-control edit-form" />
-            </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="booking">Booking:</label>
-
-          <div class="col-md-4 col-8">
-            <p class="info form-control-static">${email ? email : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editEmail' class='btn input-group-btn btn-default edit-btn edit '>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="email" id='email' class="form-control edit-form" />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="capacity">Capacity:</label>
-          <div class="col-md-4 col-8">
-            <p class="form-control-static">${capacity ? capacity : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editCap' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="number" id='capacity'  class="form-control edit-form" />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="genres">Genres booked:</label>
-          <div class='col-md-4 col-8'>
-            <p class="form-control-static"> ${genres ? genres : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editGenres' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="text" id='genres' class="form-control edit-form"  />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="type">Type of venue:</label>
-          <div class='col-md-4 col-8'>
-            <p class="form-control-static"> ${type ? type : ''} </p>
-          </div>
-          <div class='col-1'>
-            <button id='editType' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="text" id='type' class="form-control edit-form"  />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="diyChange">DIY Status:</label>
-          <div class='col-md-4 col-8'>
-            <p class="form-control-static"> ${diy ? 'This is a diy or not-for-profit venue.' : 'This is not a DIY venue'} </p>
-          </div>
-
-          <div class='col-1'>
-            <button id='editType' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='form-check col-lg-5'>
-            <input type="checkbox" id='diy' class="form-check edit-form" ${diy ? "checked" : ''} />
-            <label class="form-check-label edit-form" for="diy">
-              ${diy ?  'This is a diy or not-for-profit venue. Uncheck to mark as not DIY' : 'This is not a DIY venue. Check to mark as DIY.'}
-            </label>
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="sound">Sound: </label>
-          <div class="col-md-4 col-8">
-            <p class="form-control-static">${sound ? sound : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editSound' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="text" id='sound' class="form-control edit-form"  />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="crowd">Type of crowd:</label>
-          <div class="col-md-4 col-8">
-            <p class="form-control-static">${crowd ? crowd : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editCrowd' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="text" id='crowd' class="form-control edit-form"  />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="ages">Ages: </label>
-          <div class="col-md-4 col-8">
-            <p class="form-control-static">${ages ? ages : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editAges' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="text" id='ages' class="form-control edit-form"  />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label col-2 col-form-label" for="pay">Pay structure: </label>
-          <div class="col-md-4 col-8">
-            <p class="form-control-static">${pay ? pay : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editPay' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="text"  id='pay'  class="form-control edit-form"  />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label  col-2 col-form-label" for="promo">Promo info: </label>
-          <div class="col-md-4 col-8">
-            <p class="form-control-static">${promo ? promo : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editPromo' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="text"  id='promo'  class="form-control edit-form"  />
-          </div>
-        </div>
-        <div class="form-group row">
-          <label class="control-label  col-2 col-form-label" for="accessibility">Accessibility: </label>
-          <div class="col-md-4 col-8">
-            <p class="form-control-static">${accessibility ? accessibility : ''}</p>
-          </div>
-          <div class='col-1'>
-            <button id='editAccess' class='btn btn-default edit-btn edit'>Edit</button>
-          </div>
-          <div class='col-lg-5'>
-            <input type="text"  id='accessibility'  class="form-control edit-form"  />
-          </div>
-        </div>
-        <div class="form-group row">
-          <div class="col-lg-offset-2 col-2">
-            <button id='submitEdits' type='submit' class='btn btn-default edit-form'>Save Edits</button>
-          </div>
-        </div>
-
-      </form>
-      <div id='displayEvents'>Upcoming Facebook events:
-        <ul></ul>
-      </div>
-    `))
     //set autofill values for form inputs
     $('input.edit-form').each( function() {
       if (data[this.id]) {
         this.value = data[this.id]
       }
     })
-    $('#editVenue').click( e => {
-      e.preventDefault()
-      $('.edit-form').show()
-      $('.edit-btn').hide()
-    })
+  }
+
     $('.edit-btn').click( e => {
       e.preventDefault()
+      console.log('venueData is accessible ', venueData);
       let targ = $(e.currentTarget)
-      let thisInput = $(e.currentTarget).closest('div').next().children('input')
-      let origVal = ''
-
+      console.log('current target was ', targ);
+      let thisInput = targ.closest('div').next().children('input')
+      console.log('thisInput ', thisInput);
+      console.log("targ.hasClass('edit') ", targ.hasClass('edit'));
+      console.log("targ.hasClass('save') ", targ.hasClass('save'));
+      console.log("targ.hasClass('cancel-edit') ", targ.hasClass('cancel-edit'));
       if (targ.hasClass('edit')) {
+        console.log('was edit');
+        console.log('showing input field');
+        thisInput.show()
+        console.log('showing cancel button');
+        targ.next().attr( "style", "display: block;" )
+        console.log('target becomes save button');
         targ.text('Save').toggleClass('save').toggleClass('edit')
-        $(thisInput).show()
-        targ.closest('div').append($(`<button class="btn input-group-btn edit-btn btn-default cancel-edit">Cancel</button>`))
-        $('.cancel-edit').click( event => {
-          event.preventDefault()
-          $(event.currentTarget).closest('div').next().children('input').hide()
-          $(event.currentTarget).closest('div').children('.save').text('Edit').toggleClass('save').toggleClass('edit')
-          $('.cancel-edit').remove()
-        })
-
       } else if (targ.hasClass('save')) {
-          origVal = data[$(thisInput).prop('id')]
-          let editedVenue = {}
-          if ($(thisInput).prop('id') === 'diy' && data['diy'] !== $(thisInput).prop('checked')) {
-            editedVenue['diy'] = !data['diy']
-          } else if ($(thisInput).val() !== origVal) {
-            let field = $(thisInput).prop('id')
-            editedVenue[field] = $(thisInput).val()
-          }
-            console.log('editedVenue to be sent to server ', editedVenue);
+        console.log('was save');
+        let origVal = venueData[$(thisInput).prop('id')]
+        console.log('origVal ', origVal);
+        let editedVenue = {}
+        if (thisInput.prop('id') === 'diy' && venueData['diy'] !== $(thisInput).prop('checked')) {
+          editedVenue['diy'] = !venueData['diy']
+        } else if ($(thisInput).val() !== origVal) {
+          console.log('currentVal is different', $(thisInput).val());
+          let field = $(thisInput).prop('id')
+          editedVenue[field] = $(thisInput).val()
+        }
+          console.log('editedVenue ', editedVenue);
+          if (Object.keys(editedVenue).length > 0) {
+            console.log('editedVenue had keys, sending to server ');
             sendEditToServer(venueId, editedVenue)
-            targ.toggleClass('save').toggleClass('edit').text('Edit')
-            targ.next('.cancel-edit').remove()
-            targ.closest('div').next().children('input').hide()
+          }
+          targ.toggleClass('save').toggleClass('edit').text('Edit')
+          targ.next().hide()
+          targ.closest('div').next().children('input').hide()
+      } else if (targ.hasClass('cancel-edit')) {
+        console.log('was cancel');
+          targ.closest('div').next().children('input').hide()
+          targ.closest('div').children('.save').text('Edit').toggleClass('save').toggleClass('edit')
+          targ.hide()
       }
     })
 
 
-    $('#editVenueForm').submit( e => {
+
+
+
+
+    $('#editVenueForm').submit(e => {
       e.preventDefault()
       let venueId = document.location.href.match(/(\d+)$/)[0]
       let inputs = $(this).find('input')
       let editedVenue = {}
       $(inputs).each(function (i, val) {
+        console.log('capacity ', capacity);
+        if (val.id === 'capacity' && val.value != '' && val.value != data[capacity]) {
+          console.log('actually editing capacity setting it to ', val.value);
+          editedVenue[val.id] = val.value
+        }
         if (val.id !== 'diy' && val.value != data[val.id]) {
           editedVenue[val.id] = val.value
         }
@@ -287,7 +176,15 @@ $(document).ready(function() {
       console.log('editedVenue to be sent to server ', editedVenue);
       sendEditToServer(venueId, editedVenue)
     })
-  }
+
+
+
+
+  $('#editVenue').click( e => {
+    e.preventDefault()
+    $('.edit-form').show()
+    $('.edit-btn').hide()
+  })
 
 const sendEditToServer = (id, edits) => {
   $.ajax({
@@ -296,7 +193,6 @@ const sendEditToServer = (id, edits) => {
     data: edits,
     success: data => {
       console.log('data came back from ajax ', data)
-      $('#venueInfo').empty()
       showVenue(data)
     },
     fail: err => {

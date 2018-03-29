@@ -11,7 +11,14 @@ a {
 html {
   font-size: 1rem;
 }
+ul {
+  list-style-type: none;
+  padding-left: 15px;
+}
 
+li {
+  padding-bottom: 10px;
+}
 .second-row {
   margin: 0 0 10px;
 }
@@ -88,6 +95,13 @@ a:focus {
   font-size: 0.65rem;
   margin: 0 auto;
   display:block;
+}
+
+.btn.cancel-edit {
+  display:none;
+  padding: 0;
+  font-size: 0.65rem;
+  margin: 0 auto;
 }
 
 .edit-all-btn {
