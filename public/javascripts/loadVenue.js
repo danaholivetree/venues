@@ -168,16 +168,35 @@ $(document).ready(function() {
       sendEditToServer(venueId, editedVenue)
       inputs.hide()
       $('.edit').show()
+      $('#editVenue').text('Edit All')
+      $('#cancelEdits').hide()
     })
 
 
 
 
   $('#editVenue').click( e => {
+    let targ = $(e.currentTarget)
     e.preventDefault()
-    $('.edit-form').show()
-    $('.edit-btn').hide()
+    if (targ.hasClass("edit-all")) {
+      $('.edit-form').show()
+      $('.edit-btn').hide()
+      $('#editVenue').text('Cancel').addClass('cancel-all').removeClass('edit-all')
+    } else if (targ.hasClass("cancel-all")) {
+      $('.edit-form').hide()
+      $('.edit').show()
+      $('#editVenue').text('Edit All').removeClass('cancel-all').addClass('edit-all')
+    }
   })
+
+  $('#cancelEdits').click( e => {
+    $('.edit-form').hide()
+    $('.edit').show()
+    $('#editVenue').text('Edit All').removeClass('cancel-all').addClass('edit-all')
+    $('#submitEdits').hide()
+    $('#cancelEdits').hide()
+  })
+
 
 const sendEditToServer = (id, edits) => {
   $.ajax({
