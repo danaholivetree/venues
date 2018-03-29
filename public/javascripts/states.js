@@ -83,14 +83,14 @@
       }
     }
 
-    exports.genreKeywords = [ 'Psych','Rock','Americana','Indie','Blues','Bluegrass',
-    'Folk', 'Zombie','Death','Polka','Prog','Lo-fi','Pop','Shoe-Gaze','Glam',
-    'Experimental','Slow','Eclectic','Orchestral','Cello', 'Freak',
-    'Ambient','Classic','Rap','R&B','Hip-hop','Dark','Dream','Electro','Power',
-    'Rock & Roll','Surf','Vintage','Country','Swing','Blues','Experimental','Punk',
-    'Metal', 'Hardcore', 'Noise', 'Electronic', 'Jam', 'Classical',
-    'Singer-songwriter', 'Jazz', 'Math', 'Synth', 'Goth', 'Opera', 'Rockabilly',
-    'Swing', 'Ragtime', 'Post-rock', 'Steampunk', 'Avant', 'World', 'Emo' ]
+    exports.genreKeywords = [ 'Singer-songwriter', 'Rock','Americana','Indie','Bluegrass',
+    'Folk','Country','Lo-fi','Dream','Pop', 'Dance', 'Shoe-Gaze','Glam', 'Psych',
+    'Experimental','Orchestral', 'Cello', 'Freak', 'Opera',
+    'Ambient','Classic','Vintage','Rap','R&B','Hip-hop','Dark','Electro','Power',
+    'Rock & Roll','Surf','Swing','Ragtime','Jazz','Blues','Experimental','Punk','Emo',
+    'Death', 'Metal', 'Hardcore', 'Noise', 'Electronic', 'Jam', 'Classical',
+    'Synth', 'Goth', 'Rockabilly','Math','Post-rock','Prog', 'Steampunk', 'Zombie',
+    'Polka', 'Avant', 'World', 'Eclectic' ]
 
 
 

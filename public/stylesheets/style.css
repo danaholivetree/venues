@@ -12,6 +12,12 @@ html {
   font-size: 1rem;
 }
 
+.second-row {
+  margin: 0 0 10px;
+}
+.second-row-inside {
+  margin-top: 10px;
+}
 /* @include media-breakpoint-up(sm) {
   html {
     font-size: 0.9rem;

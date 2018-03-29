@@ -93,19 +93,33 @@ router.get('/q', (req, res, next) => {
     })
 });
 
+
+
 router.get('/:id', (req, res, next) => {
   console.log('Getting venue ', Number(req.params.id));
   return knex('venues')
     .where('venues.id', Number(req.params.id))
     .leftOuterJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
     .rightOuterJoin('users', 'users.id', 'venues.contributed_by')
-    .select('venues.id as id', 'venue', 'state', 'url', 'venues.email', 'city', 'genres_booked as genres', 'capacity', 'seated', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo', 'diy', 'users.name as contributedBy', 'sound')
+    .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'venues.email', 'city', 'capacity','genres_booked as genres', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo',  'users.name as contributedBy', 'sound')
     .first()
     .then( venue => {
       console.log('got the venue ', venue);
       res.send(venue)
     })
 });
+
+// router.get('/:id', (req, res, next) => {
+//   console.log('Getting venue ', Number(req.params.id));
+//   return knex('venues')
+//     .where('venues.id', Number(req.params.id))
+//     .select('*')
+//     .first()
+//     .then( venue => {
+//       console.log('got the venue ', venue);
+//       res.send(venue)
+//     })
+// });
 
 router.post('/', (req, res, next) => {
   console.log('post');
@@ -173,7 +187,7 @@ router.put('/:id', (req, res, next) => {
   }
 
   const newProfile = (venue) => {
-    knex('venue_profiles')
+    return knex('venue_profiles')
       .insert(venue)
       .returning(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo', 'sound'])
   }
@@ -244,32 +258,18 @@ router.put('/:id', (req, res, next) => {
               if (exists) {
                 updateProfile(toProfile)
                 .then( newData => {
-                  // for (let key in newData[0]) {
-                  //   updatedVenue[key] = newData[0][key]
-                  // }
-
                   res.send(addProfileToUpdatedVenue(updatedVenue, newData[0]))
                 })
               } else {
+                console.log('newprofile ');
                 newProfile(toProfile)
                   .then( newData => {
-                    // for (let key in newData[0]) {
-                    //   updatedVenue[key] = newData[0][key]
-                    // }
-
                     res.send(addProfileToUpdatedVenue(updatedVenue, newData[0]))
                   })
                 }
               } else { // nothing goes to profile
-                // for (let key in exists) {
-                //   updatedVenue[key] = exists[key]
-                // }
-                console.log('updatedVEnue without profile ', updatedVenue);
-                console.log('updatedVEnue right before sending back ', addProfileToUpdatedVenue(updatedVenue, exists));
                 res.send(addProfileToUpdatedVenue(updatedVenue, exists))
               }
-
-
             })
           })
   } else if (Object.keys(toProfile).length > 0)  {
@@ -282,19 +282,11 @@ router.put('/:id', (req, res, next) => {
             if (exists) {
                 updateProfile(toProfile)
                   .then( newData => {
-                    // for (let key in newData[0]) {
-                    //   updatedVenue[key] = newData[0][key]
-                    // }
-
                     res.send(addProfileToUpdatedVenue(updatedVenue, newData[0]))
                   })
             } else {
               newProfile(toProfile)
                 .then( newData => {
-                  // for (let key in newData[0]) {
-                  //   updatedVenue[key] = newData[0][key]
-                  // }
-
                   res.send(addProfileToUpdatedVenue(updatedVenue, newData[0]))
                 })
               }

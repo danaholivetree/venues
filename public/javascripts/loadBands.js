@@ -1,12 +1,13 @@
 $(document).ready(function() {
   const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
-
+  let accessToken = ''
+  let gotSpotify = ''
 
   const getWidget = (token, band, target) => {
     $.ajax({
       method: 'GET',
-      url: `https://api.spotify.com/v1/search?q="${band}"&type=artist&market=US&limit=1&offset=0`,
+      url: `https://api.spotify.com/v1/search?q="${band}"&type=artist&market=US&limit=5&offset=0`,
       accepts: "application/json",
       contentType: "application/json",
       headers : {
@@ -16,11 +17,12 @@ $(document).ready(function() {
         console.log('data ', data);
         if (data.artists.items[0]) {
           let artistId = data.artists.items[0].id
-          let artistHref = data.artists.items[0].href
+          gotSpotify = data.artists.items[0].external_urls.spotify
           let artistUri = data.artists.items[0].uri
           let showSpotify = `<iframe src=https://open.spotify.com/embed?uri=${artistUri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`
           $(showSpotify).insertAfter(target)
           $(target).hide()
+
         }
       },
       error: err => {
@@ -54,7 +56,6 @@ $(document).ready(function() {
           <td><button class='playSpotify btn' data-name='${band.band}'>play</button></td>
         </tr>`))
         if (band.starred) {
-          console.log('band.starred ', band.starred);
          $(`.star_col${band.starred} i`).css("color", "lightblue")
         }
     })
@@ -99,32 +100,34 @@ $(document).ready(function() {
       }
 
       let accessToken = getAccessToken()
+      console.log('accessToken', accessToken);
       if (!accessToken || accessToken == '') {
-        $.get('/token', (data) => {
+        $.get('/token/spotify', (data) => {
           localStorage.setItem('pa_token', data.access_token)
           localStorage.setItem('pa_expires', 1000*(data.expires_in) + (new Date()).getTime())
           accessToken = data.access_token
-          $.ajax({
-            method: 'GET',
-            url: `https://api.spotify.com/v1/search?q=${e.target.dataset.name}&type=artist&market=US&limit=1&offset=0`,
-            accepts: "application/json",
-            contentType: "application/json",
-            headers : {
-              'Authorization': `Bearer ${accessToken}`
-            },
-            success : data => {
-              console.log('data ', data);
-              let artistId = data.artists.items[0].id
-              let artistHref = data.artists.items[0].href
-              let showSpotify = `<iframe src=https://open.spotify.com/embed?uri=spotify:artist:${artistId}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`
-              $(showSpotify).insertAfter($(targ))
-              $(targ).hide()
-
-            },
-            error: err => {
-              console.log('error ', err);
-            }
-          })
+          // $.ajax({
+          //   method: 'GET',
+          //   url: `https://api.spotify.com/v1/search?q=${e.target.dataset.name}&type=artist&market=US&limit=1&offset=0`,
+          //   accepts: "application/json",
+          //   contentType: "application/json",
+          //   headers : {
+          //     'Authorization': `Bearer ${accessToken}`
+          //   },
+          //   success : data => {
+          //     console.log('data ', data);
+          //     let artistId = data.artists.items[0].id
+          //     let artistHref = data.artists.items[0].href
+          //     let showSpotify = `<iframe src=https://open.spotify.com/embed?uri=spotify:artist:${artistId}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`
+          //     $(showSpotify).insertAfter($(targ))
+          //     $(targ).hide()
+          //
+          //   },
+          //   error: err => {
+          //     console.log('error ', err);
+          //   }
+          // })
+          getWidget(accessToken, e.target.dataset.name, $(targ))
 
         })
       } else {
@@ -150,7 +153,6 @@ $(document).ready(function() {
     const params = {state, city, band, genres}
     const queryString = $.param(params)
     $.get(`/api/bands/q?${queryString}`, (data, status) => {
-      console.log('bands data ', data);
       if (state !== 'All') {
         $('.stateDisplay').text(`Bands in ${state}`).show()
       } else if (city) {
@@ -178,7 +180,6 @@ $(document).ready(function() {
 
   $('#addBand').click( e => {
     e.preventDefault()
-    console.log('clicked add band');
       $('#bandSearchForm').toggle(false)
       $('#addBandForm').toggle(true)
       $('#addBand').css('background-color', 'lightblue')
@@ -190,6 +191,22 @@ $(document).ready(function() {
     if($('.genre-selector:checked').length > 4) {
        this.checked = false;
      }
+  })
+
+  $('#band').blur( e => {
+    e.preventDefault()
+    console.log(e.currentTarget.value);
+    if (!accessToken || accessToken == '') {
+      $.get('/token/spotify', (data) => {
+        localStorage.setItem('pa_token', data.access_token)
+        localStorage.setItem('pa_expires', 1000*(data.expires_in) + (new Date()).getTime())
+        accessToken = data.access_token
+        getWidget(accessToken, e.currentTarget.value, $('#spotifyGuess'))
+      })
+    }
+    else {
+      getWidget(accessToken, e.currentTarget.value, $('#spotifyGuess'))
+    }
   })
 
   $('#addBandForm').submit( e => {
@@ -216,7 +233,9 @@ $(document).ready(function() {
     newBand.url = formData.url.value && checkUrl(formData.url.value)
     newBand.fb = formData.fb.value && checkUrl(formData.fb.value)
     newBand.bandcamp = formData.bandcamp.value && checkUrl(formData.bandcamp.value)
-    newBand.spotify = formData.spotify.value && checkUrl(formData.spotify.value)
+    // newBand.spotify = formData.spotify.value && checkUrl(formData.spotify.value)
+    newBand.spotify = gotSpotify
+    console.log('newBand.spotify ', newBand.spotify);
     console.log('newBand ', newBand);
 
     $.ajax({
@@ -234,5 +253,6 @@ $(document).ready(function() {
       data: {newBand: JSON.stringify(newBand)}
     })
   }) //end submit form
+
 
 })

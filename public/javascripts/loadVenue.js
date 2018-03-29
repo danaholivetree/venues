@@ -3,6 +3,7 @@ $(document).ready(function() {
 
   $.get(`/api/venues/${venueId}`, data => {
     showVenue(data)
+    getFbInfo(data.url)
 
   }).fail( err => {
     console.log('error ' , err);
@@ -10,10 +11,36 @@ $(document).ready(function() {
 
 {/* <h3> ${venue} </h3> */}
 {/* <button id='editVenue' class='btn btn-default'>Edit All</button> */}
+
+  const getFbInfo = url => {
+    // console.log('url ', url);
+    // console.log('url.split(".")[1] ', url.split('.')[1]);
+    if (url.split('.')[1] === 'facebook') {
+      let fbid = url.split('/')[3]
+      // console.log("url.split('/')[3] ", url.split('/')[3])
+      $.get(`/token/facebook/venues/${fbid}`, data => {
+        console.log('data' , data);
+        let events = data.events.data
+
+        let upcomingEvents = events.filter( event => {
+          return (new Date(event.start_time) > new Date())
+        })
+        let displayEvents = upcomingEvents.map( event => {
+          // let time = event.start_time
+          // let dateString = new Date(time).toDateString();
+          return `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id}>${event.name}</a></li>`
+        })
+        displayEvents.forEach( event => {
+          $('#displayEvents ul').prepend(event)
+        })
+        // console.log('displayevents ' , displayEvents);
+      })
+    }
+  }
+
   const showVenue = data => {
     console.log('gotData ', data);
     const {id, venue, url, state, city, diy, capacity, email, sound, genres, type, crowd, ages, pay, promo, accessibility, contributedBy} = data
-
     $('#venueInfo').append($(`
       <div class='container' style="padding: 30px 0 0 ;"><h3>${venue}</h3></div>
 
@@ -40,7 +67,7 @@ $(document).ready(function() {
         </div>
         <div class="form-group row">
           <label class="control-label col-2 col-form-label" for="url">Website:</label>
-            <div class=" col-md-4 col-8">
+            <div class="col-md-4 col-8">
               <p class="info form-control-static"> <a href=${url}>${url}</a>  </p>
             </div>
             <div class='col-1'>
@@ -194,6 +221,9 @@ $(document).ready(function() {
         </div>
 
       </form>
+      <div id='displayEvents'>Upcoming Facebook events:
+        <ul></ul>
+      </div>
     `))
     //set autofill values for form inputs
     $('input.edit-form').each( function() {
