@@ -54,6 +54,7 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
   const query = req.params.qs
   let uri = `https://graph.facebook.com/v2.12/${query}?`
   let qs = `fields=name,website,link,genre,hometown,current_location,fan_count,events.limit(5){name,start_time,place{name,location{city,state}}}`
+  //
   // let auth = `&access_token=${app_id}|${app_secret}`
   let auth = `&access_token=${process.env.TEMP_TOKEN}`
   request.get({url: uri+qs+auth, json: true}, (error, response, data) => {

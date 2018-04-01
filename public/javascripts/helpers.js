@@ -12,9 +12,9 @@
   //   }
   //   else return url
   // }
-  exports.addHttp = url => `http://${url}`
+  exports.addHttp = url => `https://${url}`
   exports.checkUrl = url => {
-    const addHttp = url => `http://${url}`
+    const addHttp = url => `https://${url}`
     const addWww = url => {
       return `${url.split('/').slice(0,2).join('/')}/www.${url.split('/').slice(2).join('')}`}
     if (url.split('/')[0] !== 'http:' && url.split('/')[0] !== 'https:') {
@@ -33,6 +33,7 @@
       return email
     }
   }
+
 
   exports.endMessage  = () => {
     setTimeout(function() {

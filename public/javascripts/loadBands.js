@@ -213,6 +213,7 @@ $(document).ready(function() {
       $('#addBandForm').toggle(true)
       $('#addBand').css('background-color', 'lightblue')
       $('#searchBands').css('background-color', 'white')
+      $('#fb').val('http://www.facebook.com/')
   })
 
 
@@ -226,10 +227,10 @@ $(document).ready(function() {
     e.preventDefault()
     console.log(e.currentTarget.value);
     if (!accessToken || accessToken == '') {
-      $.get('/token/spotify', (data) => {
-        localStorage.setItem('pa_token', data.access_token)
-        localStorage.setItem('pa_expires', 1000*(data.expires_in) + (new Date()).getTime())
-        accessToken = data.access_token
+      $.get('/token/spotify', ({access_token, expires_in}) => {
+        localStorage.setItem('pa_token', access_token)
+        localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
+        accessToken = access_token
         getSpotifyWidgets(accessToken, e.currentTarget.value, $('#spotifyGuess'))
       })
     }
@@ -243,6 +244,7 @@ $(document).ready(function() {
     let url = e.currentTarget.value
     let fbid
     if (url.split('.')[1] === 'facebook') {
+      console.log('was a fb address');
       fbid = url.split('/')[3]
       if (fbid.split('-').length > 1) {
         fbid = fbid.split('-')
@@ -253,33 +255,53 @@ $(document).ready(function() {
       fbid = url.split('.')[1]
       console.log('trying fbid ', fbid);
     }
-    $.get(`/token/facebook/venues/${fbid}`, data => {
-      console.log('data' , data);
-      // getEvents(data.events.data)
-      // checkForBookingEmail(data.about)
-      // if (data.emails) {
-      //   data.emails.filter( email => checkForBookingEmail(email))
-      // }
+    $.get(`/token/facebook/bands/${fbid}`, ({name,website,link,genre,hometown,current_location,fan_count}) => {
+      let url = checkUrl(website)
+      if (current_location) {
+        $('#city').val(current_location.split(',')[0])
+        if (current_location.split(',').length > 1) {
+          if (current_location.split(',')[1].trim().length === 2) {
+            $('#state').val(abbrState(current_location.split(',')[1].trim(), 'name'))
+          } else {
+            $('#state').val(current_location.split(',')[1].trim())
+          }
+        }
+      } else if (hometown) {
+        $('#city').val(hometown.split(',')[0])
+        if (hometown.split(',').length > 1) {
+          if (hometown.split(',')[1].trim().length === 2) {
+            $('#state').val(abbrState(hometown.split(',')[1].trim(), 'name'))
+          } else {
+            $('#state').val(hometown.split(',')[1].trim())
+          }
+        }
+      }
+      if (url.split('.')[1] ==='bandcamp') {
+        $('#bandcamp').val(url)
+      } else if (url.split('/')[2].split('.')[0] === 'www') {
+        $('#url').val(url)
+      }
+
     })
-
-
   })
 
   $('#addBandForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
 
-
-
     const newBand = {}
-    newBand.state = formData.state.value
+    if (!formData.state.value || formData.state.value === 'All') {
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please select a state</div>`)
+    } else {
+      newBand.state = formData.state.value
+    }
     if (!formData.city.value) {
-      $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
     } else {
       newBand.city = makeUppercase(formData.city.value)
     }
     if (!formData.band.value) {
-        $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a band name</div>`)
+        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a band name</div>`)
     } else {
       newBand.band = formData.band.value
     }
@@ -289,6 +311,13 @@ $(document).ready(function() {
     })
     newBand.genres = selectedGenres
     newBand.url = formData.url.value && checkUrl(formData.url.value)
+
+    if (formData.fb.value.split('.')[1] !== 'facebook') {
+        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Incorrect form for facebook url</div>`)
+    }
+    if (!formData.fb.value.split('/')[3]) {
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a complete facebook url</div>`)
+    }
     newBand.fb = formData.fb.value && checkUrl(formData.fb.value)
     newBand.bandcamp = formData.bandcamp.value && checkUrl(formData.bandcamp.value)
     // newBand.spotify = formData.spotify.value && checkUrl(formData.spotify.value)

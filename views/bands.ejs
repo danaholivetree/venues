@@ -58,14 +58,14 @@
             <span class="input-group-text">City</span>
           </div>
           <label for='city' class="control-label col-3 d-md-none col-form-label" >City:</label>
-          <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          <input type="text" id='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
         <div class="input-group mb-3 col-12 col-md">
           <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">Band</span>
           </div>
           <label for='band' class="control-label col-3 d-md-none col-form-label" >Band:</label>
-          <input type="text" id='band' class="form-control"  aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          <input type="text" id='band' class="form-control"  autofocus aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
       </div>
 
@@ -75,21 +75,21 @@
             <span class="input-group-text">FB</span>
           </div>
           <label for='fb' class="control-label col-3 d-md-none col-form-label" >FB:</label>
-          <input type="text" name='fb' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          <input type="url" id='fb' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
         <div class="input-group mb-3 col-12 col-md">
           <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">URL</span>
           </div>
           <label for='url' class="control-label col-3 d-md-none col-form-label" >Url:</label>
-          <input type="text" name='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          <input type="url" id='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
         <div class="input-group mb-3 col col-12 col-md">
           <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">Bandcamp</span>
           </div>
           <label for='bandcamp' class="control-label col-3 d-md-none col-form-label" >Bandcamp:</label>
-          <input type="text" name='bandcamp' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          <input type="url" id='bandcamp' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
       </div>
       <div id='spotifyGuess' class='form-row'>
@@ -97,7 +97,7 @@
 
       </div>
       <div class='form-row'>
-        <div class="input-group mb-3 col-12 col-md-11">
+        <div class="input-group mb-3 col-12 col-md-10">
           <div class='input-group-text genres' id='addGenres'>
             <span class="capSelector">Genre (up to 4)</span>
           </div>
@@ -106,6 +106,7 @@
         <div class="col-md-1 col-2 mx-auto">
           <button type="submit" class="btn big-btn">SUBMIT</button>
         </div>
+        <div id='errorMessage'></div>
       </div>
     </form>
 
