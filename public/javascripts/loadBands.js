@@ -2,28 +2,57 @@ $(document).ready(function() {
   const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
   let accessToken = ''
-  let gotSpotify = ''
+  // let gotSpotify = ''
 
-  const getWidget = (token, band, target) => {
+  const getSpotifyWidgets = (token, band, target) => {
     $.ajax({
       method: 'GET',
-      url: `https://api.spotify.com/v1/search?q="${band}"&type=artist&market=US&limit=5&offset=0`,
+      url: `https://api.spotify.com/v1/search?q="${band}"&type=artist&market=US&limit=4&offset=0`,
       accepts: "application/json",
       contentType: "application/json",
       headers : {
         'Authorization': `Bearer ${token}`
       },
-      success : data => {
-        console.log('data ', data);
-        if (data.artists.items[0]) {
-          let artistId = data.artists.items[0].id
-          gotSpotify = data.artists.items[0].external_urls.spotify
-          let artistUri = data.artists.items[0].uri
-          let showSpotify = `<iframe src=https://open.spotify.com/embed?uri=${artistUri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`
-          $(showSpotify).insertAfter(target)
-          $(target).hide()
+      success : ({artists}) => {
+        console.log('artists', artists);
+        const {items} = artists
+        // let removeUnlikelies = items.filter( item => {
+        //   return item.followers.total > 50
+        // })
+        if (items.length > 0) {
+          let reordered = items.sort( (a,b) => a.followers.total < b.followers.total)
+          // let bestGuess = Math.max( ...items.map( item => item.followers.total))
+          $('#spotifyGuess').children().first().show()
+          reordered.forEach( (item, i) => {
+            let artistId = item.id
+            let artistSpotify = item.external_urls.spotify
+            let artistUri = item.uri
+            // let showSpotify = `<div class='col'><iframe src=https://open.spotify.com/embed?uri=${artistUri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></div>`
+            // $(showSpotify).insertAfter(target)
+            let showItAll =  `<div class='form-group col-3 guesses'>
+                      <div class="form-radio-inline">
+                        <div class='form-radio col-12'>
+                          <label class="form-radio-label" for="radio${i}">
+                            <iframe src=https://open.spotify.com/embed?uri=${artistUri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                          </label>
+                        </div>
+
+                        <div class='mx-auto col-1'>
+                          <input class="form-radio-input guess" type="radio" id="radio${i}" value=${artistSpotify}>
+                        </div>
+                      </div>
+                    </div>`
+
+            $(target).append(showItAll)
+            // $(target).hide()
+          })
 
         }
+
+
+
+
+
       },
       error: err => {
         console.log('error ', err);
@@ -32,39 +61,40 @@ $(document).ready(function() {
   }
   // <td class='url d-none d-md-table-cell'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
 {/* <span class='playSpotify' data-uri=${spotifySrc} data-name='${band.band}'></span> */}
+// <td class='star_col${id} d-none d-md-table-cell' align='center'><i class="material-icons star" data-id=${id}>star</i><br><span>${stars}</span></td>
   const listBands = (data) => {
-    data.forEach( band => {
-      let displayUrl = band.url  ? `<a href=${band.url} target='_blank'>www</a>` : ``
-      let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : ''
-      let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : ''
-      let displayBandcamp = band.bandcamp ? `<span align='center' ><a href=${band.bandcamp} target='_blank'><img src='images/bandcamp-button-bc-circle-aqua-32.png'></a></span>` : ``
+    data.forEach( ({id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars}) => {
+      let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
+      let spotifyUrl = spotify ? spotify.split('/')[4] : ''
+      let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : ''
+      let displayBandcamp = bandcamp ? `<span align='center' ><a href=${bandcamp} target='_blank'><img src='images/bandcamp-button-bc-circle-aqua-32.png'></a></span>` : ``
       // let displayBandcampWidget = band.bandcamp ? `<iframe style="border: 0; width: 370px; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=260781898/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/transparent=true/" seamless><a href=${band.bandcamp}>${band.band}</a></iframe>` : ''
       // let testBandcamp = band.bandcamp ? `<button class='btn bandcamp' data-name=${band.band} data-id=${band.id} data-url=${band.bandcamp}>load widg</button>` : ''
-      let displayBand = band.fb ? `<a href=${band.fb} target='_blank'>${band.band}</a>` : `${band.band}`
-      let showSpotify = band.spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
+      let displayBand = fb ? `<a href=${fb} target='_blank'>${band}</a>` : `${band}`
+      let showSpotify = spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
       $('#bandsList').append($(`
         <tr>
-          <td class='d-none d-md-table-cell'>${abbrState(band.state, 'abbr')}</td>
-          <td>${band.city}</td>
+          <td class='d-none d-md-table-cell'>${abbrState(state, 'abbr')}</td>
+          <td>${city}</td>
           <td>${displayBand}</td>
-          <td class="genreList d-none d-md-table-cell">${band.genre}</td>
-          <td class='star_col${band.id} d-none d-md-table-cell' align='center'><i class="material-icons star" data-id=${band.id}>star</i><br><span>${band.stars}</span></td>
+          <td class="genreList d-none d-md-table-cell">${genre}</td>
+
 
           <td class='d-none d-md-table-cell '><span class='mx-auto'>${displayBandcamp}</span></td>
-          <td>${band.spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUrl} style="width:32px; background-color:inherit;"/>` : ''}</td>
+          <td>${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUrl} style="width:32px; background-color:inherit;"/>` : ''}</td>
         </tr>`))
-        if (band.starred) {
-         $(`.star_col${band.starred} i`).css("color", "lightblue")
+        if (starred) {
+         $(`.star_col${starred} i`).css("color", "lightblue")
         }
     })
 
     $('.star').click( e => {
       e.preventDefault()
       let targ = e.target
-      $.post(`/api/stars`, {bandId: e.target.dataset.id}, data => {
-        console.log('data came back from post stars ', data);
-        $(`.star_col${data.id} span`).text(`${data.stars}`)
-        $(`.star_col${data.id} i`).css("color", "lightblue")
+      $.post(`/api/stars`, {bandId: e.target.dataset.id}, ({id, stars}) => {
+        console.log('data came back from post stars ', id, stars);
+        $(`.star_col${id} span`).text(`${stars}`)
+        $(`.star_col${id} i`).css("color", "lightblue")
       })
     })
 
@@ -192,11 +222,11 @@ $(document).ready(function() {
         localStorage.setItem('pa_token', data.access_token)
         localStorage.setItem('pa_expires', 1000*(data.expires_in) + (new Date()).getTime())
         accessToken = data.access_token
-        getWidget(accessToken, e.currentTarget.value, $('#spotifyGuess'))
+        getSpotifyWidgets(accessToken, e.currentTarget.value, $('#spotifyGuess'))
       })
     }
     else {
-      getWidget(accessToken, e.currentTarget.value, $('#spotifyGuess'))
+      getSpotifyWidgets(accessToken, e.currentTarget.value, $('#spotifyGuess'))
     }
   })
 
@@ -230,6 +260,8 @@ $(document).ready(function() {
   $('#addBandForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
+    console.log('spotify guess checked first', $('.guess:checked'))
+    console.log('$(".guess:checked").value() ', $('.guess:checked').val() );
 
     const newBand = {}
     newBand.state = formData.state.value
@@ -252,8 +284,9 @@ $(document).ready(function() {
     newBand.fb = formData.fb.value && checkUrl(formData.fb.value)
     newBand.bandcamp = formData.bandcamp.value && checkUrl(formData.bandcamp.value)
     // newBand.spotify = formData.spotify.value && checkUrl(formData.spotify.value)
-    newBand.spotify = gotSpotify
-    console.log('newBand.spotify ', newBand.spotify);
+    newBand.spotify = $('.guess:checked').val()
+    // newBand.spotify = formData.
+    // console.log('newBand.spotify ', newBand.spotify);
     console.log('newBand ', newBand);
 
     $.ajax({
@@ -263,6 +296,7 @@ $(document).ready(function() {
       success: function (data) {
         // $('#addBandForm').clear()
         $('input[type="text"], textarea').val('');
+        $('.guesses').remove()
         $('.genre-selector').prop('checked', false)
         $('#state').val('All');
         $('#bandsList').empty()

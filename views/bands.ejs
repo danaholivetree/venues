@@ -70,6 +70,13 @@
       </div>
 
       <div class='form-row second-row'>
+        <div class="input-group mb-3 col col-12 col-md">
+          <div class="d-none d-md-inline-block input-group-prepend">
+            <span class="input-group-text">FB</span>
+          </div>
+          <label for='fb' class="control-label col-3 d-md-none col-form-label" >FB:</label>
+          <input type="text" name='fb' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
         <div class="input-group mb-3 col-12 col-md">
           <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">URL</span>
@@ -79,20 +86,15 @@
         </div>
         <div class="input-group mb-3 col col-12 col-md">
           <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">FB</span>
-          </div>
-          <label for='fb' class="control-label col-3 d-md-none col-form-label" >FB:</label>
-          <input type="text" name='fb' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-        </div>
-        <div class="input-group mb-3 col col-12 col-md">
-          <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">Bandcamp</span>
           </div>
           <label for='bandcamp' class="control-label col-3 d-md-none col-form-label" >Bandcamp:</label>
           <input type="text" name='bandcamp' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div id='spotifyGuess' class="mb-3 col">
-        </div>
+      </div>
+      <div id='spotifyGuess' class='form-row'>
+        <p class='col-12' style='display:none;'>Please select the artist's correct spotify:<p>
+
       </div>
       <div class='form-row'>
         <div class="input-group mb-3 col-12 col-md-11">
@@ -115,8 +117,8 @@
             <th width='5%' class='d-none d-md-table-cell'>State</th>
             <th width='15%' >City</th>
             <th width='25%' >Band (click to fb)</th>
-            <th width='15%' class='d-none d-md-table-cell'>Genre</th>
-            <th width='5%' class='d-none d-md-table-cell'>Rating</th>
+            <th width='20%' class='d-none d-md-table-cell'>Genre</th>
+            <!-- <th width='5%' class='d-none d-md-table-cell'>Rating</th> -->
             <!-- <th width='5%' class='d-none d-md-table-cell'>Url</th> -->
             <th width='5%'  class='d-none d-md-table-cell'>Bandcamp</th>
             <th width='25%' >Spotify</th>
