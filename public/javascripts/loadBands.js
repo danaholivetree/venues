@@ -30,18 +30,16 @@ $(document).ready(function() {
       }
     })
   }
-
-
+  // <td class='url d-none d-md-table-cell'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
+{/* <span class='playSpotify' data-uri=${spotifySrc} data-name='${band.band}'></span> */}
   const listBands = (data) => {
     data.forEach( band => {
-      // let displayUrl = band.url ? band.url.split('/')[2].split('.').slice(1).join('.') : ''
       let displayUrl = band.url  ? `<a href=${band.url} target='_blank'>www</a>` : ``
       let spotifyUrl = band.spotify ? band.spotify.split('/')[4] : ''
       let spotifySrc = band.spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : ''
-      let displaySpotify = band.spotify ? `<a href=${band.spotify} target='_blank'>spotify</a>` : ``
       let displayBandcamp = band.bandcamp ? `<span align='center' ><a href=${band.bandcamp} target='_blank'><img src='images/bandcamp-button-bc-circle-aqua-32.png'></a></span>` : ``
       // let displayBandcampWidget = band.bandcamp ? `<iframe style="border: 0; width: 370px; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=260781898/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/transparent=true/" seamless><a href=${band.bandcamp}>${band.band}</a></iframe>` : ''
-      // let testBandcamp = band.bandcamp ? `<button class='btn bandcamp' data-id=${band.id} data-url=${band.bandcamp}>load widg</button>` : ''
+      // let testBandcamp = band.bandcamp ? `<button class='btn bandcamp' data-name=${band.band} data-id=${band.id} data-url=${band.bandcamp}>load widg</button>` : ''
       let displayBand = band.fb ? `<a href=${band.fb} target='_blank'>${band.band}</a>` : `${band.band}`
       let showSpotify = band.spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
       $('#bandsList').append($(`
@@ -51,9 +49,9 @@ $(document).ready(function() {
           <td>${displayBand}</td>
           <td class="genreList d-none d-md-table-cell">${band.genre}</td>
           <td class='star_col${band.id} d-none d-md-table-cell' align='center'><i class="material-icons star" data-id=${band.id}>star</i><br><span>${band.stars}</span></td>
-          <td class='url d-none d-md-table-cell'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
-          <td class='d-none d-md-table-cell'>${displayBandcamp}</td>
-          <td><button class='playSpotify btn' data-name='${band.band}'>play</button></td>
+
+          <td class='d-none d-md-table-cell '><span class='mx-auto'>${displayBandcamp}</span></td>
+          <td>${band.spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUrl} style="width:32px; background-color:inherit;"/>` : ''}</td>
         </tr>`))
         if (band.starred) {
          $(`.star_col${band.starred} i`).css("color", "lightblue")
@@ -74,7 +72,7 @@ $(document).ready(function() {
     //   e.preventDefault()
     //   console.log('e.target.dataset.url ', e.target.dataset.url);
     //   let targ = e.target
-    //   $.get(`https://harmalaska.bandcamp.com`, data => {
+    //   $.get(`https://www.bandcamp.com/search?${}`, data => {
     //     console.log('data ', data);
     //   })
     // })
@@ -82,60 +80,53 @@ $(document).ready(function() {
 
   $.get(`/api/bands`, (data, status) => {
     listBands(data.slice(0,20))
+
     $('.playSpotify').click( e => {
       e.preventDefault()
-      let targ = e.target
-
-      const getAccessToken = () => {
-        if (!localStorage.getItem('pa_token')) {
-          return ''
-        }
-        let expires = Number(localStorage.getItem('pa_expires'))
-        if ((new Date()).getTime() > expires) {
-          console.log('expired');
-          return '';
-        }
-        var token = localStorage.getItem('pa_token');
-        return token;
-      }
-
-      let accessToken = getAccessToken()
-      console.log('accessToken', accessToken);
-      if (!accessToken || accessToken == '') {
-        $.get('/token/spotify', (data) => {
-          localStorage.setItem('pa_token', data.access_token)
-          localStorage.setItem('pa_expires', 1000*(data.expires_in) + (new Date()).getTime())
-          accessToken = data.access_token
-          // $.ajax({
-          //   method: 'GET',
-          //   url: `https://api.spotify.com/v1/search?q=${e.target.dataset.name}&type=artist&market=US&limit=1&offset=0`,
-          //   accepts: "application/json",
-          //   contentType: "application/json",
-          //   headers : {
-          //     'Authorization': `Bearer ${accessToken}`
-          //   },
-          //   success : data => {
-          //     console.log('data ', data);
-          //     let artistId = data.artists.items[0].id
-          //     let artistHref = data.artists.items[0].href
-          //     let showSpotify = `<iframe src=https://open.spotify.com/embed?uri=spotify:artist:${artistId}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`
-          //     $(showSpotify).insertAfter($(targ))
-          //     $(targ).hide()
-          //
-          //   },
-          //   error: err => {
-          //     console.log('error ', err);
-          //   }
-          // })
-          getWidget(accessToken, e.target.dataset.name, $(targ))
-
-        })
-      } else {
-        getWidget(accessToken, e.target.dataset.name, $(targ))
-      }
-
-
+      let targ = $(e.currentTarget)
+      let uri = e.currentTarget.dataset.uri
+      console.log('uri ', uri);
+      $(`<iframe src=https://open.spotify.com/embed?uri=spotify:track:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`).insertAfter(targ)
+      targ.hide()
     })
+    // $('.playSpotify').click( e => {
+    //   e.preventDefault()
+    //   let uri = e.currentTarget.dataset.uri
+    //   let targ = e.target
+    //   console.log('targ ', targ);
+    //   console.log('targ.dataset', e.currentTarget.dataset);
+    //   if (uri) {
+    //     console.log('there was a uri');
+    //     $(targ).hide()
+    //     $(targ).next().show()
+    //   } else {
+    //     console.log('there was no uri');
+    //     const getAccessToken = () => {
+    //       if (!localStorage.getItem('pa_token')) {
+    //         return ''
+    //       }
+    //       let expires = Number(localStorage.getItem('pa_expires'))
+    //       if ((new Date()).getTime() > expires) {
+    //         console.log('expired');
+    //         return '';
+    //       }
+    //       var token = localStorage.getItem('pa_token');
+    //       return token;
+    //     }
+    //     let accessToken = getAccessToken()
+    //     console.log('accessToken', accessToken);
+    //     if (!accessToken || accessToken == '') {
+    //       $.get('/token/spotify', (data) => {
+    //         localStorage.setItem('pa_token', data.access_token)
+    //         localStorage.setItem('pa_expires', 1000*(data.expires_in) + (new Date()).getTime())
+    //         accessToken = data.access_token
+    //         getWidget(accessToken, e.currentTarget.dataset.name, $(targ))
+    //       })
+    //     } else {
+    //       getWidget(accessToken, e.currentTarget.dataset.name, $(targ))
+    //     }
+    //   }
+    // })
   })
 
 
@@ -207,6 +198,33 @@ $(document).ready(function() {
     else {
       getWidget(accessToken, e.currentTarget.value, $('#spotifyGuess'))
     }
+  })
+
+  $('#fb').blur( e => {
+    e.preventDefault()
+    let url = e.currentTarget.value
+    let fbid
+    if (url.split('.')[1] === 'facebook') {
+      fbid = url.split('/')[3]
+      if (fbid.split('-').length > 1) {
+        fbid = fbid.split('-')
+        fbid = fbid[fbid.length-1]
+      }
+      console.log('fbid ', fbid);
+    } else {
+      fbid = url.split('.')[1]
+      console.log('trying fbid ', fbid);
+    }
+    $.get(`/token/facebook/venues/${fbid}`, data => {
+      console.log('data' , data);
+      // getEvents(data.events.data)
+      // checkForBookingEmail(data.about)
+      // if (data.emails) {
+      //   data.emails.filter( email => checkForBookingEmail(email))
+      // }
+    })
+
+
   })
 
   $('#addBandForm').submit( e => {

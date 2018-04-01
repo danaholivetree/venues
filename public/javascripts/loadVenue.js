@@ -63,8 +63,6 @@ $(document).ready(function() {
       fbid = url.split('.')[1]
       console.log('trying fbid ', fbid);
     }
-
-
       $.get(`/token/facebook/venues/${fbid}`, data => {
         console.log('data' , data);
         getEvents(data.events.data)

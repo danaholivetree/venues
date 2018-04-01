@@ -5,29 +5,33 @@
       <div class='button-header'><button class='btn' id='searchVenues'>SEARCH VENUES</button>  <button class='btn' id='addVenue'>ADD A VENUE</button></div>
         <form id='venueSearchForm'>
           <div class='form-row'>
-            <div class="input-group mb-3 col-12 col-md">
-              <div class="input-group-prepend">
+            <div class="input-group mb-3 col-12 col-lg">
+              <div class="d-none d-lg-inline-block input-group-prepend">
                 <span class="input-group-text" id="venueState">State</span>
               </div>
+              <label for='state' class="control-label col-3 d-lg-none col-form-label" >State:</label>
                 <select class="custom-select form-control stateSelector" name='state'></select>
             </div>
-            <div class="input-group mb-3 col-12 col-md">
-              <div class="input-group-prepend">
+            <div class="input-group mb-3 col-12 col-lg">
+              <div class="d-none d-lg-inline-block input-group-prepend">
                 <span class="input-group-text">City</span>
               </div>
+              <label for='city' class="control-label col-3 d-lg-none col-form-label" >City:</label>
               <input type="text" id='cityInput' name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
             </div>
-            <div class="input-group mb-3 col-12 col-md">
-              <div class="input-group-prepend">
+            <div class="input-group mb-3 col-12 col-lg">
+              <div class="d-none d-lg-inline-block input-group-prepend">
                 <span class="input-group-text">Venue</span>
               </div>
+              <label for='venue' class="control-label col-3 d-lg-none col-form-label" >State:</label>
               <input type="text" id='venueInput' name='venue' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
             </div>
           </div>
           <div class='row'>
-            <div class='input-group mb-3 col-md-8 col-12 offset-md-1'>
+            <div class='input-group mb-3 col-lg-8 col-12 offset-lg-1'>
               <!-- <div class=input-group-text > -->
-                <span class="input-group-text capSelector">Capacity</span>
+                <!-- <span class="input-group-text capSelector">Capacity</span> -->
+                <label for='Capacity' class="control-label col-3 col-md-1  col-form-label capSelector" >Cap:</label>
 
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="capAny" value="any" checked>
@@ -59,73 +63,80 @@
                 </div>
               <!-- </div> -->
             </div>
-            <div class="col-1">
-              <button type="submit" class="btn btn-default big-btn">Submit</button>
+            <div class="col-2 mx-auto col-lg-1 ">
+              <button type="submit" class="btn btn-default big-btn">SUBMIT</button>
             </div>
           </div>
         </form>
 
       <form id='addVenueForm' style='display:none;'>
         <div class='form-row'>
-          <div class="input-group mb-3 col-12 col-md">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-lg-4">
+            <div class="d-none d-lg-inline-block input-group-prepend">
               <span class="input-group-text">State</span>
             </div>
+              <label for='state' class="control-label col-3 d-lg-none col-form-label" >State:</label>
               <select class="custom-select form-control stateSelector" id='state'></select>
           </div>
-          <div class="input-group mb-3 col-12 col-md">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-lg-4">
+            <div class="d-none d-lg-inline-block input-group-prepend">
               <span class="input-group-text">City</span>
             </div>
+            <label for='city' class="control-label col-3 d-lg-none col-form-label" >City:</label>
             <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col-12 col-md">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-lg-4">
+            <div class="d-none d-lg-inline-block input-group-prepend">
               <span class="input-group-text">Venue</span>
             </div>
+            <label for='venue' class="control-label col-3 d-lg-none col-form-label" >Venue:</label>
             <input type="text" name='venue' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
         </div>
         <div class='form-row'>
-          <div class="input-group mb-3 col-12 col-md">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-lg-3">
+            <div class="d-none d-lg-inline-block input-group-prepend">
               <span class="input-group-text">URL</span>
             </div>
-            <input type="url" name='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            <label for='url' class="control-label col-3 d-lg-none col-form-label" >Url:</label>
+            <input type="url" id='urlInput' name='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col-12 col-md">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-lg-4">
+            <div class="d-none d-lg-inline-block input-group-prepend">
               <span class="input-group-text">Booking Email</span>
             </div>
+            <label for='email' class="control-label col-3 d-lg-none col-form-label" >Booking Email:</label>
             <input type="email" name='email' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col-6 col-md-2">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-lg-3">
+            <div class="d-none d-lg-inline-block input-group-prepend">
               <span class="input-group-text">Capacity</span>
             </div>
+            <label for='capacity' class="control-label col-3 d-lg-none col-form-label" >Capacity:</label>
             <input type="number" name='capacity' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-          </div>
-          <div class="form-check form-check-inline col-6 col-md-2">
-            <input class="form-check-input" type="checkbox" id="diy" value="diy">
-            <label class="form-check-label" for="diy">DIY</label>
-          </div>
 
-          <div class="col-1">
-            <button type="submit" class="btn btn-default">Submit</button>
+            <div class="form-check form-check-inline px-3 col-3 col-lg-2">
+              <input class="form-check-input" type="checkbox" id="diy" value="diy">
+              <label class="form-check-label" for="diy">DIY</label>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-1 col-2 mx-auto">
+            <button type="submit" class="btn btn-default big-btn">SUBMIT</button>
           </div>
           <div id='errorMessage'></div>
-        </div>
+        <!-- </div> -->
       </form>
       <h1> <span class='stateDisplay' style='display:none'></span> </h1>
 
         <table class='table table-hover'>
           <thead>
-            <th width='10%'>state</th>
-            <th width='15%'>city</th>
-            <th width='30%'>venue</th>
-            <th width='10%' class='d-none d-md-table-cell'>capacity</th>
-            <th width='10%' class='d-none d-md-table-cell'><i class="material-icons md-24">thumb_up</i></th>
-            <th width='10%' class='d-none d-md-table-cell'><i class="material-icons md-24">thumb_down</i></th>
+            <th width='10%'>State</th>
+            <th width='15%'>City</th>
+            <th width='30%'>Venue</th>
+            <th width='10%' class='d-none d-md-table-cell'>Capacity</th>
+            <th width='5%' class='d-none d-md-table-cell'></th>
+            <th width='5%' class='d-none d-md-table-cell'></th>
           </thead>
           <tbody id='venuesList'>
 

@@ -6,34 +6,37 @@
       <!-- <div class='searchbox container-fluid' > -->
       <form id='bandSearchForm' style='display:inline;'>
         <div class='form-row'>
-          <div class="input-group mb-3 col">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-md">
+            <div class="d-none d-md-inline-block input-group-prepend">
               <span class="input-group-text" id="inputGroup-sizing-default">State</span>
             </div>
-              <select class="custom-select form-control stateSelector" name='state' default='Colorado'></select>
+              <label for='state' class="control-label col-3 d-md-none col-form-label" >State:</label>
+              <select class="custom-select form-control stateSelector" name='state'></select>
           </div>
 
-          <div class="input-group mb-3 col">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-md">
+            <div class="d-none d-md-inline-block input-group-prepend">
               <span class="input-group-text">City</span>
             </div>
+            <label for='city' class="control-label col-3 d-md-none col-form-label" >City:</label>
             <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
-          <div class="input-group mb-3 col">
-            <div class="input-group-prepend">
+          <div class="input-group mb-3 col-12 col-md">
+            <div class="d-none d-md-inline-block input-group-prepend">
               <span class="input-group-text">Band</span>
             </div>
+            <label for='band' class="control-label col-3 d-md-none col-form-label" >Venue:</label>
             <input type="text" name='band' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
         </div>
         <div class='row'>
-          <div class='input-group mb-3 col-11' >
+          <div class='input-group mb-3 col-12 col-md-11' >
             <div class='input-group-text genres' id='genreSelector'>
               <span class="capSelector">Genre</span>
             </div>
           </div>
-          <div class="col-1">
-            <button type="submit" class="btn btn-primary">Submit</button>
+          <div class="col-md-1 col-2 mx-auto">
+            <button type="submit" class="btn big-btn">SUBMIT</button>
           </div>
         </div>
       </form>
@@ -43,57 +46,63 @@
 
     <form id='addBandForm' style='display:none;'>
       <div class='form-row'>
-        <div class="input-group mb-3 col">
-          <div class="input-group-prepend">
+        <div class="input-group mb-3 col-12 col-md">
+          <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">State</span>
           </div>
+          <label for='state' class="control-label col-3 d-md-none col-form-label" >State:</label>
             <select class="custom-select form-control stateSelector" id='state'></select>
         </div>
-        <div class="input-group mb-3 col">
-          <div class="input-group-prepend">
+        <div class="input-group mb-3 col-12 col-md">
+          <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">City</span>
           </div>
+          <label for='city' class="control-label col-3 d-md-none col-form-label" >City:</label>
           <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div class="input-group mb-3 col">
-          <div class="input-group-prepend">
+        <div class="input-group mb-3 col-12 col-md">
+          <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">Band</span>
           </div>
+          <label for='band' class="control-label col-3 d-md-none col-form-label" >Band:</label>
           <input type="text" id='band' class="form-control"  aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
       </div>
 
       <div class='form-row second-row'>
-        <div class="input-group mb-3 col second-row-inside">
-          <div class="input-group-prepend">
+        <div class="input-group mb-3 col-12 col-md">
+          <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">URL</span>
           </div>
+          <label for='url' class="control-label col-3 d-md-none col-form-label" >Url:</label>
           <input type="text" name='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div class="input-group mb-3 col second-row-inside">
-          <div class="input-group-prepend">
+        <div class="input-group mb-3 col col-12 col-md">
+          <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">FB</span>
           </div>
+          <label for='fb' class="control-label col-3 d-md-none col-form-label" >FB:</label>
           <input type="text" name='fb' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
-        <div class="input-group mb-3 col second-row-inside">
-          <div class="input-group-prepend">
+        <div class="input-group mb-3 col col-12 col-md">
+          <div class="d-none d-md-inline-block input-group-prepend">
             <span class="input-group-text">Bandcamp</span>
           </div>
+          <label for='bandcamp' class="control-label col-3 d-md-none col-form-label" >Bandcamp:</label>
           <input type="text" name='bandcamp' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
         </div>
         <div id='spotifyGuess' class="mb-3 col">
         </div>
       </div>
       <div class='form-row'>
-        <div class="input-group mb-3 col-11">
+        <div class="input-group mb-3 col-12 col-md-11">
           <div class='input-group-text genres' id='addGenres'>
             <span class="capSelector">Genre (up to 4)</span>
           </div>
         </div>
 
-        <div class="col-1">
-          <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="col-md-1 col-2 mx-auto">
+          <button type="submit" class="btn big-btn">SUBMIT</button>
         </div>
       </div>
     </form>
@@ -103,14 +112,14 @@
       <table class='table'>
         <thead>
           <tr>
-            <th class='d-none d-md-table-cell'>state</th>
-            <th>city</th>
-            <th>band (click to fb)</th>
-            <th class='d-none d-md-table-cell'>genre</th>
-            <th class='d-none d-md-table-cell'>stars</th>
-            <th class='d-none d-md-table-cell'>url</th>
-            <th class='d-none d-md-table-cell'>bandcamp</th>
-            <th>spotify</th>
+            <th width='5%' class='d-none d-md-table-cell'>State</th>
+            <th width='15%' >City</th>
+            <th width='25%' >Band (click to fb)</th>
+            <th width='15%' class='d-none d-md-table-cell'>Genre</th>
+            <th width='5%' class='d-none d-md-table-cell'>Rating</th>
+            <!-- <th width='5%' class='d-none d-md-table-cell'>Url</th> -->
+            <th width='5%'  class='d-none d-md-table-cell'>Bandcamp</th>
+            <th width='25%' >Spotify</th>
 
           </tr>
 
