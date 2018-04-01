@@ -4,7 +4,7 @@ $(document).ready(function() {
   const { states, abbrState, genreKeywords } = usStates
 
   for (let i = 0; i < states.length; i++ ) {
-    $('.stateSelector').append($(`<option value=${states[i]}>${states[i]}</option>`))
+    $('.stateSelector').append($(`<option value='${states[i]}'>${states[i]}</option>`))
   }
 
   genreKeywords.forEach( genre => {

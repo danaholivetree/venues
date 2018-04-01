@@ -65,8 +65,9 @@ $(document).ready(function() {
   const listBands = (data) => {
     data.forEach( ({id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars}) => {
       let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
-      let spotifyUrl = spotify ? spotify.split('/')[4] : ''
-      let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:track:${spotifyUrl}&theme=white` : ''
+
+      let spotifyUri = spotify ? spotify.split('/')[4] : ''
+      let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:artist:${spotifyUri}&theme=white` : ''
       let displayBandcamp = bandcamp ? `<span align='center' ><a href=${bandcamp} target='_blank'><img src='images/bandcamp-button-bc-circle-aqua-32.png'></a></span>` : ``
       // let displayBandcampWidget = band.bandcamp ? `<iframe style="border: 0; width: 370px; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=260781898/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/transparent=true/" seamless><a href=${band.bandcamp}>${band.band}</a></iframe>` : ''
       // let testBandcamp = band.bandcamp ? `<button class='btn bandcamp' data-name=${band.band} data-id=${band.id} data-url=${band.bandcamp}>load widg</button>` : ''
@@ -77,11 +78,11 @@ $(document).ready(function() {
           <td class='d-none d-md-table-cell'>${abbrState(state, 'abbr')}</td>
           <td>${city}</td>
           <td>${displayBand}</td>
-          <td class="genreList d-none d-md-table-cell">${genre}</td>
+          <td class="genreList d-none d-md-table-cell">${genre ? genre : ''}</td>
 
 
           <td class='d-none d-md-table-cell '><span class='mx-auto'>${displayBandcamp}</span></td>
-          <td>${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUrl} style="width:32px; background-color:inherit;"/>` : ''}</td>
+          <td>${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit;"/>` : ''}</td>
         </tr>`))
         if (starred) {
          $(`.star_col${starred} i`).css("color", "lightblue")
@@ -115,8 +116,7 @@ $(document).ready(function() {
       e.preventDefault()
       let targ = $(e.currentTarget)
       let uri = e.currentTarget.dataset.uri
-      console.log('uri ', uri);
-      $(`<iframe src=https://open.spotify.com/embed?uri=spotify:track:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`).insertAfter(targ)
+      $(`<iframe src=https://open.spotify.com/embed?uri=spotify:artist:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`).insertAfter(targ)
       targ.hide()
     })
     // $('.playSpotify').click( e => {
@@ -163,8 +163,16 @@ $(document).ready(function() {
   $('#bandSearchForm').submit( e => {
     e.preventDefault()
     var target = $( event.target )
+
+    console.log('target ', target);
+
+
+
     let formData = e.target.elements
-    let state = formData.state.value
+
+    // let state = formData.state.value
+    let state = $('.stateSelector').val()
+    console.log('state ', state);
     let city = formData.city.value
     let band = formData.band.value
     let genres = []
@@ -260,8 +268,8 @@ $(document).ready(function() {
   $('#addBandForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
-    console.log('spotify guess checked first', $('.guess:checked'))
-    console.log('$(".guess:checked").value() ', $('.guess:checked').val() );
+
+
 
     const newBand = {}
     newBand.state = formData.state.value
@@ -293,6 +301,7 @@ $(document).ready(function() {
       method: 'POST',
       url: '/api/bands',
       dataType: 'json',
+      data: {newBand: JSON.stringify(newBand)},
       success: function (data) {
         // $('#addBandForm').clear()
         $('input[type="text"], textarea').val('');
@@ -301,8 +310,8 @@ $(document).ready(function() {
         $('#state').val('All');
         $('#bandsList').empty()
         listBands(data)
-              },
-      data: {newBand: JSON.stringify(newBand)}
+              }
+
     })
   }) //end submit form
 
