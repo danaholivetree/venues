@@ -139,40 +139,41 @@ $(document).ready(function() {
 // try to get email, city and state from venue name alone
   $('#venue').blur( e => {
     e.preventDefault()
-    let venue = e.currentTarget.value
-    $('#venue').val(makeUppercase(e.currentTarget.value))
-    console.log('should be trying fb search for ', venue, 'after geting rid of white space ', venue.split(" ").join(''));
-    $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, ({name,about,link,website,single_line_address,emails,location,events}) => {
-      $('#url').val(checkUrl(link))
-      let booking = checkForBookingEmail(about)
-      console.log('booking from about ', booking);
-      if (emails) {
-        booking = emails.filter( email => checkForBookingEmail(email))
-      }
-      console.log('may have gotten booking from emails ', booking);
-      if (booking) {
-        $('#email').val(booking)
-      }
-      $('#city').val(location.city)
-      $('#state').val(abbrState(location.state, 'name'))
-      let siQuery = venue.split(' ').join('-') + '-' +location.city+ '-' + abbrState(location.state, 'name')
-      console.log('siQuery ', siQuery);
-      $.get(`/token/si/${siQuery}`, data => {
-        console.log('data came back from scrape ', data);
-        console.log(Number(data.capacity));
-        if (data.capacity) {
-          $('#capacity').val(Number(data.capacity))
+    if ($('#venue').val()) {
+      let venue = e.currentTarget.value
+      $('#venue').val(makeUppercase(e.currentTarget.value))
+      console.log('should be trying fb search for ', venue, 'after geting rid of white space ', venue.split(" ").join(''));
+      $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, ({name,about,link,website,single_line_address,emails,location,events}) => {
+        $('#url').val(checkUrl(link))
+        let booking = checkForBookingEmail(about)
+        console.log('booking from about ', booking);
+        if (emails) {
+          booking = emails.filter( email => checkForBookingEmail(email))
         }
+        console.log('may have gotten booking from emails ', booking);
+        if (booking) {
+          $('#email').val(booking)
+        }
+        $('#city').val(location.city)
+        $('#state').val(abbrState(location.state, 'name'))
+        let siQuery = venue.split(' ').join('-') + '-' +location.city+ '-' + abbrState(location.state, 'name')
+        console.log('siQuery ', siQuery);
+        $.get(`/token/si/${siQuery}`, data => {
+          console.log('data came back from scrape ', data);
+          console.log(Number(data.capacity));
+          if (data.capacity) {
+            $('#capacity').val(Number(data.capacity))
+          }
+        })
       })
-    })
-
+    }
   })
 
 // check for email from url if it hasn't been found already
   $('#url').blur( e => {
     e.preventDefault()
     let url = e.currentTarget.value
-    if (!$('#email').val()) {
+    if ($('#url').val() && !$('#email').val()) {
       let fbid
       if (url.split('.')[1] === 'facebook') {
         fbid = url.split('/')[3]
