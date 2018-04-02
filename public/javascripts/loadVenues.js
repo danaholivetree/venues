@@ -2,6 +2,12 @@ $(document).ready(function() {
   const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
 
+  $.get(`/api/venues`, (data, status) => {
+    // console.log('got data ', data);
+    listVenues(data.slice(0,20))
+    setThumbListener()
+  })
+
   const listVenues = (data) => {
     data.forEach( venue => {
 
@@ -56,11 +62,7 @@ $(document).ready(function() {
     }
   })
 
-  $.get(`/api/venues`, (data, status) => {
-    // console.log('got data ', data);
-    listVenues(data.slice(0,20))
-    setThumbListener()
-  })
+
 
   $('#venueSearchForm').submit( e => {
     e.preventDefault()
@@ -122,6 +124,7 @@ $(document).ready(function() {
       $('#addVenueForm').toggle(false)
       $('#searchVenues').css('background-color', 'lightblue')
       $('#addVenue').css('background-color', 'white')
+      $('#venueState').val('All');
   })
 
   $('#addVenue').click( e => {
@@ -133,10 +136,77 @@ $(document).ready(function() {
       $('#searchVenues').css('background-color', 'white')
   })
 
-  $("#urlInput").blur( e => {
+// try to get email, city and state from venue name alone
+  $('#venue').blur( e => {
     e.preventDefault()
+    let venue = e.currentTarget.value
+    $('#venue').val(makeUppercase(e.currentTarget.value))
+    console.log('should be trying fb search for ', venue, 'after geting rid of white space ', venue.split(" ").join(''));
+    $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, ({name,about,link,website,single_line_address,emails,location,events}) => {
+      $('#url').val(checkUrl(link))
+      let booking = checkForBookingEmail(about)
+      console.log('booking from about ', booking);
+      if (emails) {
+        booking = emails.filter( email => checkForBookingEmail(email))
+      }
+      console.log('may have gotten booking from emails ', booking);
+      if (booking) {
+        $('#email').val(booking)
+      }
+      $('#city').val(location.city)
+      $('#state').val(abbrState(location.state, 'name'))
+      let siQuery = venue.split(' ').join('-') + '-' +location.city+ '-' + abbrState(location.state, 'name')
+      console.log('siQuery ', siQuery);
+      $.get(`/token/si/${siQuery}`, data => {
+        console.log('data came back from scrape ', data);
+        console.log(Number(data.capacity));
+        if (data.capacity) {
+          $('#capacity').val(Number(data.capacity))
+        }
+      })
+    })
 
   })
+
+// check for email from url if it hasn't been found already
+  $('#url').blur( e => {
+    e.preventDefault()
+    let url = e.currentTarget.value
+    if (!$('#email').val()) {
+      let fbid
+      if (url.split('.')[1] === 'facebook') {
+        fbid = url.split('/')[3]
+        if (fbid.split('-').length > 1) {
+          fbid = fbid.split('-')
+          fbid = fbid[fbid.length-1]
+        }
+      } else {
+        fbid = url.split('.')[1]
+      }
+      $.get(`/token/facebook/venues/${fbid}`, ({name,about,link,website,single_line_address,emails,location,events}) => {
+        let booking = checkForBookingEmail(about)
+        if (emails) {
+          booking = emails.filter( email => checkForBookingEmail(email))
+        }
+        $('#email').val(booking)
+        $('#city').val(location.city)
+        $('#state').val(abbrState(location.state, 'name'))
+      })
+    }
+  })
+
+  const checkForBookingEmail = (field) => {
+    console.log('field ', field);
+    let clean = field.replace(/(\r\n|\n|\r)/gm, " ");
+    let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
+    // let book = /(booking)/gi
+    let booking = clean.split(' ').find( el => el.match(em))
+    console.log('booking ', booking);
+    return booking
+}
+
+
+
 
   $('#addVenueForm').submit( e => {
     e.preventDefault()

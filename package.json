@@ -26,6 +26,7 @@
     "pg-copy-streams": "^1.2.0",
     "popper.js": "^1.12.9",
     "request": "^2.85.0",
+    "scrape-it": "^5.0.2",
     "serve-favicon": "~2.4.5"
   },
   "engines": {

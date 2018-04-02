@@ -6,7 +6,6 @@ const request = require('request')
 const bc = require('bandcamp-scraper')
 
 router.get('/:q', (req, res, next) => {
-  console.log('req.params.q', req.params.q);
   var params = {
     query: req.params.q,
     page: 1
@@ -16,7 +15,6 @@ router.get('/:q', (req, res, next) => {
     if (error) {
       console.log(error);
     } else {
-      console.log(searchResults);
       res.send(searchResults.slice(0,2))
     }
   });
