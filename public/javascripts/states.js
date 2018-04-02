@@ -83,7 +83,7 @@
       }
     }
 
-    exports.genreKeywords = [ 'Singer-songwriter', 'Rock','Americana','Indie','Bluegrass',
+    exports.genreKeywords = [ 'Singer-Songwriter', 'Rock','Americana','Indie','Bluegrass',
     'Folk','Country','Lo-fi','Dream','Pop', 'Dance', 'Shoe-Gaze','Glam', 'Psych',
     'Experimental','Orchestral', 'Cello', 'Freak', 'Opera',
     'Ambient','Classic','Vintage','Rap','R&B','Hip-hop','Dark','Electro','Power',

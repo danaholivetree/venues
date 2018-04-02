@@ -44,15 +44,8 @@ $(document).ready(function() {
                     </div>`
 
             $(target).append(showItAll)
-            // $(target).hide()
           })
-
         }
-
-
-
-
-
       },
       error: err => {
         console.log('error ', err);
@@ -98,20 +91,6 @@ $(document).ready(function() {
         $(`.star_col${id} i`).css("color", "lightblue")
       })
     })
-
-    // $('.bandcamp').click( e => {
-    //   e.preventDefault()
-    //   console.log('e.target.dataset.url ', e.target.dataset.url);
-    //   let targ = e.target
-    //   $.get(`https://www.bandcamp.com/search?${}`, data => {
-    //     console.log('data ', data);
-    //   })
-    // })
-  }
-
-  $.get(`/api/bands`, (data, status) => {
-    listBands(data.slice(0,20))
-
     $('.playSpotify').click( e => {
       e.preventDefault()
       let targ = $(e.currentTarget)
@@ -119,6 +98,12 @@ $(document).ready(function() {
       $(`<iframe src=https://open.spotify.com/embed?uri=spotify:artist:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`).insertAfter(targ)
       targ.hide()
     })
+  }
+
+  $.get(`/api/bands`, (data, status) => {
+    listBands(data.slice(0,20))
+
+
     // $('.playSpotify').click( e => {
     //   e.preventDefault()
     //   let uri = e.currentTarget.dataset.uri
@@ -163,14 +148,8 @@ $(document).ready(function() {
   $('#bandSearchForm').submit( e => {
     e.preventDefault()
     var target = $( event.target )
-
     console.log('target ', target);
-
-
-
     let formData = e.target.elements
-
-    // let state = formData.state.value
     let state = $('.stateSelector').val()
     console.log('state ', state);
     let city = formData.city.value
@@ -200,7 +179,6 @@ $(document).ready(function() {
 
   $('#searchBands').click( e => {
     e.preventDefault()
-    console.log('clicked search bands');
       $('#bandSearchForm').toggle(true)
       $('#addBandForm').toggle(false)
       $('#searchBands').css('background-color', 'lightblue')
@@ -225,18 +203,43 @@ $(document).ready(function() {
 
   $('#band').blur( e => {
     e.preventDefault()
-    console.log(e.currentTarget.value);
+    let band = e.currentTarget.value
+    $.get(`/bc/${band}`, data => {
+      console.log('data from bandcamp scrape ', data);
+      $('#bandcamp').val(data[0].url)
+      console.log('data[0].genre.trim() ', data[0].genre.trim());
+      // $(`.genres input.${data[0].genre.trim()}`).prop('checked', true)
+      data[0].tags.forEach( tag => {
+        console.log('tag ', tag);
+        tag = tag[0].toUpperCase()+tag.slice(1)
+        $(`.genres input.${tag}`).prop('checked', true)
+      })
+    })
     if (!accessToken || accessToken == '') {
       $.get('/token/spotify', ({access_token, expires_in}) => {
         localStorage.setItem('pa_token', access_token)
         localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
         accessToken = access_token
-        getSpotifyWidgets(accessToken, e.currentTarget.value, $('#spotifyGuess'))
+        getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
       })
+    } else {
+      getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
     }
-    else {
-      getSpotifyWidgets(accessToken, e.currentTarget.value, $('#spotifyGuess'))
-    }
+    console.log('got here');
+      $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
+        console.log('first request ', data);
+        if (!data) {
+          $.get(`/token/facebook/bands/${band.split(" ").join('')}music` , data => {
+            console.log('second request ', data);
+            $('#facebook').val(data.link)
+            $('#url').val(checkUrl(data.website))
+          })
+        }
+        console.log('data.link');
+        $('#fb').val(data.link)
+        $('#url').val(checkUrl(data.website))
+      })
+
   })
 
   $('#fb').blur( e => {
@@ -244,46 +247,67 @@ $(document).ready(function() {
     let url = e.currentTarget.value
     let fbid
     if (url.split('.')[1] === 'facebook') {
-      console.log('was a fb address');
       fbid = url.split('/')[3]
       if (fbid.split('-').length > 1) {
         fbid = fbid.split('-')
         fbid = fbid[fbid.length-1]
       }
-      console.log('fbid ', fbid);
     } else {
       fbid = url.split('.')[1]
-      console.log('trying fbid ', fbid);
     }
     $.get(`/token/facebook/bands/${fbid}`, ({name,website,link,genre,hometown,current_location,fan_count}) => {
       let url = checkUrl(website)
-      if (current_location) {
-        $('#city').val(current_location.split(',')[0])
-        if (current_location.split(',').length > 1) {
-          if (current_location.split(',')[1].trim().length === 2) {
-            $('#state').val(abbrState(current_location.split(',')[1].trim(), 'name'))
-          } else {
-            $('#state').val(current_location.split(',')[1].trim())
-          }
-        }
-      } else if (hometown) {
-        $('#city').val(hometown.split(',')[0])
-        if (hometown.split(',').length > 1) {
-          if (hometown.split(',')[1].trim().length === 2) {
-            $('#state').val(abbrState(hometown.split(',')[1].trim(), 'name'))
-          } else {
-            $('#state').val(hometown.split(',')[1].trim())
-          }
-        }
-      }
+      getLocationFromFb(current_location, hometown)
+      // if (current_location) {
+      //   $('#city').val(current_location.split(',')[0])
+      //   if (current_location.split(',').length > 1) {
+      //     if (current_location.split(',')[1].trim().length === 2) {
+      //       $('#state').val(abbrState(current_location.split(',')[1].trim(), 'name'))
+      //     } else {
+      //       $('#state').val(current_location.split(',')[1].trim())
+      //     }
+      //   }
+      // } else if (hometown) {
+      //   $('#city').val(hometown.split(',')[0])
+      //   if (hometown.split(',').length > 1) {
+      //     if (hometown.split(',')[1].trim().length === 2) {
+      //       $('#state').val(abbrState(hometown.split(',')[1].trim(), 'name'))
+      //     } else {
+      //       $('#state').val(hometown.split(',')[1].trim())
+      //     }
+      //   }
+      // }
       if (url.split('.')[1] ==='bandcamp') {
         $('#bandcamp').val(url)
       } else if (url.split('/')[2].split('.')[0] === 'www') {
         $('#url').val(url)
       }
-
     })
   })
+
+  const getLocationFromFb = (curr, home) => {
+
+    if (curr) {
+      $('#city').val(curr.split(',')[0])
+      if (curr.split(',').length > 1) {
+        if (curr.split(',')[1].trim().length === 2) {
+          $('#state').val(abbrState(curr.split(',')[1].trim(), 'name'))
+        } else {
+          $('#state').val(curr.split(',')[1].trim())
+        }
+      }
+    } else if (home) {
+      $('#city').val(home.split(',')[0])
+      if (home.split(',').length > 1) {
+        if (home.split(',')[1].trim().length === 2) {
+          $('#state').val(abbrState(home.split(',')[1].trim(), 'name'))
+        } else {
+          $('#state').val(home.split(',')[1].trim())
+        }
+      }
+    }
+  }
+
 
   $('#addBandForm').submit( e => {
     e.preventDefault()

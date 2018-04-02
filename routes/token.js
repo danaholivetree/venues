@@ -58,7 +58,7 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
   // let auth = `&access_token=${app_id}|${app_secret}`
   let auth = `&access_token=${process.env.TEMP_TOKEN}`
   request.get({url: uri+qs+auth, json: true}, (error, response, data) => {
-    console.log('got data from bands ' , data);
+    console.log('got data from fb ' , data);
     if (!error && response.statusCode === 200) {
       res.send(data)
     }
