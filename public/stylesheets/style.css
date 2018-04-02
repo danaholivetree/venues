@@ -122,7 +122,7 @@ a:focus {
 }
 
 #errorMessage {
-  width: 200px;
+  /* width: 300px; */
 
 }
 /* .thumb:hover {

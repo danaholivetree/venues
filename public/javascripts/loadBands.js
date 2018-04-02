@@ -100,9 +100,24 @@ $(document).ready(function() {
       e.preventDefault()
       let targ = $(e.currentTarget)
       let uri = e.currentTarget.dataset.uri
-      $(`<iframe src=https://open.spotify.com/embed?uri=spotify:artist:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>`).insertAfter(targ)
+      $(`
+          <div>
+            <iframe src=https://open.spotify.com/embed?uri=spotify:artist:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+          </div>
+          <div>
+            <a href="/" class="close" aria-label="close">&times;</a>
+          </div>
+      `).insertAfter(targ)
       targ.hide()
+      $('.close').click( e => {
+        e.preventDefault()
+        console.log($(e.currentTarget).closest('div').prev().next('iframe'))
+        $(e.currentTarget).closest('div').prev().remove()
+        $(e.currentTarget).remove()
+        targ.show()
+      })
     })
+
   }
 
 
@@ -178,7 +193,7 @@ $(document).ready(function() {
       })
     })
 
-    if (!accessToken || accessToken == '') {
+    if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
       console.log('needed a token first');
       $.get('/token/spotify', ({access_token, expires_in}) => {
         console.log('got a enw access token ', access_token);

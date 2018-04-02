@@ -11,8 +11,8 @@ $(document).ready(function() {
   const listVenues = (data) => {
     data.forEach( venue => {
 
-      let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
-
+      // let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
+      let displayVenue = `<a href='/venues/${venue.id}'>${venue.venue}${venue.diy ? '*' : ''}</a>`
       $('#venuesList').append($(`
 
         <tr scope='row' data-id=${venue.id} class='venue-row'>
@@ -254,7 +254,7 @@ $(document).ready(function() {
       } else {
         window.location=`/venues/${data.id}`
       }
-      
+
 
 
 

@@ -41,5 +41,33 @@
      }, 2000)
   }
 
+  exports.copyToClipboard = (text, el) => {
+    console.log('copying text to clipboard ', text);
+    console.log('el ', el);
+    var copyTest = document.queryCommandSupported('copy');
+    console.log('copyTest ', copyTest);
+    var elOriginalText = el.attr('data-original-title');
+
+    if (copyTest === true) {
+      var copyTextArea = document.createElement("textarea");
+      copyTextArea.value = text;
+      document.body.appendChild(copyTextArea);
+      copyTextArea.select();
+      try {
+        var successful = document.execCommand('copy');
+        console.log('successful ', successful);
+        var msg = successful ? 'Copied!' : 'Whoops, not copied!';
+        el.attr('data-original-title', msg).tooltip('show');
+      } catch (err) {
+        console.log('Oops, unable to copy');
+      }
+      document.body.removeChild(copyTextArea);
+      el.attr('data-original-title', elOriginalText);
+    } else {
+      // Fallback if browser doesn't support .execCommand('copy')
+      window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);
+    }
+  }
+
 
 })(typeof exports === 'undefined'? this['helpers']={}: exports);
