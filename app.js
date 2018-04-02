@@ -70,22 +70,22 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+
   if (err.output) {
     // console.log('err.output ', err.output);
     const {statusCode, error, message} = err.output.payload
     console.log('statusCode ', statusCode);
     console.log('message ', message);
-    res.status(statusCode).send(message)
+    res.send(message)
+  } else {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
   }
-  console.log('boom res should have been sent, other error ', err.status, err.message );
 
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
 });
 
 module.exports = app;

@@ -241,15 +241,23 @@ $(document).ready(function() {
       newVenue.capacity = formData.capacity.value
     }
     newVenue.diy = formData.diy.checked ? true : false
-    console.log('newVenue.id', newVenue.id);
-    console.log('type of  ', typeof newVenue.id);
+    //why woudl i ahve been looking for a newvneue id?
 
     $.post(`/api/venues`, newVenue, (data, status) => {
       // $('input[type="text"], textarea').val('');
       // $('#state').val('All');
       // $('#venuesList').empty()
       // listVenues(data)
-      window.location=`/venues/${data.id}`
+      if (!data.id) {
+        console.log('error data ' ,data);
+          return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${data}</div>`)
+      } else {
+        window.location=`/venues/${data.id}`
+      }
+      
+
+
+
     })
   })
 

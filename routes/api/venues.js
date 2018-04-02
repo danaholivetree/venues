@@ -127,7 +127,7 @@ router.post('/', (req, res, next) => {
     .where({city, venue})
     .then( exists => {
       if (exists[0]) {
-        throw boom.badRequest('venue already exists in db')
+        return next(boom.badRequest('This venue is already in the database'))
       } else {
         return knex('users')
           .where('id', req.cookies.user.id)
