@@ -121,6 +121,8 @@ $(document).ready(function() {
   $('#searchVenues').click( e => {
     e.preventDefault()
       $('#venueSearchForm').toggle(true)
+      $('#addVenueForm input').val('')
+      $('#state').val('All')
       $('#addVenueForm').toggle(false)
       $('#searchVenues').css('background-color', 'lightblue')
       $('#addVenue').css('background-color', 'white')
@@ -132,6 +134,7 @@ $(document).ready(function() {
     console.log('clicked add venue');
       $('#venueSearchForm').toggle(false)
       $('#addVenueForm').toggle(true)
+      $('#venue').focus()
       $('#addVenue').css('background-color', 'lightblue')
       $('#searchVenues').css('background-color', 'white')
   })
@@ -185,12 +188,9 @@ $(document).ready(function() {
   })
 
   const checkForBookingEmail = (field) => {
-    console.log('field ', field);
     let clean = field.replace(/(\r\n|\n|\r)/gm, " ");
     let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
-    // let book = /(booking)/gi
     let booking = clean.split(' ').find( el => el.match(em))
-    console.log('booking ', booking);
     return booking
   }
 

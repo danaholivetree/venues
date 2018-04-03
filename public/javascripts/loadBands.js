@@ -157,13 +157,19 @@ $(document).ready(function() {
   $('#searchBands').click( e => {
     e.preventDefault()
       $('#bandSearchForm').toggle(true)
+      $('.guesses').remove()
+      $('.genre-selector').prop('checked', false)
       $('#addBandForm').toggle(false)
+      $('#addBandForm input').val('')
+      $('#state').val('All')
       $('#searchBands').css('background-color', 'lightblue')
       $('#addBand').css('background-color', 'white')
   })
 
   $('#addBand').click( e => {
     e.preventDefault()
+      $('#bandSearchForm input').val('')
+      $('.stateSelector').val('All')
       $('#bandSearchForm').toggle(false)
       $('#addBandForm').toggle(true)
       $('#addBand').css('background-color', 'lightblue')
