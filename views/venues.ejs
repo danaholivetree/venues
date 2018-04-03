@@ -91,7 +91,7 @@
               <span class="input-group-text">Venue</span>
             </div>
             <label for='venue' class="control-label col-3 d-lg-none col-form-label" >Venue:</label>
-            <input type="text" id='venue' autofocus class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            <input type="text" id='venue' autofocus class="form-control" data-target="#checkVenueModal" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
         </div>
         <div class='form-row'>
@@ -122,6 +122,28 @@
             </div>
           </div>
         </div>
+
+        <div class="modal" id="checkVenueModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <!-- <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5> -->
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <!-- Did you mean venue in city, state? -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+              <button type="button" id='acceptVenue' class="btn btn-default">Yes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
           <div class="col-md-1 col-2 mx-auto mb-3">
             <button type="submit" class="btn btn-default big-btn">SUBMIT</button>
           </div>

@@ -79,7 +79,7 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
 
 router.get('/si/:q', (req, res, next) => {
   let query = req.params.q
-  console.log('query ', query);
+  console.log('got query for iotm ', query);
   scrapeIt(`https://www.indieonthemove.com/venues/view/${query}`, {
     genres: '.alignleft ul li:nth-of-type(6)',
     capacity: '.alignleft ul li:nth-of-type(7)',

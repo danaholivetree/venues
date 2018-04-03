@@ -43,14 +43,13 @@ $(document).ready(function() {
       }
     })
 
-    $('.js-tooltip').tooltip();
+    $('.js-tooltip').tooltip()
     $('.js-copy').click( (e) => {
       e.preventDefault()
-      var text = $(e.currentTarget).attr('data-copy');
-      var el = $(e.currentTarget);
-      console.log('el before copy', el);
-      copyToClipboard(text, el);
-    });
+      var text = $(e.currentTarget).attr('data-copy')
+      var el = $(e.currentTarget)
+      copyToClipboard(text, el)
+    })
   }
 
   const getFbInfo = url => {
@@ -136,11 +135,14 @@ $(document).ready(function() {
     $('.edit-btn').click( e => {
       e.preventDefault()
       let targ = $(e.currentTarget)
+      let focus = $('.btn:focus')
+      console.log('.edit-btn was pressed ', targ);
+      console.log('focus ', focus);
       let thisInput = targ.closest('div').next().children('input')
       if (targ.hasClass('edit')) {
-        thisInput.show()
+        thisInput.addClass('edit-single').show()
         targ.next().attr( "style", "display: block;" )
-        targ.text('Save').toggleClass('save').toggleClass('edit')
+        targ.text('Save').toggleClass('save').toggleClass('edit').focus()
       } else if (targ.hasClass('save')) {
         let origVal = venueData[$(thisInput).prop('id')]
         let editedVenue = {}
@@ -164,10 +166,21 @@ $(document).ready(function() {
           targ.closest('div').children('.save').text('Edit').toggleClass('save').toggleClass('edit')
           targ.hide()
       }
+
+      // $('.edit-single').submit( e => {
+      //   $(e.currentTarget).toggleClass('edit-single')
+      //   console.log('shouldnt have editsingle class anymore', $(e.currentTarget).hasClass('edit-single'));
+      // })
+    })
+
+    $('.edit-form').click( e => {
+      console.log('focus is on ', $('.btn:focus'));
+      console.log('active element', $( document.activeElement ));
     })
 
     $('#editVenueForm').submit(e => {
       e.preventDefault()
+      console.log('edit venue form was submitted');
       let venueId = document.location.href.match(/(\d+)$/)[0]
       let inputs = $(this).find('input')
       let editedVenue = {}
@@ -202,6 +215,7 @@ $(document).ready(function() {
     e.preventDefault()
     if (targ.hasClass("edit-all")) {
       $('.edit-form').show()
+      $('.save').toggleClass('save').toggleClass('edit').text('Edit')
       $('.edit-btn').hide()
       $('#editVenue').text('Cancel').addClass('cancel-all').removeClass('edit-all')
     } else if (targ.hasClass("cancel-all")) {

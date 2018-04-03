@@ -144,32 +144,25 @@ $(document).ready(function() {
       $('#venue').val(makeUppercase(e.currentTarget.value))
       console.log('should be trying fb search for ', venue, 'after geting rid of white space ', venue.split(" ").join(''));
       $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, ({name,about,link,website,single_line_address,emails,location,events}) => {
-        $('#url').val(checkUrl(link))
-        let booking = checkForBookingEmail(about)
-        console.log('booking from about ', booking);
-        if (emails) {
-          booking = emails.filter( email => checkForBookingEmail(email))
+        console.log('location');
+        if (location) {
+          console.log('location ', location);
+          $('#checkVenueModal .modal-body').text(`Do you mean ${name} in ${location.city}, ${location.state}?`)
+          $('#checkVenueModal').modal('show');
+          $('#acceptVenue').click( e => {
+            lookForFbInfo(about, link, emails, location)
+            $('#checkVenueModal').modal('hide');
+            lookForSiInfo(venue, location)
+          })
         }
-        console.log('may have gotten booking from emails ', booking);
-        if (booking) {
-          $('#email').val(booking)
-        }
-        $('#city').val(location.city)
-        $('#state').val(abbrState(location.state, 'name'))
-        let siQuery = venue.split(' ').join('-') + '-' +location.city+ '-' + abbrState(location.state, 'name')
-        console.log('siQuery ', siQuery);
-        $.get(`/token/si/${siQuery}`, data => {
-          console.log('data came back from scrape ', data);
-          console.log(Number(data.capacity));
-          if (data.capacity) {
-            $('#capacity').val(Number(data.capacity))
-          }
-        })
+
+
       })
     }
   })
 
-// check for email from url if it hasn't been found already
+
+// check for data from url if it hasn't been found already
   $('#url').blur( e => {
     e.preventDefault()
     let url = e.currentTarget.value
@@ -185,13 +178,8 @@ $(document).ready(function() {
         fbid = url.split('.')[1]
       }
       $.get(`/token/facebook/venues/${fbid}`, ({name,about,link,website,single_line_address,emails,location,events}) => {
-        let booking = checkForBookingEmail(about)
-        if (emails) {
-          booking = emails.filter( email => checkForBookingEmail(email))
-        }
-        $('#email').val(booking)
-        $('#city').val(location.city)
-        $('#state').val(abbrState(location.state, 'name'))
+        lookForFbInfo(about, link, emails, location)
+        lookForSiInfo(name, location)
       })
     }
   })
@@ -204,8 +192,41 @@ $(document).ready(function() {
     let booking = clean.split(' ').find( el => el.match(em))
     console.log('booking ', booking);
     return booking
-}
+  }
 
+  const lookForFbInfo = (about, link, emails, location) => {
+    if (!$('#url').val().split('/')[3]) {
+      $('#url').val(checkUrl(link))
+    }
+
+    let booking = checkForBookingEmail(about)
+    console.log('booking from about ', booking);
+    if (emails) {
+      booking = emails.filter( email => checkForBookingEmail(email))
+    }
+    console.log('may have gotten booking from emails ', booking);
+    if (booking && !$('#email').val()) {
+      $('#email').val(booking)
+    }
+    if (!$('#city').val()) {
+      $('#city').val(location.city)
+    }
+    if ($('#state').val() === "All") {
+      $('#state').val(abbrState(location.state, 'name'))
+    }
+  }
+
+  const lookForSiInfo = (venue, location) => {
+    let siQuery = venue.split(' ').join('-') + '-' +location.city+ '-' + abbrState(location.state, 'name')
+    console.log('siQuery ', siQuery);
+    $.get(`/token/si/${siQuery}`, data => {
+      console.log('data came back from scrape ', data);
+      console.log(Number(data.capacity));
+      if (data.capacity) {
+        $('#capacity').val(Number(data.capacity))
+      }
+    })
+  }
 
 
 

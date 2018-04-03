@@ -42,10 +42,7 @@
   }
 
   exports.copyToClipboard = (text, el) => {
-    console.log('copying text to clipboard ', text);
-    console.log('el ', el);
     var copyTest = document.queryCommandSupported('copy');
-    console.log('copyTest ', copyTest);
     var elOriginalText = el.attr('data-original-title');
 
     if (copyTest === true) {
@@ -55,7 +52,6 @@
       copyTextArea.select();
       try {
         var successful = document.execCommand('copy');
-        console.log('successful ', successful);
         var msg = successful ? 'Copied!' : 'Whoops, not copied!';
         el.attr('data-original-title', msg).tooltip('show');
       } catch (err) {
