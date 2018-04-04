@@ -28,7 +28,8 @@ $(document).ready(function() {
         if (items.length > 0) {
           let reordered = items.sort( (a,b) => a.followers.total < b.followers.total)
           $('#spotifyGuess').children().first().show()
-          reordered.forEach( (item, i) => {
+          reordered.forEach( (item, i, arr) => {
+            console.log('arr ', arr);
             let artistId = item.id
             let artistSpotify = item.external_urls.spotify
             let artistUri = item.uri
@@ -43,12 +44,15 @@ $(document).ready(function() {
                         </div>
 
                         <div class='mx-auto col-1'>
-                          <input class="form-radio-input guess" type="radio" id="radio${i}" value=${artistSpotify}>
+                          <input class="form-radio-input guess" type="radio" id="radio${i}" value=${artistSpotify} />
                         </div>
                       </div>
                     </div>`
 
             $(target).append(showItAll)
+            if (arr.length === 1) {
+              $('input.guess').prop("checked", true)
+            }
           })
         }
       },
@@ -302,7 +306,7 @@ $(document).ready(function() {
     if (!formData.band.value) {
         return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a band name</div>`)
     } else {
-      newBand.band = formData.band.value
+      newBand.band = makeUppercase(formData.band.value)
     }
     let selectedGenres = []
     $.each($( ".genre-selector:checked" ), function (index, element) {
@@ -331,6 +335,7 @@ $(document).ready(function() {
       dataType: 'json',
       data: {newBand: JSON.stringify(newBand)},
       success: function (data) {
+        console.log('data  from add band ', data);
                   // $('#addBandForm').clear()
                   $('#errorMessage').empty()
                   $('input').val('');
@@ -339,7 +344,10 @@ $(document).ready(function() {
                   $('#state').val('All');
                   $('#bandsList').empty()
                   listBands(data)
-              }
+              },
+      error: err => {
+        $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${err.responseText}</div>`)
+      }
 
     })
   }) //end submit form

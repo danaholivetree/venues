@@ -113,7 +113,7 @@ router.post('/', (req, res, next) => {
     .where('band', newBand.band)
     .then( exists => {
       if (exists[0]) {
-        throw boom.badRequest('band already exists in db')
+        return next(boom.badRequest('This band is already in the database'))
       } else {
         return knex('users')
           .where('id', req.cookies.user.id)
