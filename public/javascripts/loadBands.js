@@ -2,8 +2,6 @@ $(document).ready(function() {
   const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
   let accessToken = localStorage.getItem('pa_token')
-  // if (localStorage.getItem('pa_token') && localStorage.getItem('pa_token'))
-  // let gotSpotify = ''
 
   $.get(`/api/bands`, (data, status) => {
     listBands(data.slice(0,20))
@@ -26,6 +24,7 @@ $(document).ready(function() {
         if (items.length > 0) {
           let reordered = items.sort( (a,b) => a.followers.total < b.followers.total)
           $('#spotifyGuess').children().first().show()
+          $('.guesses').remove()
           reordered.forEach( (item, i, arr) => {
             let artistId = item.id
             let artistSpotify = item.external_urls.spotify
@@ -181,7 +180,7 @@ $(document).ready(function() {
      }
   })
 
-  $('#band').blur( e => {
+  $('#band').change( e => {
     e.preventDefault()
     let band = e.currentTarget.value
     if (band !== '') {
@@ -217,7 +216,7 @@ $(document).ready(function() {
 
   })
 
-  $('#fb').blur( e => {
+  $('#fb').change( e => {
     e.preventDefault()
 
     let url = e.currentTarget.value

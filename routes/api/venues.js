@@ -18,21 +18,17 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/q', (req, res, next) => {
-  console.log('getting to query' , req.query);
   var query = knex('venues')
               .select('*')
   const addState = (state) => {
     if (state !== 'All') {
-      console.log('adding state ', state);
       return query.where('state', state)
     }
   }
   const addCity = (city) => {
-    console.log('adding city ', city);
     return query.where('city', 'ilike', `${city}%`)
   }
   const addVenue = (venue) => {
-    console.log('adding venue ', venue);
     return query.where('venue', 'ilike', `%${venue}%`)
   }
 
@@ -94,7 +90,6 @@ router.get('/q', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-  console.log('Getting venue ', Number(req.params.id));
   return knex('venues')
     .where('venues.id', Number(req.params.id))
     .leftOuterJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
@@ -108,7 +103,6 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-  console.log('post');
   const {state, city, venue, capacity, email, url, diy} = req.body
   var newVenue = {state, city, venue, url, contributed_by: req.cookies.user.id}
   if (capacity) {
@@ -165,7 +159,6 @@ router.put('/:id', (req, res, next) => {
   let findProfile = profileQuery.select(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo', 'sound']).first()
 
   const updateVenue = (venue) => {
-    console.log('venue to update', venue);
     return venueQuery
       .update(venue)
       .returning('*')
@@ -203,8 +196,6 @@ router.put('/:id', (req, res, next) => {
     toVenues.capacity = capacity
   }
   if (Object.keys(req.body).find( el => el === 'diy')) {
-    console.log(Object.keys(req.body).find( el => el === 'diy'));
-    console.log('diy was a key');
     toVenues.diy = diy
   }
   if (genres || genres === '') {
@@ -238,11 +229,9 @@ router.put('/:id', (req, res, next) => {
     toVenues.id = Number(req.params.id)
     updateVenue(toVenues)
       .then( venue => {
-        console.log(venue);
         updatedVenue = venue[0]
         return findProfile
           .then (exists => {
-            console.log('exists ', exists);
             // if we need to update the profile
             if (Object.keys(toProfile).length > 0) {
               toProfile.venue_id = Number(req.params.id)
