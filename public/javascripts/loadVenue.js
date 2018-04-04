@@ -8,6 +8,7 @@ $(document).ready(function() {
 
   $.get(`/api/venues/${venueId}`, data => {
     venueData = data
+    console.log('data');
     showVenue(data)
     getFbInfo(data.url) //maybe not have to do this more than once?
     getSi(data.venue, data.city, data.state)
@@ -23,7 +24,7 @@ $(document).ready(function() {
     $('.info.location').empty().append(`${city}, ${state}`)
     $('.info.url').empty().append(`<a href=${url} target='_blank'>${url}</a>`)
     $('.info.email').empty().append(`${email ? email + `  <button class="btn btn-default thumb btn-copy js-tooltip js-copy" data-toggle="tooltip" data-placement="top" data-copy=${email} title="Copy to clipboard"><svg class="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="18" height="18" viewBox="0 0 24 24"><path d="M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg></button>` : ''}`)
-    $('.info.capacity').empty().append(`${capacity !== 0 ? capacity : ''}`)
+    $('.info.capacity').empty().append(`${(capacity !== 0) && capacity ? capacity : ''}`)
     $('.info.genres').empty().append(`${genres ? genres : ''}`)
     $('.info.type').empty().append(`${type ? type : ''}`)
     $('.info.crowd').empty().append(`${crowd ? crowd : ''}`)
@@ -35,7 +36,7 @@ $(document).ready(function() {
     $('.info.diy').empty().append(`${diy ? 'This is a diy or not-for-profit venue.' : 'This is not a DIY venue'}`)
     $('#diy').prop('checked', diy )
     $('#diy').next('label').empty().append(`${diy ?  'This is a diy or not-for-profit venue. Uncheck to mark as not DIY' : 'This is not a DIY venue. Check to mark as DIY.'}`)
-
+    $('#contrib').text(`Contributed by ${contributedBy}`)
     //set autofill values for form inputs
     $('input.edit-form').each( function() {
       if (data[this.id]) {
@@ -88,6 +89,20 @@ $(document).ready(function() {
         console.log('prevVal ', prevAgesVal);
         $('#ages').val(ages + ' ' + prevAgesVal).show()
         editOn('ages')
+      }
+      if (genres) {
+        let eachGenre = genres.split(', ')
+        console.log('new genres ', eachGenre);
+        let curr = $('.info.genres').val()
+        let currentGenres = curr.split(', ')
+        console.log('current genres ', currentGenres);
+        let eachNewGenre = eachGenre.filter( genre => {
+          return !currentGenres.find( curr => curr.toLowerCase() === genre.toLowerCase()) && genre !== 'All Genres'
+        })
+        console.log('eachNewGenre ', eachNewGenre.join(', '));
+        $('#genres').val(eachNewGenre.join(', ')).show()
+        editOn('genres')
+
       }
     })
   }
