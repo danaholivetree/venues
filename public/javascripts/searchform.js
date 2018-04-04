@@ -9,7 +9,7 @@ $(document).ready(function() {
 
   genreKeywords.forEach( genre => {
       $('.genres').append($(`<div class="form-check form-check-inline" style='display:inline-flex;'>
-        <input class="form-check-input genre-selector ${genre}" type="checkbox" value=${genre}>
+        <input class="form-check-input genre-selector ${genre}" type="checkbox" value="${genre}">
         <label class="form-check-label" for=${genre}>${genre}</label></div>`))
   })
 

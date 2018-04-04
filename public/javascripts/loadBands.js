@@ -2,7 +2,6 @@ $(document).ready(function() {
   const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
   let accessToken = localStorage.getItem('pa_token')
-  console.log(accessToken);
   // if (localStorage.getItem('pa_token') && localStorage.getItem('pa_token'))
   // let gotSpotify = ''
 
@@ -20,7 +19,6 @@ $(document).ready(function() {
         'Authorization': `Bearer ${token}`
       },
       success : ({artists}) => {
-        console.log('artists', artists);
         const {items} = artists
         // let removeUnlikelies = items.filter( item => {
         //   return item.followers.total > 50
@@ -29,7 +27,6 @@ $(document).ready(function() {
           let reordered = items.sort( (a,b) => a.followers.total < b.followers.total)
           $('#spotifyGuess').children().first().show()
           reordered.forEach( (item, i, arr) => {
-            console.log('arr ', arr);
             let artistId = item.id
             let artistSpotify = item.external_urls.spotify
             let artistUri = item.uri
@@ -95,7 +92,6 @@ $(document).ready(function() {
       e.preventDefault()
       let targ = e.target
       $.post(`/api/stars`, {bandId: e.target.dataset.id}, ({id, stars}) => {
-        console.log('data came back from post stars ', id, stars);
         $(`.star_col${id} span`).text(`${stars}`)
         $(`.star_col${id} i`).css("color", "lightblue")
       })
@@ -115,7 +111,6 @@ $(document).ready(function() {
       targ.hide()
       $('.close').click( e => {
         e.preventDefault()
-        console.log($(e.currentTarget).closest('div').prev().next('iframe'))
         $(e.currentTarget).closest('div').prev().remove()
         $(e.currentTarget).remove()
         targ.show()
@@ -129,10 +124,8 @@ $(document).ready(function() {
   $('#bandSearchForm').submit( e => {
     e.preventDefault()
     var target = $( event.target )
-    console.log('target ', target);
     let formData = e.target.elements
     let state = $('.stateSelector').val()
-    console.log('state ', state);
     let city = formData.city.value
     let band = formData.band.value
     let genres = []
@@ -193,33 +186,24 @@ $(document).ready(function() {
     let band = e.currentTarget.value
     if (band !== '') {
       $.get(`/bc/${band}`, data => {
-        console.log('data from bandcamp scrape ', data);
         $('#bandcamp').val(data[0].url)
-        console.log('data[0].genre.trim() ', data[0].genre.trim());
         // $(`.genres input.${data[0].genre.trim()}`).prop('checked', true)
         data[0].tags.forEach( tag => {
-          console.log('tag ', tag);
           tag = tag[0].toUpperCase()+tag.slice(1)
           $(`.genres input.${tag}`).prop('checked', true)
         })
       })
 
       if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
-        console.log('needed a token first');
         $.get('/token/spotify', ({access_token, expires_in}) => {
-          console.log('got a enw access token ', access_token);
           localStorage.setItem('pa_token', access_token)
           localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
           accessToken = access_token
-          console.log('set variable accessToken', accessToken);
           getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
         })
       } else {
-        console.log('had access token ', accessToken);
-        console.log('getting spotify widgets- band', band);
         getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
       }
-      console.log('should be trying fb search ');
         $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
           console.log('fb data from band name', data);
           console.log('data.link');
@@ -238,7 +222,6 @@ $(document).ready(function() {
 
     let url = e.currentTarget.value
     if (!url.split('/')[3]) {
-      console.log('fb had not been filled in yet, doing query to fb api ');
       let fbid
       if (url.split('.')[1] === 'facebook') {
         fbid = url.split('/')[3]
@@ -282,61 +265,69 @@ $(document).ready(function() {
           }
         }
       }
-
     }
-
   }
 
-
-  $('#addBandForm').submit( e => {
-    e.preventDefault()
-    let formData = e.target.elements
-
-    const newBand = {}
+  const checkForErrors = (formData) => {
     if (!formData.state.value || formData.state.value === 'All') {
-      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please select a state</div>`)
-    } else {
-      newBand.state = formData.state.value
+      return "Please select a state"
     }
     if (!formData.city.value) {
-      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
-    } else {
-      newBand.city = makeUppercase(formData.city.value)
+      return "Please enter a city"
     }
     if (!formData.band.value) {
-        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a band name</div>`)
-    } else {
-      newBand.band = makeUppercase(formData.band.value)
+      return "Please enter a band name"
     }
+    if (formData.fb && formData.fb.value.split('.')[1] !== 'facebook') {
+      return "Incorrect form for facebook url"
+    }
+    if (formData.fb && !formData.fb.value.split('/')[3]) {
+      return "Please enter a complete facebook url"
+    }
+  }
+
+  const newBandFromForm = (formData) => {
+    let newBand = {
+      state: formData.state.value,
+      city: makeUppercase(formData.city.value),
+      band: makeUppercase(formData.band.value)
+    }
+
     let selectedGenres = []
-    $.each($( ".genre-selector:checked" ), function (index, element) {
-      selectedGenres.push(element.value)
+    $.each($( "#addGenres input:checked" ), function (i, el) {
+      selectedGenres.push(el.value)
     })
     newBand.genres = selectedGenres.slice(0,4)
-    newBand.url = formData.url.value && checkUrl(formData.url.value)
 
-    if (formData.fb.value.split('.')[1] !== 'facebook') {
-        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Incorrect form for facebook url</div>`)
+    if (formData.url.value !== '') {
+      newBand.url = checkUrl(formData.url.value)
     }
-    if (!formData.fb.value.split('/')[3]) {
-      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a complete facebook url</div>`)
+    if (formData.fb.value !== '') {
+      newBand.fb = checkUrl(formData.fb.value)
     }
-    newBand.fb = formData.fb.value && checkUrl(formData.fb.value)
-    newBand.bandcamp = formData.bandcamp.value && checkUrl(formData.bandcamp.value)
+    if (formData.bandcamp.value !== '') {
+      newBand.bandcamp = checkUrl(formData.bandcamp.value)
+    }
     // newBand.spotify = formData.spotify.value && checkUrl(formData.spotify.value)
     newBand.spotify = $('.guess:checked').val()
-    // newBand.spotify = formData.
-    // console.log('newBand.spotify ', newBand.spotify);
-    console.log('newBand ', newBand);
 
+    return newBand
+  }
+
+  const newBandandSubmit = (e) => {
+    // e.preventDefault()
+    let formData = e.target.elements
+    if (checkForErrors(formData)) {
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${checkForErrors(formData)}</div>`)
+    }
+    let newBand = newBandFromForm(formData)
     $.ajax({
       method: 'POST',
       url: '/api/bands',
       dataType: 'json',
       data: {newBand: JSON.stringify(newBand)},
       success: function (data) {
-        console.log('data  from add band ', data);
-                  // $('#addBandForm').clear()
+                  console.log('data came back from add band ', data);
                   $('#errorMessage').empty()
                   $('input').val('');
                   $('.guesses').remove()
@@ -348,9 +339,14 @@ $(document).ready(function() {
       error: err => {
         $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${err.responseText}</div>`)
       }
-
     })
-  }) //end submit form
+  }
+
+  $('#addBandForm').submit( e => {
+    e.preventDefault()
+    newBandandSubmit(e)
+  })
+
 
 
 })
