@@ -2,7 +2,10 @@
   <% include ./partials/nav.ejs %>
   <body>
     <div class='container'>
-      <div class='button-header'><button class='btn' id='searchVenues'>SEARCH VENUES</button>  <button class='btn' id='addVenue'>ADD A VENUE</button></div>
+      <div class='button-header'>
+        <button class='btn' id='searchVenues'>SEARCH VENUES</button>
+        <button class='btn' id='addVenue'>ADD A VENUE</button>
+      </div>
         <form id='venueSearchForm'>
           <div class='form-row'>
             <div class="input-group mb-3 col-12 col-lg">
@@ -143,14 +146,20 @@
         </div>
       </div>
 
-
-          <div class="col-md-1 col-2 mx-auto mb-3">
+      <div class='form-row'>
+        <div class='col-auto mx-auto' style="text-align:center;" id='errorMessage'></div>
+      </div>
+      <div class='form-row'>
+        <div class="col-auto mx-auto my-3">
+          <button type="submit" class="btn big-btn">SUBMIT</button>
+        </div>
+          <!-- <div class="col-md-1 col-2 mx-auto mb-3">
             <button type="submit" class="btn btn-default big-btn">SUBMIT</button>
           </div>
-          <div id='errorMessage' class='col-lg-4 col-md-4 col-sm-5 col-10 mx-auto mb-3'></div>
+          <div id='errorMessage' class='col-lg-4 col-md-4 col-sm-5 col-10 mx-auto mb-3'></div> -->
 
 
-        <!-- </div> -->
+        </div>
       </form>
       <h1> <span class='stateDisplay' style='display:none'></span> </h1>
 

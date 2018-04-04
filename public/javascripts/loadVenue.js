@@ -17,7 +17,7 @@ $(document).ready(function() {
   const showVenue = data => {
     console.log('gotData ', data);
     const {id, venue, url, state, city, diy, capacity, email, sound, genres, type, crowd, ages, pay, promo, accessibility, contributedBy} = data
-
+    //empty and append no matter what OR check if values have changed first , which is more intensive
     $('.container > h3').empty().append(venue)
     $('.info.location').empty().append(`${city}, ${state}`)
     $('.info.url').empty().append(`<a href=${url} target='_blank'>${url}</a>`)
@@ -113,9 +113,9 @@ $(document).ready(function() {
 {/* <h3> ${venue} </h3> */}
 {/* <button id='editVenue' class='btn btn-default'>Edit All</button> */}
   const getEvents = events => {
-    // let upcomingEvents = events.filter( event => (new Date(event.start_time) > new Date()))
-    if (events.length > 0) {
-      let displayEvents = events.map( event => {
+    let upcomingEvents = events.filter( event => (new Date(event.start_time) > new Date()))
+    if (upcomingEvents.length > 0) {
+      let displayEvents = upcomingEvents.map( event => {
         return `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`
       })
       displayEvents.forEach( event => {

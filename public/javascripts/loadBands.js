@@ -187,41 +187,45 @@ $(document).ready(function() {
   $('#band').blur( e => {
     e.preventDefault()
     let band = e.currentTarget.value
-    $.get(`/bc/${band}`, data => {
-      console.log('data from bandcamp scrape ', data);
-      $('#bandcamp').val(data[0].url)
-      console.log('data[0].genre.trim() ', data[0].genre.trim());
-      // $(`.genres input.${data[0].genre.trim()}`).prop('checked', true)
-      data[0].tags.forEach( tag => {
-        console.log('tag ', tag);
-        tag = tag[0].toUpperCase()+tag.slice(1)
-        $(`.genres input.${tag}`).prop('checked', true)
+    if (band !== '') {
+      $.get(`/bc/${band}`, data => {
+        console.log('data from bandcamp scrape ', data);
+        $('#bandcamp').val(data[0].url)
+        console.log('data[0].genre.trim() ', data[0].genre.trim());
+        // $(`.genres input.${data[0].genre.trim()}`).prop('checked', true)
+        data[0].tags.forEach( tag => {
+          console.log('tag ', tag);
+          tag = tag[0].toUpperCase()+tag.slice(1)
+          $(`.genres input.${tag}`).prop('checked', true)
+        })
       })
-    })
 
-    if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
-      console.log('needed a token first');
-      $.get('/token/spotify', ({access_token, expires_in}) => {
-        console.log('got a enw access token ', access_token);
-        localStorage.setItem('pa_token', access_token)
-        localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
-        accessToken = access_token
-        console.log('set variable accessToken', accessToken);
+      if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
+        console.log('needed a token first');
+        $.get('/token/spotify', ({access_token, expires_in}) => {
+          console.log('got a enw access token ', access_token);
+          localStorage.setItem('pa_token', access_token)
+          localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
+          accessToken = access_token
+          console.log('set variable accessToken', accessToken);
+          getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
+        })
+      } else {
+        console.log('had access token ', accessToken);
+        console.log('getting spotify widgets- band', band);
         getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
-      })
-    } else {
-      console.log('had access token ', accessToken);
-      console.log('getting spotify widgets- band', band);
-      getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
+      }
+      console.log('should be trying fb search ');
+        $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
+          console.log('fb data from band name', data);
+          console.log('data.link');
+          $('#fb').val(data.link)
+          $('#url').val(checkUrl(data.website))
+          getLocationFromFb(data.current_location, data.hometown)
+        })
+
+
     }
-    console.log('should be trying fb search ');
-      $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
-        console.log('fb data from band name', data);
-        console.log('data.link');
-        $('#fb').val(data.link)
-        $('#url').val(checkUrl(data.website))
-        getLocationFromFb(data.current_location, data.hometown)
-      })
 
   })
 
@@ -254,26 +258,29 @@ $(document).ready(function() {
   })
 
   const getLocationFromFb = (curr, home) => {
+    if ($('#city').val() === '' || ($('#state').val() === '')) {
+      if (curr) {
+        $('#city').val(curr.split(',')[0])
+        if (curr.split(',').length > 1) {
+          if (curr.split(',')[1].trim().length === 2) {
+            $('#state').val(abbrState(curr.split(',')[1].trim(), 'name'))
+          } else {
+            $('#state').val(curr.split(',')[1].trim())
+          }
+        }
+      } else if (home) {
+        $('#city').val(home.split(',')[0])
+        if (home.split(',').length > 1) {
+          if (home.split(',')[1].trim().length === 2) {
+            $('#state').val(abbrState(home.split(',')[1].trim(), 'name'))
+          } else {
+            $('#state').val(home.split(',')[1].trim())
+          }
+        }
+      }
 
-    if (curr) {
-      $('#city').val(curr.split(',')[0])
-      if (curr.split(',').length > 1) {
-        if (curr.split(',')[1].trim().length === 2) {
-          $('#state').val(abbrState(curr.split(',')[1].trim(), 'name'))
-        } else {
-          $('#state').val(curr.split(',')[1].trim())
-        }
-      }
-    } else if (home) {
-      $('#city').val(home.split(',')[0])
-      if (home.split(',').length > 1) {
-        if (home.split(',')[1].trim().length === 2) {
-          $('#state').val(abbrState(home.split(',')[1].trim(), 'name'))
-        } else {
-          $('#state').val(home.split(',')[1].trim())
-        }
-      }
     }
+
   }
 
 
@@ -324,13 +331,14 @@ $(document).ready(function() {
       dataType: 'json',
       data: {newBand: JSON.stringify(newBand)},
       success: function (data) {
-        // $('#addBandForm').clear()
-        $('input').val('');
-        $('.guesses').remove()
-        $('.genre-selector').prop('checked', false)
-        $('#state').val('All');
-        $('#bandsList').empty()
-        listBands(data)
+                  // $('#addBandForm').clear()
+                  $('#errorMessage').empty()
+                  $('input').val('');
+                  $('.guesses').remove()
+                  $('.genre-selector').prop('checked', false)
+                  $('#state').val('All');
+                  $('#bandsList').empty()
+                  listBands(data)
               }
 
     })
