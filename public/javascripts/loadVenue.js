@@ -4,11 +4,9 @@ $(document).ready(function() {
 
   let venueId = document.location.href.match(/(\d+)$/)[0]
   let venueData = {}
-  console.log('venueId ', venueId);
 
   $.get(`/api/venues/${venueId}`, data => {
     venueData = data
-    console.log('data');
     showVenue(data)
     getFbInfo(data.url) //maybe not have to do this more than once?
     getSi(data.venue, data.city, data.state)
@@ -36,7 +34,7 @@ $(document).ready(function() {
     $('.info.diy').empty().append(`${diy ? 'This is a diy or not-for-profit venue.' : 'This is not a DIY venue'}`)
     $('#diy').prop('checked', diy )
     $('#diy').next('label').empty().append(`${diy ?  'This is a diy or not-for-profit venue. Uncheck to mark as not DIY' : 'This is not a DIY venue. Check to mark as DIY.'}`)
-    $('#contrib').text(`Contributed by ${contributedBy}`)
+    $('#contrib').text(`Contributed by ${contributedBy === 'Danah Olivetree' ? 'Tour Popsicle' : contributedBy}`)
     //set autofill values for form inputs
     $('input.edit-form').each( function() {
       if (data[this.id]) {
@@ -61,15 +59,18 @@ $(document).ready(function() {
         fbid = fbid.split('-')
         fbid = fbid[fbid.length-1]
       }
-      console.log('fbid ', fbid);
     } else {
       fbid = url.split('.')[1]
       console.log('trying fbid ', fbid);
     }
       $.get(`/token/facebook/venues/${fbid}`, data => {
-        console.log('data' , data);
-        getEvents(data.events.data)
-        checkForBookingEmail(data.about)
+        console.log('fb data ', data);
+        if (data.events) {
+          getEvents(data.events.data)
+        }
+        if (data.about) {
+          checkForBookingEmail(data.about)
+        }
         if (data.emails) {
           data.emails.filter( email => checkForBookingEmail(email))
         }
@@ -78,7 +79,6 @@ $(document).ready(function() {
 
   const getSi = (venue, city, state) => {
     let siQuery = venue.split(' ').join('-') + '-' + city + '-' + state
-    console.log('siQuery ', siQuery);
     $.get(`/token/si/${siQuery}`, ({capacity, ages, genres}) => {
       capacity = Number(capacity)
       if (capacity && Number($('#capacity').val()) !== capacity) {
@@ -86,23 +86,20 @@ $(document).ready(function() {
       }
       let prevAgesVal = $('.info.ages').text().trim()
       if (ages && ages !== '' && prevAgesVal !== ages ) {
-        console.log('prevVal ', prevAgesVal);
         $('#ages').val(ages + ' ' + prevAgesVal).show()
         editOn('ages')
       }
       if (genres) {
         let eachGenre = genres.split(', ')
-        console.log('new genres ', eachGenre);
-        let curr = $('.info.genres').val()
+        let curr = $('.info.genres').text()
         let currentGenres = curr.split(', ')
-        console.log('current genres ', currentGenres);
         let eachNewGenre = eachGenre.filter( genre => {
           return !currentGenres.find( curr => curr.toLowerCase() === genre.toLowerCase()) && genre !== 'All Genres'
         })
-        console.log('eachNewGenre ', eachNewGenre.join(', '));
-        $('#genres').val(eachNewGenre.join(', ')).show()
-        editOn('genres')
-
+        if (eachNewGenre.length > 0) {
+          $('#genres').val(eachNewGenre.join(', ')).show()
+          editOn('genres')
+        }
       }
     })
   }
@@ -116,23 +113,24 @@ $(document).ready(function() {
 {/* <h3> ${venue} </h3> */}
 {/* <button id='editVenue' class='btn btn-default'>Edit All</button> */}
   const getEvents = events => {
-    let upcomingEvents = events.filter( event => (new Date(event.start_time) > new Date()))
-    if (upcomingEvents.length > 0) {
-      let displayEvents = upcomingEvents.map( event => {
+    // let upcomingEvents = events.filter( event => (new Date(event.start_time) > new Date()))
+    if (events.length > 0) {
+      let displayEvents = events.map( event => {
         return `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`
       })
       displayEvents.forEach( event => {
         $('#displayEvents ul').prepend(event)
       })
-    } else {
-      if (events.length > 0) {
-        let displayEvents = events.map( event => `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`)
-        displayEvents.forEach( event => {
-          $('#displayEvents ul').append(event)
-        })
-        $('#displayEvents').prev('div').text('Past FB events:')
-      }
     }
+    // else {
+    //   if (events.length > 0) {
+    //     let displayEvents = events.map( event => `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`)
+    //     displayEvents.forEach( event => {
+    //       $('#displayEvents ul').append(event)
+    //     })
+    //     $('#displayEvents').prev('div').text('Past FB events:')
+    //   }
+    // }
   }
 
   const checkForBookingEmail = (field) => {
@@ -140,7 +138,6 @@ $(document).ready(function() {
     let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
     // let book = /(booking)/gi
     let booking = clean.split(' ').find( el => el.match(em))
-    console.log('booking ', booking);
     if (booking && venueData.email !== booking) {
       $('#email').show().val(booking)
       editOn('email')
@@ -164,13 +161,10 @@ $(document).ready(function() {
         if (thisInput.prop('id') === 'diy' && venueData['diy'] !== $(thisInput).prop('checked')) {
           editedVenue['diy'] = !venueData['diy']
         } else if ($(thisInput).val() !== origVal) {
-          console.log('origVal ', origVal);
-          console.log('currentVal is different', $(thisInput).val());
           let field = $(thisInput).prop('id')
           editedVenue[field] = $(thisInput).val()
         }
           if (Object.keys(editedVenue).length > 0) {
-            console.log('editedVenue had keys, sending to server ');
             sendEditToServer(venueId, editedVenue)
           }
           targ.toggleClass('save').toggleClass('edit').text('Edit')
@@ -203,17 +197,16 @@ $(document).ready(function() {
         let field = val.id
         let newValue = val.value
         let origValue = venueData[field]
-        console.log('capacity ', capacity);
         if (field === 'capacity' && newValue != '' && newValue != origValue) {
-          console.log('actually editing capacity setting it to ', newValue);
+          console.log('editing capacity setting it to ', newValue);
           editedVenue[field] = newValue
         }
         if (field === 'diy' && val.checked !== origValue) {
-          console.log('diy changed ', diy);
+          console.log('changing diy ', diy);
           editedVenue[field] = val.checked
         }
         if (field !== 'diy' && val.value != origValue) {
-          console.log('something other than cap or diy changed ', newValue);
+          console.log(field, 'changed to ', newValue);
           editedVenue[field] = newValue
         }
       })
@@ -254,7 +247,7 @@ const sendEditToServer = (id, edits) => {
     method: 'PUT',
     data: edits,
     success: data => {
-      console.log('data came back from ajax ', data)
+      console.log('edited data came back from server ', data)
       showVenue(data)
     },
     fail: err => {
