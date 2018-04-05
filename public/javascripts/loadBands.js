@@ -31,8 +31,8 @@ $(document).ready(function() {
             let artistUri = item.uri
             // let showSpotify = `<div class='col'><iframe src=https://open.spotify.com/embed?uri=${artistUri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></div>`
             // $(showSpotify).insertAfter(target)
-            let showItAll =  `<div class='form-group col-3 guesses'>
-                      <div class="form-radio-inline">
+            let showItAll =  `<div class='form-group col-lg-3 col-12 guesses'>
+                      <div class="form-radio-inline mx-auto">
                         <div class='form-radio col-12'>
                           <label class="form-radio-label" for="radio${i}">
                             <iframe src=https://open.spotify.com/embed?uri=${artistUri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
@@ -49,7 +49,18 @@ $(document).ready(function() {
             if (arr.length === 1) {
               $('input.guess').prop("checked", true)
             }
+
           })
+
+          $(`<div class="form-row"><div class="input-group mb-3 col-12 col-md-8">
+            <div class="d-none d-md-inline-block input-group-prepend">
+              <span class="input-group-text">Wrong artist? Spotify URL:</span>
+            </div>
+            <label for='spotifyOther' class="control-label col-3 d-md-none col-form-label" >or Spotify URL:</label>
+            <input type="url" id='spotifyOther' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          </div></div>`).insertAfter($(target))
+
+          $('#spotifyOther').on('change', e => $('input.guess').prop("checked", false))
         }
       },
       error: err => {
@@ -308,8 +319,12 @@ $(document).ready(function() {
       newBand.bandcamp = checkUrl(formData.bandcamp.value)
     }
     // newBand.spotify = formData.spotify.value && checkUrl(formData.spotify.value)
-    newBand.spotify = $('.guess:checked').val()
-
+    let spot = $('.guess:checked').val()
+    if (spot) {
+      newBand.spotify = $('.guess:checked').val()
+    } else if ($('#spotifyOther').val()) {
+      newBand.spotify = $('#spotifyOther').val()
+    }
     return newBand
   }
 

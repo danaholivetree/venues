@@ -10,18 +10,21 @@ $(document).ready(function() {
     showVenue(data)
     getFbInfo(data.url) //maybe not have to do this more than once?
     getSi(data.venue, data.city, data.state)
+    editSingleOn()
+    submitFormOff()
   }).fail( err => {
     console.log('error ' , err);
   })
 
   const showVenue = data => {
+    venueData = data
     console.log('gotData ', data);
     const {id, venue, url, state, city, diy, capacity, email, sound, genres, type, crowd, ages, pay, promo, accessibility, contributedBy} = data
     //empty and append no matter what OR check if values have changed first , which is more intensive
     $('.container > h3').empty().append(venue)
     $('.info.location').empty().append(`${city}, ${state}`)
     $('.info.url').empty().append(`<a href=${url} target='_blank'>${url}</a>`)
-    $('.info.email').empty().append(`${email ? email + `  <button class="btn btn-default thumb btn-copy js-tooltip js-copy" data-toggle="tooltip" data-placement="top" data-copy=${email} title="Copy to clipboard"><svg class="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="18" height="18" viewBox="0 0 24 24"><path d="M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg></button>` : ''}`)
+    $('.info.email').empty().append(`${email ? email + `  <button type="button" class="btn btn-default thumb btn-copy js-tooltip js-copy" data-toggle="tooltip" data-placement="top" data-copy=${email} title="Copy to clipboard"><svg class="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="18" height="18" viewBox="0 0 24 24"><path d="M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg></button>` : ''}`)
     $('.info.capacity').empty().append(`${(capacity !== 0) && capacity ? capacity : ''}`)
     $('.info.genres').empty().append(`${genres ? genres : ''}`)
     $('.info.type').empty().append(`${type ? type : ''}`)
@@ -83,6 +86,7 @@ $(document).ready(function() {
       capacity = Number(capacity)
       if (capacity && Number($('#capacity').val()) !== capacity) {
         $('#capacity').val(capacity).show()
+        editOn('capacity')
       }
       let prevAgesVal = $('.info.ages').text().trim()
       if (ages && ages !== '' && prevAgesVal !== ages ) {
@@ -106,7 +110,7 @@ $(document).ready(function() {
 
   const editOn = (id) => {
     let thisButton = $(`#${id}`).closest('div').prev('div').children().first()
-    thisButton.text('Save').toggleClass('save').toggleClass('edit')
+    thisButton.text('Save').toggleClass('save').toggleClass('edit').prop('type', 'submit')
     thisButton.next().attr( "style", "display: block;" )
   }
 
@@ -122,15 +126,6 @@ $(document).ready(function() {
         $('#displayEvents ul').prepend(event)
       })
     }
-    // else {
-    //   if (events.length > 0) {
-    //     let displayEvents = events.map( event => `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`)
-    //     displayEvents.forEach( event => {
-    //       $('#displayEvents ul').append(event)
-    //     })
-    //     $('#displayEvents').prev('div').text('Past FB events:')
-    //   }
-    // }
   }
 
   const checkForBookingEmail = (field) => {
@@ -144,36 +139,46 @@ $(document).ready(function() {
   }
 }
 
+  const editSingleOn = () => {
     $('.edit-btn').click( e => {
       e.preventDefault()
       let targ = $(e.currentTarget)
-      let focus = $('.btn:focus')
-      console.log('.edit-btn was pressed ', targ);
-      console.log('focus ', focus);
       let thisInput = targ.closest('div').next().children('input')
+
       if (targ.hasClass('edit')) {
-        thisInput.addClass('edit-single').show()
-        targ.next().attr( "style", "display: block;" )
-        targ.text('Save').toggleClass('save').toggleClass('edit').focus()
+        clickedEdit(targ, thisInput)
+        // thisInput.addClass('edit-single').show() //show text field
+        // targ.next().attr( "style", "display: block;" ) //show cancel button
+        // targ.text('Save').toggleClass('save').toggleClass('edit').prop('type', 'submit').focus() //edit turns into save type submit
       } else if (targ.hasClass('save')) {
-        let origVal = venueData[$(thisInput).prop('id')]
-        let editedVenue = {}
-        if (thisInput.prop('id') === 'diy' && venueData['diy'] !== $(thisInput).prop('checked')) {
-          editedVenue['diy'] = !venueData['diy']
-        } else if ($(thisInput).val() !== origVal) {
-          let field = $(thisInput).prop('id')
-          editedVenue[field] = $(thisInput).val()
-        }
-          if (Object.keys(editedVenue).length > 0) {
-            sendEditToServer(venueId, editedVenue)
-          }
-          targ.toggleClass('save').toggleClass('edit').text('Edit')
-          targ.next().hide()
-          targ.closest('div').next().children('input').hide()
+        clickedSave(targ, thisInput)
+        // console.log('venueData was ', venueData);
+        // let origVal = venueData[$(thisInput).prop('id')]
+        // console.log('origVal ', origVal);
+        // let editedVenue = {}
+        // if (thisInput.prop('id') === 'diy' && venueData['diy'] !== $(thisInput).prop('checked')) {
+        //   editedVenue['diy'] = !venueData['diy']
+        // } else if ($(thisInput).val() !== origVal) {
+        //   console.log('newval ', $(thisInput).val());
+        //   field = $(thisInput).prop('id')
+        //   editedVenue[field] = $(thisInput).val()
+        //   venueData[field] = editedVenue[field]
+        //   console.log('should be sending to server ', editedVenue[field]);
+        // }
+        // if (Object.keys(editedVenue).length > 0) {
+        //   sendEditToServer(venueId, editedVenue)
+        //
+        // }
+        // console.log('venueData is now ',venueData);
+        // targ.toggleClass('save').toggleClass('edit').text('Edit').prop('type', 'button')
+        // // targ.next().val($(thisInput).val()).hide()
+        // if (field === 'diy') {
+        //   $(`.info.${field}`).text(`${diy ? 'This is a diy or not-for-profit venue.' : 'This is not a DIY venue'}`)
+        // }
+        // $(`.info.${field}`).text($(thisInput).val())
+        // targ.closest('div').next().children('input').hide()
       } else if (targ.hasClass('cancel-edit')) {
-          targ.closest('div').next().children('input').hide()
-          targ.closest('div').children('.save').text('Edit').toggleClass('save').toggleClass('edit')
-          targ.hide()
+        clickedCancel(targ, thisInput)
       }
 
       // $('.edit-single').submit( e => {
@@ -181,52 +186,95 @@ $(document).ready(function() {
       //   console.log('shouldnt have editsingle class anymore', $(e.currentTarget).hasClass('edit-single'));
       // })
     })
+  }
 
-    $('.edit-form').click( e => {
-      console.log('focus is on ', $('.btn:focus'));
-      console.log('active element', $( document.activeElement ));
-    })
+  const editSingleOff = () => {
+    $('.edit-btn').off('click')
+  }
 
-    $('#editVenueForm').submit(e => {
-      e.preventDefault()
-      console.log('edit venue form was submitted');
-      let venueId = document.location.href.match(/(\d+)$/)[0]
-      let inputs = $(this).find('input')
-      let editedVenue = {}
-      $(inputs).each(function (i, val) {
-        let field = val.id
-        let newValue = val.value
-        let origValue = venueData[field]
-        if (field === 'capacity' && newValue != '' && newValue != origValue) {
-          console.log('editing capacity setting it to ', newValue);
-          editedVenue[field] = newValue
-        }
-        if (field === 'diy' && val.checked !== origValue) {
-          console.log('changing diy ', diy);
-          editedVenue[field] = val.checked
-        }
-        if (field !== 'diy' && val.value != origValue) {
-          console.log(field, 'changed to ', newValue);
-          editedVenue[field] = newValue
-        }
-      })
-      console.log('editedVenue to be sent to server ', editedVenue);
+  const clickedEdit = (editBtn, thisInput) => {
+    thisInput.show() //show text field
+    editBtn.next().attr( "style", "display: block;" ) //show adjacent cancel button
+    editBtn.text('Save').toggleClass('save').toggleClass('edit').prop('type', 'submit').focus() //edit turns into save type submit
+  }
+
+  const clickedSave = (btn, thisInput) => {
+    let origVal = venueData[$(thisInput).prop('id')]
+    let field = $(thisInput).prop('id')
+    let editedVenue = {}
+    let newVal = (field === 'diy') ? $(thisInput).prop('checked') : $(thisInput).val()
+    if (newVal !== origVal) {
+      editedVenue[field] = newVal
       sendEditToServer(venueId, editedVenue)
-      inputs.hide()
-      $('.edit').show()
-      $('#editVenue').text('Edit All')
-      $('#cancelEdits').hide()
-    })
+      venueData[field] = editedVenue[field]
+    }
+    if (field === 'diy') {
+      $(`.info.${field}`).text(`${venueData.diy ? 'This is a diy or not-for-profit venue.' : 'This is not a DIY venue'}`)
+    } else {
+      $(`.info.${field}`).text($(thisInput).val())
+    }
+    btn.toggleClass('save').toggleClass('edit').text('Edit').prop('type', 'button')
+    thisInput.hide()
+    btn.next().hide()
+  }
+
+  const clickedCancel = (btn, thisInput) => {
+    thisInput.hide()
+    btn.prev('.save').text('Edit').toggleClass('save').toggleClass('edit').prop('type', 'button')
+    btn.hide()
+  }
+
+
+    // $('.edit-form').click( e => {
+    //   console.log('focus is on ', $('.btn:focus'));
+    //   console.log('active element', $( document.activeElement ));
+    // })
+
+    const submitFormOn = () => {
+      $('#editVenueForm').submit(e => {
+        e.preventDefault()
+        console.log('edit venue form was submitted');
+        let venueId = document.location.href.match(/(\d+)$/)[0]
+        let inputs = $(this).find('input')
+        let editedVenue = {}
+        $(inputs).each(function (i, val) {
+          let field = val.id
+          let newValue = val.value
+          let origValue = venueData[field]
+          if (field === 'capacity' && newValue != '' && newValue != origValue) {
+            editedVenue[field] = newValue
+          }
+          if (field === 'diy' && val.checked !== origValue) {
+            editedVenue[field] = val.checked
+          }
+          if (field !== 'diy' && val.value != origValue) {
+            editedVenue[field] = newValue
+          }
+        })
+        console.log('editedVenue to be sent to server ', editedVenue);
+        sendEditToServer(venueId, editedVenue, all)
+        inputs.hide()
+        $('.edit').show()
+        $('#editVenue').text('Edit All')
+        $('#cancelEdits').hide()
+      })
+    }
+
+    const submitFormOff = () => {
+      $('#editVenueForm').off('submit')
+    }
 
   $('#editVenue').click( e => {
     let targ = $(e.currentTarget)
     e.preventDefault()
     if (targ.hasClass("edit-all")) {
+      editSingleOff()
       $('.edit-form').show()
       $('.save').toggleClass('save').toggleClass('edit').text('Edit')
       $('.edit-btn').hide()
       $('#editVenue').text('Cancel').addClass('cancel-all').removeClass('edit-all')
     } else if (targ.hasClass("cancel-all")) {
+      editSingleOn()
       $('.edit-form').hide()
       $('.edit').show()
       $('#editVenue').text('Edit All').removeClass('cancel-all').addClass('edit-all')
@@ -241,14 +289,16 @@ $(document).ready(function() {
     $('#cancelEdits').hide()
   })
 
-const sendEditToServer = (id, edits) => {
+const sendEditToServer = (id, edits, all) => {
   $.ajax({
     url: `/api/venues/${id}`,
     method: 'PUT',
     data: edits,
     success: data => {
       console.log('edited data came back from server ', data)
-      showVenue(data)
+      if (all) {
+        showVenue(data) //might be able to avoid this
+      }
     },
     fail: err => {
       console.log(err);

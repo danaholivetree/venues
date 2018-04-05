@@ -60,6 +60,7 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
   // console.log('attempting ', uri+qs);
   request.get({url: uri+qs+auth, json: true}, (error, response, data) => {
     if (!error && response.statusCode === 200) {
+      console.log(data)
       res.send(data)
     } else if (data.error.message) {
       // console.log('error, ', data.error.message);
