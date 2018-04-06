@@ -109,7 +109,7 @@ router.post('/logout', (req, res, next) => {
   res.clearCookie('token')
   res.clearCookie('user')
   res.send({
-    redirectURL: './'
+    redirectURL: '../'
   })
 })
 

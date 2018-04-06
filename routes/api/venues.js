@@ -5,7 +5,7 @@ const boom = require('boom')
 
 router.get('/', (req, res, next) => {
   return knex('venue_votes')
-    .select(['venues.id', 'state', 'url', 'city', 'venue', 'capacity', 'diy', 'seated', 'up', 'down', 'vote'])
+    .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'seated', 'up', 'down', 'vote'])
     .rightOuterJoin('venues', function() {
       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
     })

@@ -1,6 +1,6 @@
 $(document).ready(function() {
   const {abbrState} = usStates
-  const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
+  const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage, copyToClipboard} = helpers
 
   $.get(`/api/venues`, (data, status) => {
     // console.log('got data ', data);
@@ -13,12 +13,21 @@ $(document).ready(function() {
 
       // let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
       let displayVenue = `<a href='/venues/${venue.id}'>${venue.venue}${venue.diy ? '*' : ''}</a>`
+      console.log('venue.email ', venue.email);
+      let displayEmail = venue.email ?
+      `<button type="button" class="btn btn-default thumb btn-copy js-tooltip js-copy"
+        data-toggle="tooltip" data-placement="top" data-copy=${venue.email} title="Copy to clipboard">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="18" height="18" viewBox="0 0 24 24">
+          <path d="M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" />
+        </svg>
+      </button>` : ''
       $('#venuesList').append($(`
 
         <tr scope='row' data-id=${venue.id} class='venue-row'>
           <td>${abbrState(venue.state, 'abbr')}</td>
           <td>${venue.city}</td>
           <td>${displayVenue}</td>
+          <td class='d-none d-md-table-cell'>${displayEmail}</td>
           <td class='d-none d-md-table-cell'>${venue.capacity ? venue.capacity : ''}</td>
           <td class='d-none d-md-table-cell' id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
           <td class='d-none d-md-table-cell' id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
@@ -26,12 +35,20 @@ $(document).ready(function() {
 
       `))
 
+
       if (venue.vote === 'up') {
         $(`#upVote${venue.id} button`).css("color", "green")
       }
       if (venue.vote === 'down') {
         $(`#downVote${venue.id} button`).css("color", "red")
       }
+    })
+    $('.js-tooltip').tooltip()
+    $('.js-copy').click( e => {
+      e.preventDefault()
+      var text = $(e.currentTarget).attr('data-copy')
+      var el = $(e.currentTarget)
+      copyToClipboard(text, el)
     })
   }
   const setThumbListener = () => {

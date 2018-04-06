@@ -12,8 +12,7 @@ $(document).ready(() => {
     $.post('/auth/register', {name, email, password}, data => {
         window.location = data.redirectURL
     }).fail( err => {
-      $('#registerErrorMessage').html(`<div class="alert alert-danger" role="alert">
-        ${err.responseText}</div>`)
+      $('#registerErrorMessage').html(`<div class="alert alert-danger" role="alert">${err.responseText}</div>`)
     })
 
 
