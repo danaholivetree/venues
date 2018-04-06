@@ -36,7 +36,6 @@ $(document).ready(function() {
     $('.info.promo').empty().append(`${promo ? promo : ''}`)
     $('.info.diy').empty().append(`${diy ? 'This is a diy or not-for-profit venue.' : 'This is not a DIY venue'}`)
     $('#diy').prop('checked', diy )
-    $('#diy').next('label').empty().append(`${diy ?  'This is a diy or not-for-profit venue. Uncheck to mark as not DIY' : 'This is not a DIY venue. Check to mark as DIY.'}`)
     $('#contrib').text(`Contributed by ${contributedBy === 'Danah Olivetree' ? 'Tour Popsicle' : contributedBy}`)
     //set autofill values for form inputs
     $('input.edit-form').each( function() {
@@ -45,7 +44,7 @@ $(document).ready(function() {
         this.value = data[this.id]
       }
     })
-
+    // $('#diy').next('label').empty().append(`${diy ?  'This is a diy or not-for-profit venue. Uncheck to mark as not DIY' : 'This is not a DIY venue. Check to mark as DIY.'}`)
     $('.js-tooltip').tooltip()
     $('.js-copy').click( (e) => {
       e.preventDefault()
@@ -210,7 +209,14 @@ $(document).ready(function() {
   }
 
   const submitFormOn = () => {
-    // $('#editVenueForm').submit(e => {
+    $('.edit-form').keydown( function(e) {
+      if (e.key === 'Enter') {
+        $(this).closest('.row').next('.row').find('input.edit-form').focus()
+        if ($(this).prop('id') === 'accessibility') {
+          $("#submitEdits").focus()
+        }
+      }
+    })
     $('#submitEdits').click( e => {
       e.preventDefault()
       console.log('edit venue form was submitted');
@@ -231,8 +237,11 @@ $(document).ready(function() {
           editedVenue[field] = newValue
         }
       })
-      console.log('editedVenue to be sent to server ', editedVenue);
-      sendEditToServer(venueId, editedVenue, true)
+
+      if (Object.keys(editedVenue).length > 0) {
+        console.log('editedVenue about to be sent to server', editedVenue);
+        sendEditToServer(venueId, editedVenue, true)
+      }
       inputs.hide()
       $('.edit').show()
       $('#editVenue').text('Edit All')
