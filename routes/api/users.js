@@ -9,6 +9,7 @@ const boom = require('boom')
 router.get('/', function(req, res, next) {
   knex('users')
     .select('*')
+    .orderBy('id', 'asc')
     .then( users => {
       res.send(users)
     })
