@@ -25,6 +25,7 @@ $(document).ready(function() {
           let reordered = items.sort( (a,b) => a.followers.total < b.followers.total)
           $('#spotifyGuess').children().first().show()
           $('.guesses').remove()
+          $('#wrongSpotify').remove()
           reordered.forEach( (item, i, arr) => {
             let artistId = item.id
             let artistSpotify = item.external_urls.spotify
@@ -52,7 +53,7 @@ $(document).ready(function() {
 
           })
 
-          $(`<div class="form-row"><div class="input-group mb-3 col-12 col-md-8">
+          $(`<div id='wrongSpotify' class="form-row"><div class="input-group mb-3 col-12 col-md-8">
             <div class="d-none d-md-inline-block input-group-prepend">
               <span class="input-group-text">Wrong artist? Spotify URL:</span>
             </div>
