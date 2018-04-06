@@ -11,6 +11,7 @@ var helpers = require('express-helpers')
 const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_KEY
 const bcrypt = require('bcrypt')
+const knex = require('./knex')
 
 
 var renders = require('./routes/renders')
@@ -41,7 +42,29 @@ app.use(express.static(path.join(__dirname, 'public')));
 const authorize = (req, res, next) => {
   jwt.verify(req.cookies.token, secret, (err, payload) => {
     if (!req.cookies.token) {
-      res.render("login")
+      let users
+      let venues
+      let bands
+      return knex('users')
+        .count('id')
+        .first()
+        .then( usersCount => {
+          users = usersCount.count
+          return knex('venues')
+            .count('id')
+            .first()
+            .then( venuesCount => {
+              venues = venuesCount.count
+              return knex('bands')
+                .count('id')
+                .first()
+                .then( bandsCount => {
+                  bands = bandsCount.count
+                  res.render("login", {users, venues, bands})
+                })
+            })
+
+        })
     } else {
       next()
     }
