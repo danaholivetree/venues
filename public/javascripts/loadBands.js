@@ -146,13 +146,13 @@ $(document).ready(function() {
     const params = {state, city, band, genres}
     const queryString = $.param(params)
     $.get(`/api/bands/q?${queryString}`, (data, status) => {
-      if (state !== 'All') {
-        $('.stateDisplay').text(`Bands in ${state}`).show()
+      if (band) {
+        $('.stateDisplay').text(`Bands matching '${band}'`).show()
       } else if (city) {
         $('.stateDisplay').text(`Bands in ${city}`).show()
-      } else if (band) {
-        $('.stateDisplay').text(`Bands matching '${band}'`).show()
-      }
+      } else if (state !== 'All') {
+        $('.stateDisplay').text(`Bands in ${state}`).show()
+      } 
         $('#bandsList').empty()
         $('.genre-selector').prop('checked', false) //maybe dont want these three
         $('input[type="text"], textarea').val('');
