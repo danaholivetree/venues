@@ -131,9 +131,13 @@ $(document).ready(function() {
   const checkForBookingEmail = (field) => {
     let clean = field.replace(/(\r\n|\n|\r)/gm, " ");
     let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
+    // will add test for if found email contains 'booking' or if there may be a typo
+    // in already-listed email address
     // let book = /(booking)/gi
+    // let bookingEm = /(booking)+@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/gi
+
     let booking = clean.split(' ').find( el => el.match(em))
-    if (booking && venueData.email !== booking) {
+    if (booking && !venueData.email) {
       $('#email').show().val(booking)
       editOn('email')
   }

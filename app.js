@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_KEY
 const bcrypt = require('bcrypt')
 const knex = require('./knex')
+const request = require('request')
 
 
 var renders = require('./routes/renders')
@@ -39,38 +40,63 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// const authorize = (req, res, next) => {
+//   jwt.verify(req.cookies.token, secret, (err, payload) => {
+//     if (!req.cookies.token) {
+//       let users
+//       let venues
+//       let bands
+//       return knex('users')
+//         .count('id')
+//         .first()
+//         .then( usersCount => {
+//           users = usersCount.count
+//           return knex('venues')
+//             .count('id')
+//             .first()
+//             .then( venuesCount => {
+//               venues = venuesCount.count
+//               return knex('bands')
+//                 .count('id')
+//                 .first()
+//                 .then( bandsCount => {
+//                   bands = bandsCount.count
+//                   res.render("login", {users, venues, bands})
+//                 })
+//             })
+//
+//         })
+//     } else {
+//       next()
+//     }
+//   })
+// }
+
 const authorize = (req, res, next) => {
-  jwt.verify(req.cookies.token, secret, (err, payload) => {
-    if (!req.cookies.token) {
-      let users
-      let venues
-      let bands
-      return knex('users')
-        .count('id')
-        .first()
-        .then( usersCount => {
-          users = usersCount.count
-          return knex('venues')
-            .count('id')
-            .first()
-            .then( venuesCount => {
-              venues = venuesCount.count
-              return knex('bands')
-                .count('id')
-                .first()
-                .then( bandsCount => {
-                  bands = bandsCount.count
-                  res.render("login", {users, venues, bands})
-                })
-            })
-
-        })
-    } else {
-      next()
-    }
-  })
+  console.log('going through auth');
+  if (!req.cookies.user) {
+    console.log('there was no user cookie, rendering login');
+    res.render('login') //should i have this redirect to './' ?
+  } else if (req.cookies.user.accessToken) {
+    console.log('there was an accessToken');
+    let path = `https://graph.facebook.com/debug_token?input_token=`
+    request.get(
+      {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
+      (error, response, data) => {
+        let parsedData = JSON.parse(data)
+        if (parsedData.data.is_valid) {
+          next()
+        } else {
+          console.log(parsedData.data.error.message);
+          // special handling for each type of error?
+          // { code: 190,
+          //   message: 'Error validating access token: The session is invalid because the user logged out.',
+          //   subcode: 467 }
+          res.render('login')
+        }
+    })
+  }
 }
-
 app.use('/auth', auth)
 app.use(authorize)
 app.use('/', renders)

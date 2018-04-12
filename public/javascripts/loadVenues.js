@@ -13,7 +13,6 @@ $(document).ready(function() {
 
       // let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
       let displayVenue = `<a href='/venues/${venue.id}'>${venue.venue}${venue.diy ? '*' : ''}</a>`
-      console.log('venue.email ', venue.email);
       let displayEmail = venue.email ?
       `<button type="button" class="btn btn-default thumb btn-copy js-tooltip js-copy"
         data-toggle="tooltip" data-placement="top" data-copy=${venue.email} title="Copy to clipboard">
@@ -115,9 +114,7 @@ $(document).ready(function() {
     }
     const params = {state, city, venue, capacity}
     const queryString = $.param(params)
-    console.log('queryString ', queryString);
     $.get(`/api/venues/q?${queryString}`, (data, status) => {
-      console.log('data length ', data.length);
       if (state !== 'All') {
         $('.stateDisplay').text(`Venues in ${state}`).show()
       } else if (city) {
@@ -148,7 +145,6 @@ $(document).ready(function() {
 
   $('#addVenue').click( e => {
     e.preventDefault()
-    console.log('clicked add venue');
       $('#venueSearchForm').toggle(false)
       $('#addVenueForm').toggle(true)
       $('#venue').focus()
@@ -162,22 +158,40 @@ $(document).ready(function() {
     if ($('#venue').val()) {
       let venue = e.currentTarget.value
       $('#venue').val(makeUppercase(e.currentTarget.value))
-      console.log('should be trying fb search for ', venue, 'after geting rid of white space ', venue.split(" ").join(''));
-      $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, ({name,about,link,website,single_line_address,emails,location,events}) => {
-        console.log('location');
-        if (location) {
-          console.log('location ', location);
-          $('#checkVenueModal .modal-body').text(`Do you mean ${name} in ${location.city}, ${location.state}?`)
-          $('#checkVenueModal').modal('show');
-          $('#acceptVenue').click( e => {
-            lookForFbInfo(about, link, emails, location)
-            $('#checkVenueModal').modal('hide');
-            lookForSiInfo(venue, location)
-          })
+      $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, res => {
+        if (res && !res.error) {
+          let {name,about,link,website,single_line_address,emails,location,events} = res
+          if (location) {
+            $('#checkVenueModal .modal-body').text(`Do you mean ${name} in ${location.city}, ${location.state}?`)
+            $('#checkVenueModal').modal('show');
+            $('#acceptVenue').click( e => {
+              lookForFbInfo(about, link, emails, location)
+              $('#checkVenueModal').modal('hide');
+              lookForSiInfo(venue, location)
+            })
+          }
+        } else {
+          console.log(res.error.message);
         }
-
-
       })
+      //tried to do this with the SDK. still needs valid app access token, it seems.
+      // FB.api(`/${venue.split(" ").join('')}`, 'GET', {fields: 'name,about,link,website,single_line_address,emails,location,events.time_filter(upcoming){name,start_time,id}'}, res => {
+        // if (res && !res.error) {
+        //   let {name,about,link,website,single_line_address,emails,location,events} = res
+      //     if (location) {
+      //       console.log('location ', location);
+      //       $('#checkVenueModal .modal-body').text(`Do you mean ${name} in ${location.city}, ${location.state}?`)
+      //       $('#checkVenueModal').modal('show');
+      //       $('#acceptVenue').click( e => {
+      //         lookForFbInfo(about, link, emails, location)
+      //         $('#checkVenueModal').modal('hide');
+      //         lookForSiInfo(venue, location)
+      //       })
+      //     }
+      //   } else {
+      //     console.log(res.error.message);
+      //   }
+      // }) // close api call
     }
   })
 
@@ -197,9 +211,14 @@ $(document).ready(function() {
       } else {
         fbid = url.split('.')[1]
       }
-      $.get(`/token/facebook/venues/${fbid}`, ({name,about,link,website,single_line_address,emails,location,events}) => {
-        lookForFbInfo(about, link, emails, location)
-        lookForSiInfo(name, location)
+      $.get(`/token/facebook/venues/${fbid}`, res => {
+        if (res && !res.error) {
+          let {name,about,link,website,single_line_address,emails,location,events} = res
+          lookForFbInfo(about, link, emails, location)
+          lookForSiInfo(name, location)
+        } else {
+          console.log(res.error.message)
+        }
       })
     }
   })
@@ -217,11 +236,11 @@ $(document).ready(function() {
     }
 
     let booking = checkForBookingEmail(about)
-    console.log('booking from about ', booking);
-    if (emails) {
-      booking = emails.filter( email => checkForBookingEmail(email))
+    if (!booking) {
+      if (emails) {
+        booking = emails.filter( email => checkForBookingEmail(email))
+      }
     }
-    console.log('may have gotten booking from emails ', booking);
     if (booking && !$('#email').val()) {
       $('#email').val(booking)
     }
@@ -235,10 +254,7 @@ $(document).ready(function() {
 
   const lookForSiInfo = (venue, location) => {
     let siQuery = venue.split(' ').join('-') + '-' +location.city+ '-' + abbrState(location.state, 'name')
-    console.log('siQuery ', siQuery);
     $.get(`/token/si/${siQuery}`, data => {
-      console.log('data came back from scrape ', data);
-      console.log(Number(data.capacity));
       if (data.capacity) {
         $('#capacity').val(Number(data.capacity))
       }
@@ -287,7 +303,6 @@ $(document).ready(function() {
       // $('#venuesList').empty()
       // listVenues(data)
       if (!data.id) {
-        console.log('error data ' ,data);
           return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${data}</div>`)
       } else {
         window.location=`/venues/${data.id}`
