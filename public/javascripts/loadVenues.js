@@ -116,12 +116,12 @@ $(document).ready(function() {
     const queryString = $.param(params)
     $.get(`/api/venues/q?${queryString}`, (data, status) => {
       if (venue) {
-        $('.stateDisplay').text(`Venues matching '${venue}'`).show()
+        $('.stateDisplay').text(`Venues matching '${makeUppercase(venue)}'`).show()
       } else if (city) {
-        $('.stateDisplay').text(`Venues in ${city}`).show()
+        $('.stateDisplay').text(`Venues in ${makeUppercase(city)}`).show()
       } else if (state !== 'All') {
         $('.stateDisplay').text(`Venues in ${state}`).show()
-      } 
+      }
         $('#venuesList').empty()
         $('input[type="checkbox"]').prop('checked', false);
         $('#capAny').prop('checked', true) //maybe dont want these three
