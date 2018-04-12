@@ -19,6 +19,9 @@ router.get('/venues/:id', function(req, res, next) {
   let id = Number(req.params.id)
   res.render(`venue`)
 })
+router.get('/dash', (req, res, next) => {
+  res.render('dash')
+})
 // router.get('/users', function(req, res, next) {
 //   res.render('users')
 // })

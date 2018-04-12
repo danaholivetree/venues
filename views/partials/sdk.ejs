@@ -1,3 +1,4 @@
+
 <body>
   <div id="fb-root"></div>
     <script>(function(d, s, id) {
@@ -17,22 +18,8 @@
       });
 
       FB.AppEvents.logPageView();
-
-
     }
-    // const checkInitialLoginState = () => {
-    //   console.log('checking initial login state');
-    //   FB.getLoginStatus( response => {
-    //     if (response.status === 'connected') {
-    //       getUserInfo(response.authResponse)
-    //     } else {
-    //       console.log(window.location)
-    //       if (window.location.pathname !== '/') {
-    //         window.location = '/'
-    //       }
-    //     }
-    //   })
-    // }
+
     const getLoginStatus = () => {
       FB.getLoginStatus(function(response) {
         console.log(response.status);
@@ -42,6 +29,7 @@
         }
       })
     }
+
     const getUserInfo = (res) => {
       let {accessToken} = res
       FB.api(`/me`, 'GET', {fields: 'first_name, last_name, email, id'}, resp => {
@@ -53,10 +41,6 @@
           window.location.reload()
         })
       })
-      // } else {
-      //   console.log('there was no access Token');
-      // }
-
     }
 
     const logout = () => {
@@ -64,15 +48,13 @@
       FB.getLoginStatus( res => {
         console.log('getting login status ', res);
         if (res.status !== 'connected') {
-          // window.location = './'
           console.log('wasnt connected anyway');
         } else {
           console.log('gonna do auth logout');
-
-            $.post(`/auth/logout`, (data, status) => {
-              console.log(' /auth/logout + deleted cookie')
-              window.location = data.redirectURL
-            })
+          $.post(`/auth/logout`, (data, status) => {
+            console.log(' /auth/logout + deleted cookie')
+            window.location = data.redirectURL
+          })
 
         }
       })
