@@ -79,22 +79,30 @@ const authorize = (req, res, next) => {
     res.render('login') //should i have this redirect to './' ?
   } else if (req.cookies.user.accessToken) {
     console.log('there was an accessToken');
-    let path = `https://graph.facebook.com/debug_token?input_token=`
-    request.get(
-      {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
-      (error, response, data) => {
-        let parsedData = JSON.parse(data)
-        if (parsedData.data.is_valid) {
-          next()
-        } else {
-          console.log(parsedData.data.error.message);
-          // special handling for each type of error?
-          // { code: 190,
-          //   message: 'Error validating access token: The session is invalid because the user logged out.',
-          //   subcode: 467 }
-          res.render('login')
-        }
-    })
+    // let path = `https://graph.facebook.com/debug_token?input_token=`
+    // request.get(
+    //   {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
+    //   (error, response, data) => {
+    //     let parsedData = JSON.parse(data)
+    //     if (parsedData.data.is_valid) {
+    //       next()
+    //     } else {
+    //       console.log(parsedData.data.error);
+    //       let err = parsedData.data.error.message
+    //       let subcode = parsedData.data.error.subcode
+    //       if (subcode === 463) {
+    //         //token expired
+    //
+    //       }
+    //       if (subcode === 467)  {
+    //         //user logged out of Facebook
+    //
+    //       }
+    //       res.render('login')
+    //
+    //     }
+    // })
+    next()
   }
 }
 app.use('/auth', auth)

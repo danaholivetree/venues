@@ -94,7 +94,10 @@ router.get('/:id', (req, res, next) => {
     .where('venues.id', Number(req.params.id))
     .leftOuterJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
     .rightOuterJoin('users', 'users.id', 'venues.contributed_by')
-    .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'venues.email', 'city', 'capacity','genres_booked as genres', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo',  'users.name as contributedBy', 'sound')
+    .leftOuterJoin('venue_votes', function() {
+      this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+    })
+    .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'vote', 'venues.email', 'city', 'capacity','genres_booked as genres', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo',  'users.name as contributedBy', 'sound')
     .first()
     .then( venue => {
       console.log('got the venue ', venue);
