@@ -42,7 +42,7 @@ router.post('/', (req, res, next) => {
           return knex('venue_votes')
             .where('user_id', userId).andWhere('venue_id', venueId)
             .update('vote', vote)
-            .returning('*')
+            .returning('vote')
             .then( blah => {
               let thisVote = (vote === 'up') ? 'up' : 'down'
               let oldVote =  (vote ==='up') ? 'down' : 'up'
