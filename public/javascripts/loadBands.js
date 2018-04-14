@@ -92,7 +92,7 @@ $(document).ready(function() {
 
 
           <td class='d-none d-md-table-cell '><span class='mx-auto'>${displayBandcamp}</span></td>
-          <td>${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit;"/>` : ''}</td>
+          <td>${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''}</td>
         </tr>`))
         if (starred) {
          $(`.star_col${starred} i`).css("color", "lightblue")
