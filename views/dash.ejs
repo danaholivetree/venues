@@ -6,18 +6,18 @@
     <div class='container-fluid'>
       <div class='row intro'>
 
-          3. If you have venues you know or bands you love that aren't in the database, please add them, and feel free to upvote them
-          to show support. The goal of this database is not to have EVERYTHING EVER listed. We want USEFUL information that will help
-          us have better shows and better experiences booking tours.
-        </p>
+
       </div>
       <div class='row'>
         <div class='dash col-4'>
-          <h3>venues i've voted on</h3>
-          <table id='votedDash' class='table table-sm'>
-            <tbody id='dashVotes'>
-            </tbody>
-          </table>
+          <select id='dashSelect'>
+            <!-- <option value='bands'>bands i like</option> -->
+            <option value='venuesUp'>venues i like</option>
+            <option value='venuesDown'>venues i don't like</option>
+            <option value='venuesBookmarked'>venues i've bookmarked</option>
+            <option value='bandsBookmarked'>bands i've bookmarked</option>
+          </select>
+          <button id='showDashTable' type='button' classs='btn big-btn'>View</button>
         </div>
 
         <!-- <div class='dash col'>
@@ -32,11 +32,15 @@
         </div>
 
         <div class='dash col'>
-
+          <h3 id='dashTableTitle'></h3>
+          <table id='dashTable' class='table table-sm'>
+            <tbody id='dashTableBody'>
+            </tbody>
+          </table>
         </div>
       </div>
 
-    </div>
+
     <script src='./javascripts/dash.js'></script>
   </body>
 

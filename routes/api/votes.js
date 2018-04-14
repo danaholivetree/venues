@@ -37,7 +37,24 @@ router.post('/', (req, res, next) => {
             })
         }
         else if (exists.vote === vote) {
-          next(Boom.badRequest(`you\'ve already voted thumbs-${vote} for this venue`))
+          // next(Boom.badRequest(`you\'ve already voted thumbs-${vote} for this venue`))
+          return knex('venue_votes')
+            .del()
+            .where('user_id', userId).andWhere('venue_id', venueId)
+            .returning('vote')
+            .then( vote => {
+              console.log('vote[0] ', vote[0]);
+              return knex.raw('UPDATE venues SET ?? = ?? - 1 WHERE ?? = ? RETURNING *', [vote, vote, 'id', venueId])
+                .then ( updated => {
+                  let updatedVenue = updated.rows[0]
+                  updatedVenue.vote = 'none'
+                  // res.send(updated.rows[0])
+                  console.log(updatedVenue);
+                  res.send(updatedVenue)
+                }).catch( errr => {
+                  return next(err)
+                })
+            })
         } else {
           return knex('venue_votes')
             .where('user_id', userId).andWhere('venue_id', venueId)

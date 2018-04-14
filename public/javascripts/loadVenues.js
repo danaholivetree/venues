@@ -54,18 +54,26 @@ $(document).ready(function() {
     $('.thumb-up').click( e => {
         $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'up'}, data => {
           $(`#upVote${data.id} span`).text(`${data.up}`)
-          $(`#upVote${data.id} button`).css("color", "green")
           $(`#downVote${data.id} span`).text(`${data.down}`)
           $(`#downVote${data.id} button`).css("color", "black")
+          if (data.vote && data.vote === 'none') {
+            $(`#upVote${data.id} button`).css("color", "black")
+          } else {
+            $(`#upVote${data.id} button`).css("color", "green")
+          }
         })
     })
 
     $('.thumb-down').click( e => {
         $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'down'}, data => {
           $(`#upVote${data.id} span`).text(`${data.up}`)
-          $(`#upVote${data.id} button`).css("color", "black")
           $(`#downVote${data.id} span`).text(`${data.down}`)
-          $(`#downVote${data.id} button`).css("color", "red")
+          $(`#upVote${data.id} button`).css("color", "black")
+          if (data.vote && data.vote === 'none') {
+            $(`#downVote${data.id} button`).css("color", "black")
+          } else {
+            $(`#downVote${data.id} button`).css("color", "red")
+          }
         })
     })
   }
