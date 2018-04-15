@@ -119,7 +119,11 @@ $(document).ready(function() {
   }
 
   const getSi = (venue, city, state) => {
-    let siQuery = venue.split(' ').join('-') + '-' + city + '-' + state
+    let cityParam = city
+    if (city.split(' ').length > 1) {
+      cityParam = city.split(' ').join('-')
+    }
+    let siQuery = venue.split(' ').join('-') + '-' + cityParam + '-' + state
     $.get(`/token/si/${siQuery}`, ({capacity, ages, genres}) => {
       capacity = Number(capacity)
       if (capacity && Number($('#capacity').val()) !== capacity) {
