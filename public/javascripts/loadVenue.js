@@ -66,26 +66,28 @@ $(document).ready(function() {
   //find a way to share this from loadVenues.js?
   const setThumbListener = (id) => {
     $('.thumb-up').click( e => {
-      console.log('clicked thumb up');
-      // e.preventDefault()
         $.post(`/api/votes`, {venueId: id, vote: 'up'}, data => {
-          console.log('data came back from post up to votes ', data);
           $(`.thumb-up`).next('span').empty().append(`${data.up}`)
-          $(`.thumb-up`).css("color", "green")
           $(`.thumb-down`).next('span').empty().append(`${data.down}`)
           $(`.thumb-down`).css("color", "black")
+          if (data.vote && data.vote === 'none') {
+            $(`.thumb-up`).css("color", "black")
+          } else {
+            $(`.thumb-up`).css("color", "green")
+          }
         })
     })
 
     $('.thumb-down').click( e => {
-      console.log('clicked thumb down');
         $.post(`/api/votes`, {venueId: id, vote: 'down'}, data => {
-          console.log('data came back from post down to votes ', data);
-          // $(`.thumb-up`).next('span').empty().append(`${data.up}`)
-          $(`.thumb-up`).next('span').empty().append(`${data.up}`)
-          $(`.thumb-up`).css("color", "black")
-          $(`.thumb-down`).next('span').empty().append(`${data.down}`)
-          $(`.thumb-down`).css("color", "red")
+           $(`.thumb-up`).next('span').empty().append(`${data.up}`)
+           $(`.thumb-down`).next('span').empty().append(`${data.down}`)
+           $(`.thumb-up`).css("color", "black")
+          if (data.vote && data.vote === 'none') {
+            $(`.thumb-down`).css("color", "black")
+          } else {
+            $(`.thumb-down`).css("color", "red")
+          }
         })
     })
   }
