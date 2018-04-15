@@ -123,7 +123,15 @@ $(document).ready(function() {
     if (city.split(' ').length > 1) {
       cityParam = city.split(' ').join('-')
     }
-    let siQuery = venue.split(' ').join('-') + '-' + cityParam + '-' + state
+    let stateParam = state
+    if (state.split(' ').length > 1) {
+      stateParam = state.split(' ').join('-')
+    }
+    let venueParam = venue
+    if (venue.split(' ').length > 1) {
+      venueParam = venue.split(' ').join('-')
+    }
+    let siQuery = venueParam + '-' + cityParam + '-' + stateParam
     $.get(`/token/si/${siQuery}`, ({capacity, ages, genres}) => {
       capacity = Number(capacity)
       if (capacity && Number($('#capacity').val()) !== capacity) {
