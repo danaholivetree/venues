@@ -3,12 +3,14 @@ var router = express.Router();
 const knex = require('../../knex')
 const boom = require('boom')
 
-/* GET bands page. */
 router.get('/', function(req, res, next) {
-  return knex('band_stars')
-    .select(['bands.id', 'state', 'url', 'bandcamp', 'fb', 'spotify', 'city', 'band', 'genre', 'stars', 'band_stars.band_id as starred'])
-    .rightOuterJoin('bands', function() {
+  return knex('bands')
+    .select(['bands.id', 'state', 'url', 'bandcamp', 'fb', 'spotify', 'city', 'band', 'genre', 'stars', 'band_stars.id as starred', 'band_bookmarks.id as bookmark'])
+    .leftOuterJoin('band_stars', function() {
       this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
+    })
+    .leftOuterJoin('band_bookmarks', function() {
+      this.on('bands.id', '=', 'band_bookmarks.band_id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
     })
     .orderBy('state', 'asc')
     .orderBy('city', 'asc')
@@ -21,7 +23,7 @@ router.get('/', function(req, res, next) {
 router.get('/q', function(req, res, next) {
 
   var query = knex('bands')
-              .select('*')
+              .select('bands.id', 'state', 'city', 'band', 'genre', 'url', 'fb', 'bandcamp', 'spotify', 'stars', "band_stars.id as starred", "band_bookmarks.id as bookmark")
 
   if (req.query.state && req.query.state !== 'All') {
     query.where('state', req.query.state)
@@ -50,12 +52,37 @@ router.get('/q', function(req, res, next) {
     rawGenreQuery = '(' + rawGenreQuery + ')'
     query.andWhereRaw(rawGenreQuery)
   }
+
+  if (req.query.starred) {
+    console.log('filtering for stars');
+      query.innerJoin('band_stars', function() {
+        this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
+      })
+  } else {
+    query.leftOuterJoin('band_stars', function() {
+      this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
+    })
+  }
+  if (req.query.bookmarks) {
+      console.log('bookmark was selected');
+      query.innerJoin('band_bookmarks', function() {
+        this.on('bands.id', '=', 'band_bookmarks.band_id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
+      })
+      var bookmarks = true
+  } else {
+   console.log('no bookmark selected, outerjoining bookmarks');
+   query.leftOuterJoin('band_bookmarks', function() {
+     this.on('bands.id', '=', 'band_bookmarks.band_id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
+   })
+ }
+
   query.orderBy('state', 'asc')
   .orderBy('city', 'asc')
+  .orderBy('band', 'asc')
   .then( bands => {
       res.send(bands)
     })
-});
+})
 
 router.get('/genres', (req, res, next) => {
   return knex('bands')

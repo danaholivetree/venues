@@ -27,13 +27,14 @@ router.post('/', (req, res, next) => {
             .insert({user_id: userId, band_id: bandId})
             .then( inserted => {
               //not sure if this part is necessary
-              console.log('inserted ', inserted);
-              return knex('bands')
-                .select('*')
-                .where('id', bandId)
-                .then( updated => {
-                  res.send(updated[0])
-                })
+              // console.log('inserted ', inserted);
+              // return knex('bands')
+              //   .select('*')
+              //   .where('id', bandId)
+              //   .then( updated => {
+              //     res.send(updated[0])
+              //   })
+              res.send({bookmarked:true})
             })
         } else {
           return knex('band_bookmarks')
@@ -41,12 +42,13 @@ router.post('/', (req, res, next) => {
             .del()
             .then( deleted => {
               //not sure if this part is necessary
-              return knex('bands')
-                .select('*')
-                .where('id', bandId)
-                .then( updated => {
-                  res.send(updated[0])
-                })
+              // return knex('bands')
+              //   .select('*')
+              //   .where('id', bandId)
+              //   .then( updated => {
+              //     res.send(updated[0])
+              //   })
+              res.send({bookmarked: false})
             })
         }
       })

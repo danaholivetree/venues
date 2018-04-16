@@ -31,12 +31,30 @@ router.post('/', (req, res, next) => {
                 .increment('stars', 1)
                 .returning('*')
                 .then( updated => {
+                    console.log('updated[0].stars ',updated[0].stars );
+                  updated[0].starred = true
+                    console.log(updated[0].starred);
                   res.send(updated[0])
                 })
             })
         }
-        else if (exists.vote === vote) {
-          next(Boom.badRequest(`you\'ve already starred this band`))
+        else if (exists) {
+          return knex('band_stars')
+            .del()
+            .where({user_id: userId, band_id: bandId})
+            .then( deleted => {
+              return knex('bands')
+                .where('id', bandId)
+                .decrement('stars', 1)
+                .returning('*')
+                .then( updated => {
+                  console.log('updated[0].stars ',updated[0].stars );
+                  updated[0].starred = false
+                  console.log(updated[0].starred);
+                  res.send(updated[0])
+                })
+
+            })
         }
       })
 })

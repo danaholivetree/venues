@@ -5,6 +5,8 @@ $(document).ready(function() {
 
   $.get(`/api/bands`, (data, status) => {
     listBands(data.slice(0,20))
+    setBookmarkListener()
+    setStarListener()
   })
 
   const getSpotifyWidgets = (token, band, target) => {
@@ -71,9 +73,9 @@ $(document).ready(function() {
   }
   // <td class='url d-none d-md-table-cell'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
 {/* <span class='playSpotify' data-uri=${spotifySrc} data-name='${band.band}'></span> */}
-// <td class='star_col${id} d-none d-md-table-cell' align='center'><i class="material-icons star" data-id=${id}>star</i><br><span>${stars}</span></td>
+
   const listBands = (data) => {
-    data.forEach( ({id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars}) => {
+    data.forEach( ({id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars, bookmark}) => {
       let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
 
       let spotifyUri = spotify ? spotify.split('/')[4] : ''
@@ -89,28 +91,32 @@ $(document).ready(function() {
           <td>${city}</td>
           <td>${displayBand}</td>
           <td class="genreList d-none d-md-table-cell">${genre ? genre : ''}</td>
-
-
           <td class='d-none d-md-table-cell '><span class='mx-auto'>${displayBandcamp}</span></td>
           <td>${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''}</td>
+          <td class='d-none d-md-table-cell' align='center'><button class='btn btn-default thumb star'  data-id=${id}><i class="material-icons md-18" data-id=${id}>star</i></button><br><span id=star-number${id}>${stars}</span></td>
+          <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${id}><i class="material-icons md-18" data-id=${id}>bookmark</i></button></td>
         </tr>`))
+        // console.log('id ', id);
+        // console.log('starred' ,starred);
         if (starred) {
-         $(`.star_col${starred} i`).css("color", "lightblue")
+         $(`.star`).css("color", "lightblue")
         }
+        // console.log('bookmark ', bookmark);
+        if (bookmark) {
+          $('.bookmark').css("color", "lightblue")
+        }
+        // if (bookmarks) {
+        //   $('.bookmark').css("color", "lightblue")
+        // }
     })
 
-    $('.star').click( e => {
-      e.preventDefault()
-      let targ = e.target
-      $.post(`/api/stars`, {bandId: e.target.dataset.id}, ({id, stars}) => {
-        $(`.star_col${id} span`).text(`${stars}`)
-        $(`.star_col${id} i`).css("color", "lightblue")
-      })
-    })
+
+
     $('.playSpotify').click( e => {
       e.preventDefault()
       let targ = $(e.currentTarget)
       let uri = e.currentTarget.dataset.uri
+      $('.hide-on-spot').hide()
       $(`
           <div>
             <iframe src=https://open.spotify.com/embed?uri=spotify:artist:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
@@ -125,11 +131,47 @@ $(document).ready(function() {
         $(e.currentTarget).closest('div').prev().remove()
         $(e.currentTarget).remove()
         targ.show()
+        $('.hide-on-spot').show()
       })
     })
 
   }
 
+  const setBookmarkListener = () => {
+    $('.bookmark').click( e => {
+      console.log('e.target ', e.target);
+      e.preventDefault()
+      console.log('e.target.dataset.id ', e.target.dataset.id);
+      $.post(`/api/bBookmarks`, {bandId: e.target.dataset.id}, data => {
+        if (data.bookmarked) {
+          $(e.target).css("color", "lightblue")
+        } else {
+          $(e.target).css("color", "black")
+        }
+      })
+    })
+  }
+
+  const setStarListener = () => {
+    console.log('setting star listener');
+    $('.star').click( e => {
+      console.log('e.target ', e.target);
+      e.preventDefault()
+      let targ = e.target
+      $.post(`/api/stars`, {bandId: targ.dataset.id}, ({starred, stars}) => {
+        console.log('starred ', starred);
+        console.log('stars ', stars);
+        console.log('looking for span ', $(targ).next('span'));
+        $(`#star-number${targ.dataset.id}`).text(`${stars}`)
+        if (starred) {
+          $(targ).css("color", "lightblue")
+        } else {
+          $(targ).css("color", "black")
+        }
+
+      })
+    })
+  }
 
 
   $('#bandSearchForm').submit( e => {
@@ -158,6 +200,8 @@ $(document).ready(function() {
         $('input[type="text"], textarea').val('');
         $('#state').val('All');
         listBands(data)
+        setBookmarkListener()
+        setStarListener()
 
     })
   })
