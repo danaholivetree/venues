@@ -34,7 +34,7 @@ $(document).ready(function() {
 
       `))
 
-
+      console.log('venue.vote ', venue.vote);
       if (venue.vote === 'up') {
         $(`#upVote${venue.id} button`).css("color", "green")
       }
@@ -95,32 +95,18 @@ $(document).ready(function() {
     let city = formData.city.value
     let venue = formData.venue.value
     let capacity = []
-    if (formData.capAny.checked) {
-      capacity.push('any')
-    } else {
-      if (formData.unlabeled.checked) {
-        capacity.push('unlabeled')
-      }
-      if (formData.capxs.checked) {
-        capacity.push('capxs')
-      }
-      if (formData.caps.checked) {
-        capacity.push('caps')
-      }
-      if (formData.capm.checked) {
-        capacity.push('capm')
-      }
-      if (formData.capl.checked) {
-        capacity.push('capl')
-      }
-      if (formData.capxl.checked) {
-        capacity.push('capxl')
-      }
-    }
+    $('#capacity :checked').each( function(i, el) {
+      capacity.push(el.id)
+    })
     if (capacity.length < 1) {
       capacity.push('any')
     }
-    const params = {state, city, venue, capacity}
+    let selectors = []
+    $('#selector :checked').each( function(i, el) {
+      selectors.push(el.value)
+    })
+    console.log('selectors ', selectors);
+    const params = {state, city, venue, capacity, selectors}
     const queryString = $.param(params)
     $.get(`/api/venues/q?${queryString}`, (data, status) => {
       if (venue) {
@@ -131,10 +117,10 @@ $(document).ready(function() {
         $('.stateDisplay').text(`Venues in ${state}`).show()
       }
         $('#venuesList').empty()
-        $('input[type="checkbox"]').prop('checked', false);
-        $('#capAny').prop('checked', true) //maybe dont want these three
-        $('input[type="text"], textarea').val('');
-        $('#venueState').val('All');
+        // $('input[type="checkbox"]').prop('checked', false);
+        // $('#capAny').prop('checked', true) //maybe dont want these three
+        // $('input[type="text"], textarea').val('');
+        // $('#venueState').val('All');
         listVenues(data)
         setThumbListener()
     })

@@ -19,7 +19,8 @@ router.get('/', (req, res, next) => {
 
 router.get('/q', (req, res, next) => {
   var query = knex('venues')
-              .select('*')
+              // .select('*')
+              .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'email', 'city', 'capacity', 'vote')
   const addState = (state) => {
     if (state !== 'All') {
       return query.where('state', state)
@@ -42,9 +43,13 @@ router.get('/q', (req, res, next) => {
     addVenue(req.query.venue)
   }
 
+
+
   var rawCapQuery = ''
   var rawBindings = []
+  console.log('req.query.capacity ', req.query.capacity);
   if (req.query.capacity[0] !== 'any') {
+    console.log(`req.query.capacity[0] !== 'any'`);
       req.query.capacity.forEach( (cap, i) => {
         if (i === 0) {
           if (cap !== 'capxl' && cap !== 'unlabeled') {
@@ -82,6 +87,30 @@ router.get('/q', (req, res, next) => {
   }
   rawCapQuery = '(' + rawCapQuery + ')'
   if (req.query.capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
+
+  if (req.query.selectors) {
+    console.log('there were selectors ', req.query.selectors);
+    req.query.selectors.forEach( (selector, i, selectors) => {
+      if (selector === 'up') {
+        query.innerJoin('venue_votes', function() {
+          this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+        }).where('vote', '=', 'up')
+      } else if (selector === 'down') {
+        console.log(i);
+        if (i === 1) {
+          query.orWhere('vote', '=', 'down')
+        } else {
+          query.innerJoin('venue_votes', function() {
+            this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+          }).where('vote', '=', 'down')
+        }
+      }
+    })
+  } else {
+    query.leftOuterJoin('venue_votes', function() {
+      this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+    })
+  }
 
   query.orderBy('state', 'asc').orderBy('city', 'asc').then( venues => {
     console.log('venues matched', venues);
