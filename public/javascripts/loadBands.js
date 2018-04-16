@@ -297,17 +297,12 @@ $(document).ready(function() {
     }
   }
 
-  const newBandFromForm = (formData) => {
+  const newBandFromForm = (formData, spot, selectedGenres) => {
     let newBand = {
       state: formData.state.value,
       city: makeUppercase(formData.city.value),
       band: makeUppercase(formData.band.value)
     }
-
-    let selectedGenres = []
-    $.each($( "#addGenres input:checked" ), function (i, el) {
-      selectedGenres.push(el.value)
-    })
     newBand.genres = selectedGenres.slice(0,4)
 
     if (formData.url.value !== '') {
@@ -319,23 +314,17 @@ $(document).ready(function() {
     if (formData.bandcamp.value !== '') {
       newBand.bandcamp = checkUrl(formData.bandcamp.value)
     }
-    // newBand.spotify = formData.spotify.value && checkUrl(formData.spotify.value)
-    let spot = $('.guess:checked').val()
-    if (spot) {
-      newBand.spotify = $('.guess:checked').val()
-    } else if ($('#spotifyOther').val()) {
-      newBand.spotify = $('#spotifyOther').val()
-    }
+    newBand.spotify = spot
     return newBand
   }
 
-  const newBandandSubmit = (e) => {
+  const newBandandSubmit = (formData, spot, selectedGenres) => {
     // e.preventDefault()
-    let formData = e.target.elements
+
     if (checkForErrors(formData)) {
       return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${checkForErrors(formData)}</div>`)
     }
-    let newBand = newBandFromForm(formData)
+    let newBand = newBandFromForm(formData, spot, selectedGenres)
     $.ajax({
       method: 'POST',
       url: '/api/bands',
@@ -359,7 +348,27 @@ $(document).ready(function() {
 
   $('#addBandForm').submit( e => {
     e.preventDefault()
-    newBandandSubmit(e)
+    let formData = e.target.elements
+    let spot = $('.guess:checked').val() ? $('.guess:checked').val() : $('#spotifyOther').val()
+    let selectedGenres = []
+    $.each($( "#addGenres input:checked" ), function (i, el) {
+      selectedGenres.push(el.value)
+    })
+    $('#checkBandModal .modal-body').empty().append(`<p>Is this correct?</p>
+      <p>Band: ${formData.band.value}</p>
+      <p>Location: ${formData.city.value}, ${abbrState(formData.state.value, 'abbr')}</p>
+      <p>FB: <a href="${formData.fb.value}" target="_blank">${formData.fb.value}</a></p>
+      <p>URL: <a href="${formData.url.value}" target="_blank">${formData.url.value}</a></p>
+      <p>Bandcamp: <a href="${formData.bandcamp.value}" target="_blank">${formData.bandcamp.value}</a></p>
+      <p>Spotify: <a href=${spot} target="_blank">${spot}</a></p>
+      <p>Genres: ${selectedGenres.slice(0,4).join(' ')}
+
+      `)
+    $('#checkBandModal').modal('show');
+    $('#acceptBand').click( e => {
+      $('#checkBandModal').modal('hide');
+      newBandandSubmit(formData, spot, selectedGenres)
+    })
   })
 
 
