@@ -6,9 +6,10 @@ $(document).ready(function() {
     // console.log('got data ', data);
     listVenues(data.slice(0,20))
     setThumbListener()
+    setBookmarkListener()
   })
 
-  const listVenues = (data) => {
+  const listVenues = (data, bookmarks = false) => {
     data.forEach( venue => {
 
       // let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
@@ -30,16 +31,23 @@ $(document).ready(function() {
           <td class='d-none d-md-table-cell'>${venue.capacity ? venue.capacity : ''}</td>
           <td class='d-none d-md-table-cell' id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
           <td class='d-none d-md-table-cell' id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
+          <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>bookmark</i></button></td>
         </tr>
 
       `))
 
-      console.log('venue.vote ', venue.vote);
+      console.log('venue.bookmark ', venue.bookmark);
       if (venue.vote === 'up') {
         $(`#upVote${venue.id} button`).css("color", "green")
       }
       if (venue.vote === 'down') {
         $(`#downVote${venue.id} button`).css("color", "red")
+      }
+      if (venue.bookmark) {
+        $('.bookmark').css("color", "lightblue")
+      }
+      if (bookmarks) {
+        $('.bookmark').css("color", "lightblue")
       }
     })
     $('.js-tooltip').tooltip()
@@ -78,6 +86,21 @@ $(document).ready(function() {
     })
   }
 
+  const setBookmarkListener = () => {
+    $('.bookmark').click( e => {
+      console.log('e.target ', e.target);
+      e.preventDefault()
+      console.log('e.target.dataset.id ', e.target.dataset.id);
+      $.post(`/api/vBookmarks`, {venueId: e.target.dataset.id}, data => {
+        if (data.bookmarked) {
+          $(e.target).css("color", "lightblue")
+        } else {
+          $(e.target).css("color", "black")
+        }
+      })
+    })
+  }
+
   $('.notany').click( e => {
     if ($('.notany:checked').length === 0) {
         $('#capAny').prop("checked", true)
@@ -103,12 +126,13 @@ $(document).ready(function() {
     }
     let selectors = []
     $('#selector :checked').each( function(i, el) {
+      console.log('el.value ' , el.value);
       selectors.push(el.value)
     })
     console.log('selectors ', selectors);
     const params = {state, city, venue, capacity, selectors}
     const queryString = $.param(params)
-    $.get(`/api/venues/q?${queryString}`, (data, status) => {
+    $.get(`/api/venues/q?${queryString}`, ({venues, bookmarks}, status) => {
       if (venue) {
         $('.stateDisplay').text(`Venues matching '${makeUppercase(venue)}'`).show()
       } else if (city) {
@@ -121,8 +145,9 @@ $(document).ready(function() {
         // $('#capAny').prop('checked', true) //maybe dont want these three
         // $('input[type="text"], textarea').val('');
         // $('#venueState').val('All');
-        listVenues(data)
+        listVenues(venues, bookmarks)
         setThumbListener()
+        setBookmarkListener()
     })
   })
 

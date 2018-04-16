@@ -21,6 +21,8 @@ var bandApi = require('./routes/api/bands')
 var userApi = require('./routes/api/users')
 var voteApi = require('./routes/api/votes')
 var starApi = require('./routes/api/stars')
+var vBookApi = require('./routes/api/vBookmarks')
+var bBookApi = require('./routes/api/bBookmarks')
 var token = require('./routes/token')
 var bc = require('./routes/bc')
 var auth = require('./routes/auth')
@@ -115,6 +117,9 @@ app.use('/api/users', userApi)
 app.use('/api/votes', voteApi)
 app.use('/api/bands', bandApi)
 app.use('/api/stars', starApi)
+app.use('/api/vBookmarks', vBookApi)
+app.use('/api/bBookmarks', bBookApi)
+
 
 
 

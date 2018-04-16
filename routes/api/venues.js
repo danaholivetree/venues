@@ -4,15 +4,19 @@ const knex = require('../../knex')
 const boom = require('boom')
 
 router.get('/', (req, res, next) => {
-  return knex('venue_votes')
-    .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'up', 'down', 'vote'])
-    .rightOuterJoin('venues', function() {
+  return knex('venues')
+    .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'up', 'down', 'vote', 'venue_bookmarks.id as bookmark'])
+    .leftOuterJoin('venue_votes', function() {
       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+    })
+    .leftOuterJoin('venue_bookmarks', function() {
+      this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn('venue_bookmarks.user_id', '=', req.cookies.user.id)
     })
     .orderBy('state', 'asc')
     .orderBy('city', 'asc')
     .orderBy('venue', 'asc')
     .then( venues => {
+      console.log(venues[1]);
       res.send(venues)
     })
 });
@@ -20,7 +24,7 @@ router.get('/', (req, res, next) => {
 router.get('/q', (req, res, next) => {
   var query = knex('venues')
               // .select('*')
-              .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'email', 'city', 'capacity', 'vote')
+              .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'email', 'city', 'capacity', 'vote', 'venue_bookmarks.id as bookmark')
   const addState = (state) => {
     if (state !== 'All') {
       return query.where('state', state)
@@ -88,33 +92,61 @@ router.get('/q', (req, res, next) => {
   rawCapQuery = '(' + rawCapQuery + ')'
   if (req.query.capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
 
+  console.log('req.query.selectors ', req.query.selectors);
+  // console.log(`req.query.selectors['up'] `, req.query.selectors.includes('up'))
+  // console.log(`req.query.selectors['down'] `, req.query.selectors.includes('down'))
+  // console.log(`!req.query.selectors['up'] `, !req.query.selectors['up'])
+  // console.log(`!req.query.selectors['down'] `, !req.query.selectors['down'])
   if (req.query.selectors) {
-    console.log('there were selectors ', req.query.selectors);
-    req.query.selectors.forEach( (selector, i, selectors) => {
-      if (selector === 'up') {
-        query.innerJoin('venue_votes', function() {
-          this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
-        }).where('vote', '=', 'up')
-      } else if (selector === 'down') {
-        console.log(i);
-        if (i === 1) {
-          query.orWhere('vote', '=', 'down')
-        } else {
+    if (req.query.selectors.includes('up') || req.query.selectors.includes('down')) {
+      console.log('there were selectors ', req.query.selectors);
+      req.query.selectors.forEach( (selector, i, selectors) => {
+        if (selector === 'up') {
+          console.log('filtering for upvotes');
           query.innerJoin('venue_votes', function() {
             this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
-          }).where('vote', '=', 'down')
+          }).where('vote', '=', 'up')
+        } else if (selector === 'down') {
+          console.log('filtering for downvotes');
+          if (i === 1) {
+            query.orWhere('vote', '=', 'down')
+          } else {
+            query.innerJoin('venue_votes', function() {
+              this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+            }).where('vote', '=', 'down')
+          }
         }
-      }
-    })
-  } else {
-    query.leftOuterJoin('venue_votes', function() {
-      this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
-    })
-  }
+      })
+    } else {
+      console.log('no up or down');
+      query.leftOuterJoin('venue_votes', function() {
+        this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+      })
+    }
+    if (req.query.selectors.includes('bookmarked')) {
+      console.log('bookmark was selected');
+      query.innerJoin('venue_bookmarks', function() {
+        this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn('venue_bookmarks.user_id', '=', req.cookies.user.id)
+      })
+      var bookmarks = true
+    } else {
+     console.log('no bookmark selected, outerjoining bookmarks');
+     query.leftOuterJoin('venue_bookmarks', function() {
+       this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", req.cookies.user.id)
+     })
+   }
+ } else {
+   query.leftOuterJoin('venue_votes', function() {
+     this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+   }).leftOuterJoin('venue_bookmarks', function() {
+     this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", req.cookies.user.id)
+   })
+ }
 
+  console.log('done with selectors');
   query.orderBy('state', 'asc').orderBy('city', 'asc').then( venues => {
-    console.log('venues matched', venues);
-      res.send(venues)
+    console.log('matched ',venues.length);
+      res.send({venues, bookmarks})
     })
 });
 
