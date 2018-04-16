@@ -12,7 +12,7 @@ $(document).ready(function() {
     data.forEach( venue => {
 
       // let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
-      let displayVenue = `<a href='/venues/${venue.id}'>${venue.venue}${venue.diy ? '*' : ''}</a>`
+      let displayVenue = `<a href='/venues/${venue.id}' target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
       let displayEmail = venue.email ?
       `<button type="button" class="btn btn-default thumb btn-copy js-tooltip js-copy"
         data-toggle="tooltip" data-placement="top" data-copy=${venue.email} title="Copy to clipboard">
@@ -274,51 +274,57 @@ $(document).ready(function() {
   $('#addVenueForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
-    const newVenue = {}
-    newVenue.state = formData.state.value
-    if (!formData.state.value || formData.state.value == 'All') {
-      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a state</div>`)
-    } else {
+    $('#checkInfoModal .modal-body').empty().append(`<p>Is this correct?</p>
+      <p>Venue: ${formData.venue.value}</p>
+      <p>Location: ${formData.city.value}, ${abbrState(formData.state.value, 'abbr')}</p>
+      <p>URL: ${formData.url.value}</p>
+      <p>Booking Email: ${formData.email.value ? formData.email.value : ''}</p>
+      <p>Capacity: ${formData.capacity.value ? formData.capacity.value : 'Unlisted'}</p>`)
+    $('#checkInfoModal').modal('show');
+    $('#acceptInfo').click( e => {
+      $('#checkInfoModal').modal('hide');
+      const newVenue = {}
       newVenue.state = formData.state.value
-    }
-    if (!formData.city.value || formData.city === '') {
-      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
-    } else {
-      newVenue.city = makeUppercase(formData.city.value)
-    }
-    if (!formData.venue.value || formData.venue === '') {
-      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a venue</div>`)
-    } else {
-      newVenue.venue = makeUppercase(formData.venue.value)
-    }
-    if (!formData.url.value) {
-      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a url</div>`)
-    } else {
-      newVenue.url = checkUrl(formData.url.value)
-    }
-    if (formData.email.value) {
-      newVenue.email = checkEmail(formData.email.value)
-    }
-    if (formData.capacity.value) {
-      newVenue.capacity = formData.capacity.value
-    }
-    newVenue.diy = formData.diy.checked ? true : false
-    //why woudl i ahve been looking for a newvneue id?
-
-    $.post(`/api/venues`, newVenue, (data, status) => {
-      // $('input[type="text"], textarea').val('');
-      // $('#state').val('All');
-      // $('#venuesList').empty()
-      // listVenues(data)
-      if (!data.id) {
-          return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${data}</div>`)
+      if (!formData.state.value || formData.state.value == 'All') {
+        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a state</div>`)
       } else {
-        window.location=`/venues/${data.id}`
+        newVenue.state = formData.state.value
       }
+      if (!formData.city.value || formData.city === '') {
+        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
+      } else {
+        newVenue.city = makeUppercase(formData.city.value)
+      }
+      if (!formData.venue.value || formData.venue === '') {
+        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a venue</div>`)
+      } else {
+        newVenue.venue = makeUppercase(formData.venue.value)
+      }
+      if (!formData.url.value) {
+        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a url</div>`)
+      } else {
+        newVenue.url = checkUrl(formData.url.value)
+      }
+      if (formData.email.value) {
+        newVenue.email = checkEmail(formData.email.value)
+      }
+      if (formData.capacity.value) {
+        newVenue.capacity = formData.capacity.value
+      }
+      newVenue.diy = formData.diy.checked ? true : false
+      //why woudl i ahve been looking for a newvneue id?
 
-
-
-
+      $.post(`/api/venues`, newVenue, (data, status) => {
+        // $('input[type="text"], textarea').val('');
+        // $('#state').val('All');
+        // $('#venuesList').empty()
+        // listVenues(data)
+        if (!data.id) {
+            return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${data}</div>`)
+        } else {
+          window.location=`/venues/${data.id}`
+        }
+      })
     })
   })
 
