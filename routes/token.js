@@ -96,15 +96,11 @@ router.get('/si/:q', (req, res, next) => {
     capacity: '.alignleft ul li:nth-of-type(7)',
     ages: '.alignleft ul li:nth-of-type(8)'
   }).then(({ data, response }) => {
-      // console.log(`Status Code: ${response.statusCode}`)
       console.log(data)
       let {genres, ages, capacity} = data
       genres = genres.slice(8)
-      // console.log('genres ', genres);
       ages = ages.slice(5)
-      // console.log('ages ', ages);
       capacity = capacity.slice(10)
-      // console.log('capacity ', capacity);
       res.send({genres, ages, capacity})
   })
 
