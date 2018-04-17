@@ -26,14 +26,6 @@ router.post('/', (req, res, next) => {
           return knex('band_bookmarks')
             .insert({user_id: userId, band_id: bandId})
             .then( inserted => {
-              //not sure if this part is necessary
-              // console.log('inserted ', inserted);
-              // return knex('bands')
-              //   .select('*')
-              //   .where('id', bandId)
-              //   .then( updated => {
-              //     res.send(updated[0])
-              //   })
               res.send({bookmarked:true})
             })
         } else {
@@ -41,13 +33,6 @@ router.post('/', (req, res, next) => {
             .where('user_id', userId).andWhere('band_id', bandId)
             .del()
             .then( deleted => {
-              //not sure if this part is necessary
-              // return knex('bands')
-              //   .select('*')
-              //   .where('id', bandId)
-              //   .then( updated => {
-              //     res.send(updated[0])
-              //   })
               res.send({bookmarked: false})
             })
         }

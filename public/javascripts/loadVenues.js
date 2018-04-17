@@ -36,7 +36,6 @@ $(document).ready(function() {
 
       `))
 
-      console.log('venue.bookmark ', venue.bookmark);
       if (venue.vote === 'up') {
         $(`#upVote${venue.id} button`).css("color", "green")
       }
@@ -97,12 +96,12 @@ $(document).ready(function() {
       })
     })
   }
-//this stopped working?
+
   $('.notany').click( e => {
     if ($('.notany:checked').length === 0) {
-        $('#capAny').prop("checked", true)
+        $('#any').prop("checked", true)
     } else {
-        $('#capAny').prop("checked", false)
+        $('#any').prop("checked", false)
     }
   })
 
@@ -123,10 +122,8 @@ $(document).ready(function() {
     }
     let selectors = []
     $('#selector :checked').each( function(i, el) {
-      console.log('el.value ' , el.value);
       selectors.push(el.value)
     })
-    console.log('selectors ', selectors);
     const params = {state, city, venue, capacity, selectors}
     const queryString = $.param(params)
     $.get(`/api/venues/q?${queryString}`, ({venues, bookmarks}, status) => {
@@ -138,10 +135,6 @@ $(document).ready(function() {
         $('.stateDisplay').text(`Venues in ${state}`).show()
       }
         $('#venuesList').empty()
-        // $('input[type="checkbox"]').prop('checked', false);
-        // $('#capAny').prop('checked', true) //maybe dont want these three
-        // $('input[type="text"], textarea').val('');
-        // $('#venueState').val('All');
         listVenues(venues, bookmarks)
         setThumbListener()
         setBookmarkListener()

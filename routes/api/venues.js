@@ -47,67 +47,35 @@ router.get('/q', (req, res, next) => {
     addVenue(req.query.venue)
   }
 
-
-
   var rawCapQuery = ''
   var rawBindings = []
-  console.log('req.query.capacity ', req.query.capacity);
   if (req.query.capacity[0] !== 'any') {
-    console.log(`req.query.capacity[0] !== 'any'`);
+    rawCapQuery += ' capacity IS NULL'
       req.query.capacity.forEach( (cap, i) => {
-        if (i === 0) {
-          if (cap !== 'capxl' && cap !== 'unlabeled') {
-              rawCapQuery += ' capacity BETWEEN ? and ?'
-          }
-          if (cap === 'capxl') {
-            rawCapQuery += ' capacity > ?'
-          }
-          if (cap === 'unlabeled') {
-            rawCapQuery += ' capacity IS NULL'
-          }
-          if (cap === 'capxs') rawBindings = rawBindings.concat([0, 100])
-          if (cap === 'caps') rawBindings = rawBindings.concat([101, 250])
-          if (cap === 'capm') rawBindings = rawBindings.concat([251, 600])
-          if (cap === 'capl') rawBindings = rawBindings.concat([601, 1200])
-          if (cap === 'capxl') rawBindings = rawBindings.concat([1200])
-        }
-        if (i > 0) {
-          if (cap !== 'capxl' && cap !== 'unlabeled') {
+          if (cap !== 'capxl' ) {
               rawCapQuery += ' OR capacity BETWEEN ? AND ?'
           }
           if (cap === 'capxl') {
             rawCapQuery += ' OR capacity > ?'
-          }
-          if (cap === 'unlabeled') {
-            rawCapQuery += ' capacity IS NULL'
           }
           if (cap === 'capxs') rawBindings = rawBindings.concat([0, 100])
           if (cap === 'caps') rawBindings = rawBindings.concat([101, 250])
           if (cap === 'capm') rawBindings = rawBindings.concat([251, 600])
           if (cap === 'capl') rawBindings = rawBindings.concat([601, 1200])
           if (cap === 'capxl') rawBindings = rawBindings.concat(['capacity', 1200])
-        }
       })
   }
   rawCapQuery = '(' + rawCapQuery + ')'
   if (req.query.capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
 
-  console.log('req.query.selectors ', req.query.selectors);
-  // console.log(`req.query.selectors['up'] `, req.query.selectors.includes('up'))
-  // console.log(`req.query.selectors['down'] `, req.query.selectors.includes('down'))
-  // console.log(`!req.query.selectors['up'] `, !req.query.selectors['up'])
-  // console.log(`!req.query.selectors['down'] `, !req.query.selectors['down'])
   if (req.query.selectors) {
     if (req.query.selectors.includes('up') || req.query.selectors.includes('down')) {
-      console.log('there were selectors ', req.query.selectors);
       req.query.selectors.forEach( (selector, i, selectors) => {
         if (selector === 'up') {
-          console.log('filtering for upvotes');
           query.innerJoin('venue_votes', function() {
             this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
           }).where('vote', '=', 'up')
         } else if (selector === 'down') {
-          console.log('filtering for downvotes');
           if (i === 1) {
             query.orWhere('vote', '=', 'down')
           } else {
@@ -118,19 +86,16 @@ router.get('/q', (req, res, next) => {
         }
       })
     } else {
-      console.log('no up or down');
       query.leftOuterJoin('venue_votes', function() {
         this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
       })
     }
     if (req.query.selectors.includes('bookmarked')) {
-      console.log('bookmark was selected');
       query.innerJoin('venue_bookmarks', function() {
         this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn('venue_bookmarks.user_id', '=', req.cookies.user.id)
       })
       var bookmarks = true
     } else {
-     console.log('no bookmark selected, outerjoining bookmarks');
      query.leftOuterJoin('venue_bookmarks', function() {
        this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", req.cookies.user.id)
      })
@@ -142,10 +107,7 @@ router.get('/q', (req, res, next) => {
      this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", req.cookies.user.id)
    })
  }
-
-  console.log('done with selectors');
   query.orderBy('state', 'asc').orderBy('city', 'asc').then( venues => {
-    console.log('matched ',venues.length);
       res.send({venues, bookmarks})
     })
 });
@@ -161,7 +123,6 @@ router.get('/:id', (req, res, next) => {
     .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'vote', 'venues.email', 'city', 'capacity','genres_booked as genres', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo',  'users.name as contributedBy', 'sound')
     .first()
     .then( venue => {
-      console.log('got the venue ', venue);
       res.send(venue)
     })
 });
@@ -194,19 +155,8 @@ router.post('/', (req, res, next) => {
             return knex('venues')
               .insert(newVenue, '*')
               .then( venue => {
-                console.log('venue', venue[0]);
                 res.send(venue[0])
               })
-              // .insert(newVenue, 'state')
-              // .then( state => {
-              //   return knex('venues')
-              //     .select('*')
-              //     .where('state', state[0])
-              //     .orderBy('id', 'desc')
-              //     .then( venues => {
-              //       res.send(venues)
-              //     })
-              // })
           })
 
       }
@@ -214,8 +164,6 @@ router.post('/', (req, res, next) => {
 })
 
 router.put('/:id', (req, res, next) => {
-  console.log('put route by id ',  Number(req.params.id));
-  console.log('req.body ', req.body);
   const venueQuery =   knex('venues').where('id', Number(req.params.id))
   const profileQuery = knex('venue_profiles').where('venue_id', Number(req.params.id))
 
@@ -286,8 +234,6 @@ router.put('/:id', (req, res, next) => {
   if (sound || sound === '') {
     toProfile.sound = sound
   }
-  console.log('toProfile ', toProfile);
-  console.log('toVenues ', toVenues);
   let updatedVenue = {}
   if (Object.keys(toVenues).length > 0) {
     toVenues.id = Number(req.params.id)

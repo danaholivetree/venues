@@ -135,7 +135,6 @@ $(document).ready(function() {
         $('.hide-on-spot').show()
       })
     })
-
   }
 
   const setBookmarkListener = () => {
