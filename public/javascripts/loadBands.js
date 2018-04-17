@@ -71,18 +71,13 @@ $(document).ready(function() {
       }
     })
   }
-  // <td class='url d-none d-md-table-cell'><a href=${band.url} target='_blank'>${displayUrl}</a></td>
-{/* <span class='playSpotify' data-uri=${spotifySrc} data-name='${band.band}'></span> */}
 
   const listBands = (data) => {
     data.forEach( ({id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars, bookmark}) => {
       let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
-// <a href=${bandcamp} target='_blank'><img class='playBandcamp' src='images/bandcamp-button-bc-circle-aqua-32.png'></a>
       let spotifyUri = spotify ? spotify.split('/')[4] : ''
       let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:artist:${spotifyUri}&theme=white` : ''
-      let displayBandcamp = bandcamp ? `<span align='center'><img class='playBandcamp' data-band=${band} data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'></span>` : ``
-      // let displayBandcampWidget = band.bandcamp ? `<iframe style="border: 0; width: 370px; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=260781898/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/transparent=true/" seamless><a href=${band.bandcamp}>${band.band}</a></iframe>` : ''
-      // let testBandcamp = band.bandcamp ? `<button class='btn bandcamp' data-name=${band.band} data-id=${band.id} data-url=${band.bandcamp}>load widg</button>` : ''
+      let displayBandcamp = bandcamp ? `<img class='playBandcamp' data-band='${band}' data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'>` : ``
       let displayBand = fb ? `<a href=${fb} target='_blank'>${band}</a>` : `${band}`
       let showSpotify = spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
       $('#bandsList').append($(`
@@ -91,8 +86,7 @@ $(document).ready(function() {
           <td>${city}</td>
           <td>${displayBand}</td>
           <td class="genreList d-none d-md-table-cell">${genre ? genre : ''}</td>
-          <td class='d-none d-md-table-cell '><span class='mx-auto'>${displayBandcamp}</span></td>
-          <td>${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''}</td>
+          <td>${displayBandcamp}${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''}</td>
           <td class='d-none d-md-table-cell' align='center'><button class='btn btn-default thumb star'  data-id=${id}><i class="material-icons md-18" data-id=${id}>star</i></button><br><span id=star-number${id}>${stars}</span></td>
           <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${id}><i class="material-icons md-18" data-id=${id}>bookmark</i></button></td>
         </tr>`))
@@ -116,52 +110,51 @@ $(document).ready(function() {
     $('.playSpotify').click( e => {
       e.preventDefault()
       let targ = $(e.currentTarget)
+      let bc = targ.prev()
       let uri = e.currentTarget.dataset.uri
-      // $('.hide-on-spot').hide()
+      bc.hide()
       $(`
-          <div>
+          <div class='widget'>
             <iframe src=https://open.spotify.com/embed?uri=spotify:artist:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+            <a style="top:25px;" href="/" class="close" aria-label="close">&times;</a>
           </div>
           <div>
-            <a href="/" class="close" aria-label="close">&times;</a>
+
           </div>
       `).insertAfter(targ)
       targ.hide()
       $('.close').click( e => {
         e.preventDefault()
-        $(e.currentTarget).closest('div').prev().remove()
-        $(e.currentTarget).remove()
+        $(e.currentTarget).closest('.widget').remove()
         targ.show()
-        // $('.hide-on-spot').show()
+        bc.show()
       })
     })
 
     $('.playBandcamp').click( e => {
       e.preventDefault()
       let targ = $(e.currentTarget)
-      console.log('targ' , targ);
+      let spot = targ.next()
       let url = e.currentTarget.dataset.href
       let link = e.currentTarget.dataset.href.split('/')[2].split('.')[0]
       let band = e.currentTarget.dataset.band
-      console.log('link ', link);
+
       $.get(`/bc/album/${link}`, data => {
         const {id, band_id, track, title, artist} = data
-        console.log('data ', data);
         $(`
-            <div>
+            <div class='widget'>
                <iframe style="border: 0; width: 370px; height: 120px;" src=https://bandcamp.com/EmbeddedPlayer/album=${id}/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/track=${track}/transparent=true/ seamless><a href=${url}>${title} by ${artist}</a></iframe>
+               <a style="top:45px;" href="/" class="close" aria-label="close">&times;</a>
             </div>
-            <div>
-              <a href="/" class="close" aria-label="close">&times;</a>
-            </div>
+
         `).insertAfter(targ)
         targ.hide()
+        spot.hide()
         $('.close').click( e => {
           e.preventDefault()
-          $(e.currentTarget).closest('div').prev().remove()
-          $(e.currentTarget).remove()
+          $(e.currentTarget).closest('.widget').remove()
           targ.show()
-          // $('.hide-on-spot').show()
+          spot.show()
         })
       })
 

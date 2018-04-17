@@ -226,3 +226,10 @@ h3 {
 .form-group {
   margin-bottom: 0.5rem !important;
 }
+.widget {
+  display:inline-flex;
+}
+.close {
+  position: relative;
+  left: 10px;
+}
