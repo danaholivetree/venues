@@ -43,10 +43,7 @@ $(document).ready(function() {
       if (venue.vote === 'down') {
         $(`#downVote${venue.id} button`).css("color", "red")
       }
-      if (venue.bookmark) {
-        $('.bookmark').css("color", "lightblue")
-      }
-      if (bookmarks) {
+      if (venue.bookmark || bookmarks) {
         $('.bookmark').css("color", "lightblue")
       }
     })
@@ -100,7 +97,7 @@ $(document).ready(function() {
       })
     })
   }
-
+//this stopped working?
   $('.notany').click( e => {
     if ($('.notany:checked').length === 0) {
         $('#capAny').prop("checked", true)

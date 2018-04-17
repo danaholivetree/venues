@@ -21,24 +21,24 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/q', function(req, res, next) {
-
+ const {state, city, band, genres, starred, bookmarked } = req.query
   var query = knex('bands')
               .select('bands.id', 'state', 'city', 'band', 'genre', 'url', 'fb', 'bandcamp', 'spotify', 'stars', "band_stars.id as starred", "band_bookmarks.id as bookmark")
 
-  if (req.query.state && req.query.state !== 'All') {
+  if (state && state !== 'All') {
     query.where('state', req.query.state)
   }
-  if (req.query.city) {
+  if (city) {
     query.andWhere('city', 'ilike', `${req.query.city}%`)
   }
-  if (req.query.band) {
+  if (band) {
     query.andWhere('band', 'ilike', `%${req.query.band}%`)
   }
 
-  if (req.query.genres) {
+  if (genres) {
     var rawGenreQuery = ''
     var rawBindings = []
-    req.query.genres.forEach( (genre, i) => {
+    genres.forEach( (genre, i) => {
       if (i === 0) {
         rawGenreQuery += `genre ilike '%${genre}%' `
       }
@@ -53,17 +53,18 @@ router.get('/q', function(req, res, next) {
     query.andWhereRaw(rawGenreQuery)
   }
 
-  if (req.query.starred) {
+  if (starred === 'true') {
     console.log('filtering for stars');
       query.innerJoin('band_stars', function() {
         this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
       })
   } else {
+    console.log('no stars, outerjoining');
     query.leftOuterJoin('band_stars', function() {
       this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
     })
   }
-  if (req.query.bookmarks) {
+  if (bookmarked === 'true') {
       console.log('bookmark was selected');
       query.innerJoin('band_bookmarks', function() {
         this.on('bands.id', '=', 'band_bookmarks.band_id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
@@ -80,6 +81,7 @@ router.get('/q', function(req, res, next) {
   .orderBy('city', 'asc')
   .orderBy('band', 'asc')
   .then( bands => {
+    console.log(bands.slice(0,3));
       res.send(bands)
     })
 })

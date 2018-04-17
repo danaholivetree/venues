@@ -30,11 +30,26 @@
             <input type="text" name='band' class="form-control" aria-label="Default">
           </div>
         </div>
-        <div class='row'>
-          <div class='input-group mb-3 col-12 col-md-11' >
+        <div class='form-row'>
+          <div class='input-group mb-3 col-12' >
             <div class='input-group-text genres' id='genreSelector'>
               <span class="capSelector">Genre</span>
             </div>
+          </div>
+        </div>
+        <div class='form-row'>
+          <div id='selector' class='input-group mb-3 col-lg-5 col-12'>
+              <label for='selector' class="control-label col-3 col-md-3 col-form-label" >Select Only:</label>
+              <!-- <div id='selector'> -->
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="starred-select" value="starred">
+                  <label class="form-check-label" for="up-select"><i class="material-icons md-18">star</i></label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="bookmark-select" value="bookmarked">
+                  <label class="form-check-label" for="bookmark-select"><i class="material-icons md-18">bookmark</i></label>
+                </div>
+
           </div>
           <div class="col-md-1 col-2 mx-auto">
             <button type="submit" class="btn big-btn">SUBMIT</button>

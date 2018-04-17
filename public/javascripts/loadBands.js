@@ -103,6 +103,7 @@ $(document).ready(function() {
         }
         // console.log('bookmark ', bookmark);
         if (bookmark) {
+          console.log('bookmark ', bookmark);
           $('.bookmark').css("color", "lightblue")
         }
         // if (bookmarks) {
@@ -176,7 +177,6 @@ $(document).ready(function() {
 
   $('#bandSearchForm').submit( e => {
     e.preventDefault()
-    var target = $( event.target )
     let formData = e.target.elements
     let state = $('.stateSelector').val()
     let city = formData.city.value
@@ -185,7 +185,12 @@ $(document).ready(function() {
     $('.genre-selector:checked').each( function() {
         genres.push(this.value)
     })
-    const params = {state, city, band, genres}
+    // console.log($('#starred-select'));
+    let starred = $('#starred-select').prop('checked')
+    let bookmarked = $('#bookmark-select').prop('checked')
+    console.log('starred ', starred);
+    console.log('bookmarked ', bookmarked);
+    const params = {state, city, band, genres, starred, bookmarked}
     const queryString = $.param(params)
     $.get(`/api/bands/q?${queryString}`, (data, status) => {
       if (band) {
@@ -196,9 +201,9 @@ $(document).ready(function() {
         $('.stateDisplay').text(`Bands in ${state}`).show()
       }
         $('#bandsList').empty()
-        $('.genre-selector').prop('checked', false) //maybe dont want these three
-        $('input[type="text"], textarea').val('');
-        $('#state').val('All');
+        // $('.genre-selector').prop('checked', false) //maybe dont want these three
+        // $('input[type="text"], textarea').val('');
+        // $('#state').val('All');
         listBands(data)
         setBookmarkListener()
         setStarListener()
