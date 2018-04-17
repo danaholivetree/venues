@@ -77,10 +77,10 @@ $(document).ready(function() {
   const listBands = (data) => {
     data.forEach( ({id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars, bookmark}) => {
       let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
-
+// <a href=${bandcamp} target='_blank'><img class='playBandcamp' src='images/bandcamp-button-bc-circle-aqua-32.png'></a>
       let spotifyUri = spotify ? spotify.split('/')[4] : ''
       let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:artist:${spotifyUri}&theme=white` : ''
-      let displayBandcamp = bandcamp ? `<span align='center' ><a href=${bandcamp} target='_blank'><img src='images/bandcamp-button-bc-circle-aqua-32.png'></a></span>` : ``
+      let displayBandcamp = bandcamp ? `<span align='center'><img class='playBandcamp' data-band=${band} data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'></span>` : ``
       // let displayBandcampWidget = band.bandcamp ? `<iframe style="border: 0; width: 370px; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=260781898/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/transparent=true/" seamless><a href=${band.bandcamp}>${band.band}</a></iframe>` : ''
       // let testBandcamp = band.bandcamp ? `<button class='btn bandcamp' data-name=${band.band} data-id=${band.id} data-url=${band.bandcamp}>load widg</button>` : ''
       let displayBand = fb ? `<a href=${fb} target='_blank'>${band}</a>` : `${band}`
@@ -117,7 +117,7 @@ $(document).ready(function() {
       e.preventDefault()
       let targ = $(e.currentTarget)
       let uri = e.currentTarget.dataset.uri
-      $('.hide-on-spot').hide()
+      // $('.hide-on-spot').hide()
       $(`
           <div>
             <iframe src=https://open.spotify.com/embed?uri=spotify:artist:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
@@ -132,10 +132,43 @@ $(document).ready(function() {
         $(e.currentTarget).closest('div').prev().remove()
         $(e.currentTarget).remove()
         targ.show()
-        $('.hide-on-spot').show()
+        // $('.hide-on-spot').show()
       })
     })
+
+    $('.playBandcamp').click( e => {
+      e.preventDefault()
+      let targ = $(e.currentTarget)
+      console.log('targ' , targ);
+      let url = e.currentTarget.dataset.href
+      let link = e.currentTarget.dataset.href.split('/')[2].split('.')[0]
+      let band = e.currentTarget.dataset.band
+      console.log('link ', link);
+      $.get(`/bc/album/${link}`, data => {
+        const {id, band_id, track, title, artist} = data
+        console.log('data ', data);
+        $(`
+            <div>
+               <iframe style="border: 0; width: 370px; height: 120px;" src=https://bandcamp.com/EmbeddedPlayer/album=${id}/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/track=${track}/transparent=true/ seamless><a href=${url}>${title} by ${artist}</a></iframe>
+            </div>
+            <div>
+              <a href="/" class="close" aria-label="close">&times;</a>
+            </div>
+        `).insertAfter(targ)
+        targ.hide()
+        $('.close').click( e => {
+          e.preventDefault()
+          $(e.currentTarget).closest('div').prev().remove()
+          $(e.currentTarget).remove()
+          targ.show()
+          // $('.hide-on-spot').show()
+        })
+      })
+
+    })
+
   }
+
 
   const setBookmarkListener = () => {
     $('.bookmark').click( e => {
@@ -187,8 +220,6 @@ $(document).ready(function() {
     // console.log($('#starred-select'));
     let starred = $('#starred-select').prop('checked')
     let bookmarked = $('#bookmark-select').prop('checked')
-    console.log('starred ', starred);
-    console.log('bookmarked ', bookmarked);
     const params = {state, city, band, genres, starred, bookmarked}
     const queryString = $.param(params)
     $.get(`/api/bands/q?${queryString}`, (data, status) => {
@@ -244,7 +275,7 @@ $(document).ready(function() {
     e.preventDefault()
     let band = e.currentTarget.value
     if (band !== '') {
-      $.get(`/bc/${band}`, data => {
+      $.get(`/bc/search/${band}`, data => {
         $('#bandcamp').val(data[0].url)
         // $(`.genres input.${data[0].genre.trim()}`).prop('checked', true)
         data[0].tags.forEach( tag => {
