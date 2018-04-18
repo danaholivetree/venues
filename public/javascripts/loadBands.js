@@ -80,6 +80,10 @@ $(document).ready(function() {
       let displayBandcamp = bandcamp ? `<img class='playBandcamp' data-band='${band}' data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'>` : ``
       let displayBand = fb ? `<a href=${fb} target='_blank'>${band}</a>` : `${band}`
       let showSpotify = spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
+      let starBorder= `<i style="color:black;" class="material-icons md-18" data-id=${id}>star_border</i>`
+      let starIcon = `<i style="color:lightblue;" class="material-icons md-18" data-id=${id}>star</i>`
+      let bookmarkIcon = `<i class="material-icons md-18" data-id=${id}>bookmark</i>`
+      let bookmarkBorder = `<i class="material-icons md-18" data-id=${id}>bookmark_border</i>`
       $('#bandsList').append($(`
         <tr>
           <td class='d-none d-md-table-cell'>${abbrState(state, 'abbr')}</td>
@@ -87,14 +91,10 @@ $(document).ready(function() {
           <td>${displayBand}</td>
           <td class="genreList d-none d-md-table-cell">${genre ? genre : ''}</td>
           <td>${displayBandcamp}${spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''}</td>
-          <td class='d-none d-md-table-cell' align='center'><button class='btn btn-default thumb star'  data-id=${id}><i class="material-icons md-18" data-id=${id}>star</i></button><br><span id=star-number${id}>${stars}</span></td>
-          <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${id}><i class="material-icons md-18" data-id=${id}>bookmark</i></button></td>
+          <td class='d-none d-md-table-cell' align='center'><button class='btn btn-default thumb star'  data-id=${id}>${starred ? starIcon : starBorder}</button><br><span id=star-number${id}>${stars}</span></td>
+          <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${id}>${bookmark ? bookmarkIcon : bookmarkBorder}</button></td>
         </tr>`))
-        // console.log('id ', id);
-        // console.log('starred' ,starred);
-        if (starred) {
-         $(`.star`).css("color", "lightblue")
-        }
+
         // console.log('bookmark ', bookmark);
         if (bookmark) {
           console.log('bookmark ', bookmark);
@@ -170,9 +170,9 @@ $(document).ready(function() {
       console.log('e.target.dataset.id ', e.target.dataset.id);
       $.post(`/api/bBookmarks`, {bandId: e.target.dataset.id}, data => {
         if (data.bookmarked) {
-          $(e.target).css("color", "lightblue")
+          $(e.target).css("color", "lightblue").text('bookmark')
         } else {
-          $(e.target).css("color", "black")
+          $(e.target).css("color", "black").text('bookmark_border')
         }
       })
     })
@@ -190,9 +190,9 @@ $(document).ready(function() {
         console.log('looking for span ', $(targ).next('span'));
         $(`#star-number${targ.dataset.id}`).text(`${stars}`)
         if (starred) {
-          $(targ).css("color", "lightblue")
+          $(targ).css("color", "lightblue").text('star')
         } else {
-          $(targ).css("color", "black")
+          $(targ).css("color", "black").text('star_border')
         }
 
       })
@@ -216,13 +216,16 @@ $(document).ready(function() {
     const params = {state, city, band, genres, starred, bookmarked}
     const queryString = $.param(params)
     $.get(`/api/bands/q?${queryString}`, (data, status) => {
-      if (band) {
-        $('.stateDisplay').text(`Bands matching '${makeUppercase(band)}'`).show()
-      } else if (city) {
-        $('.stateDisplay').text(`Bands in ${makeUppercase(city)}`).show()
-      } else if (state !== 'All') {
-        $('.stateDisplay').text(`Bands in ${state}`).show()
-      }
+      $('.stateDisplay').text(`Bands ${bookmarked || starred ? 'I\'ve ' : ''}${bookmarked ? 'Bookmarked ' : '' }${bookmarked && starred ? 'and ' : ''}
+      ${starred ? 'Starred ' : '' }${city || state ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
+      ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${band ? 'matching '+ makeUppercase(band) : ''}`).show()
+      // if (band) {
+      //   $('.stateDisplay').text(`Bands matching '${makeUppercase(band)}'`).show()
+      // } else if (city) {
+      //   $('.stateDisplay').text(`Bands in ${makeUppercase(city)}`).show()
+      // } else if (state !== 'All') {
+      //   $('.stateDisplay').text(`Bands in ${state}`).show()
+      // }
         $('#bandsList').empty()
         // $('.genre-selector').prop('checked', false) //maybe dont want these three
         // $('input[type="text"], textarea').val('');

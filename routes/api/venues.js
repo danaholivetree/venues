@@ -171,15 +171,17 @@ router.put('/:id', (req, res, next) => {
   let findProfile = profileQuery.select(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo', 'sound']).first()
 
   const updateVenue = (venue) => {
+    venue.updated_at = new Date()
     return venueQuery
       .update(venue)
       .returning('*')
   }
 
   const updateProfile = (venue) => {
+    venue.updated_at = new Date()
     return findProfile
-    .update(venue)
-    .returning(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo', 'sound'])
+      .update(venue)
+      .returning(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo', 'sound'])
   }
 
   const newProfile = (venue) => {

@@ -11,7 +11,8 @@ $(document).ready(function() {
 
   const listVenues = (data, bookmarks = false) => {
     data.forEach( venue => {
-
+      let bookmarkIcon = `<i class="material-icons md-18" data-id=${venue.id}>bookmark</i>`
+      let bookmarkBorder = `<i class="material-icons md-18" data-id=${venue.id}>bookmark_border</i>`
       // let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
       let displayVenue = `<a href='/venues/${venue.id}' target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
       let displayEmail = venue.email ?
@@ -31,7 +32,7 @@ $(document).ready(function() {
           <td class='d-none d-md-table-cell'>${venue.capacity ? venue.capacity : ''}</td>
           <td class='d-none d-md-table-cell' id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
           <td class='d-none d-md-table-cell' id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
-          <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>bookmark</i></button></td>
+          <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${venue.id}>${venue.bookmark ? bookmarkIcon : bookmarkBorder}</button></td>
         </tr>
 
       `))
@@ -89,9 +90,9 @@ $(document).ready(function() {
       console.log('e.target.dataset.id ', e.target.dataset.id);
       $.post(`/api/vBookmarks`, {venueId: e.target.dataset.id}, data => {
         if (data.bookmarked) {
-          $(e.target).css("color", "lightblue")
+          $(e.target).css("color", "lightblue").text('bookmark')
         } else {
-          $(e.target).css("color", "black")
+          $(e.target).css("color", "black").text('bookmark_border')
         }
       })
     })
@@ -126,14 +127,12 @@ $(document).ready(function() {
     })
     const params = {state, city, venue, capacity, selectors}
     const queryString = $.param(params)
+      // ${bookmarked && starred ? 'and ' : ''}${starred ? 'Starred ' : '' }
     $.get(`/api/venues/q?${queryString}`, ({venues, bookmarks}, status) => {
-      if (venue) {
-        $('.stateDisplay').text(`Venues matching '${makeUppercase(venue)}'`).show()
-      } else if (city) {
-        $('.stateDisplay').text(`Venues in ${makeUppercase(city)}`).show()
-      } else if (state !== 'All') {
-        $('.stateDisplay').text(`Venues in ${state}`).show()
-      }
+      $('.stateDisplay').text(`Venues ${bookmarks ? 'I\'ve ' : ''}${bookmarks ? 'Bookmarked ' : '' }
+      ${city || state ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''} 
+      ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${venue ? 'matching '+ makeUppercase(venue) : ''}`).show()
+
         $('#venuesList').empty()
         listVenues(venues, bookmarks)
         setThumbListener()
