@@ -166,9 +166,7 @@ $(document).ready(function() {
 
   const setBookmarkListener = () => {
     $('.bookmark').click( e => {
-      console.log('e.target ', e.target);
       e.preventDefault()
-      console.log('e.target.dataset.id ', e.target.dataset.id);
       $.post(`/api/bBookmarks`, {bandId: e.target.dataset.id}, data => {
         if (data.bookmarked) {
           $(e.target).css("color", "lightblue").text('bookmark')
@@ -181,13 +179,9 @@ $(document).ready(function() {
 
   const setStarListener = () => {
     $('.star').click( e => {
-      console.log('e.target ', e.target);
       e.preventDefault()
       let targ = e.target
       $.post(`/api/stars`, {bandId: targ.dataset.id}, ({starred, stars}) => {
-        console.log('starred ', starred);
-        console.log('stars ', stars);
-        console.log('looking for span ', $(targ).next('span'));
         $(`#star-number${targ.dataset.id}`).text(`${stars}`)
         if (starred) {
           $(targ).css("color", "lightblue").text('star')
@@ -239,7 +233,6 @@ $(document).ready(function() {
       $('#prev').prop('disabled', false)
       off += 25
       params.offset = off
-      console.log('params should include offf', params);
       const newQueryString = $.param(params)
       $.get(`/api/bands/q?${off > 0 ? newQueryString : queryString}`, (data, status) => {
         listBands(data)
@@ -253,13 +246,10 @@ $(document).ready(function() {
     $('#prev').click( e => {
       e.preventDefault()
       if (off >= 25) {
-        console.log('off was greater than 25 ', off);
         $('#next').prop('disabled', false)
         off -= 25
-        console.log('now its ', off);
       } else {
         off = 0
-        console.log('set off to 0');
       }
       if (off === 0) {
         $('#prev').prop('disabled', true)
@@ -270,7 +260,6 @@ $(document).ready(function() {
         listBands(data)
         $('#bandTable').get(0).scrollIntoView()
         if ( data.length < 25 ) {
-          console.log('disabling next button bc data.length was < 25');
           $('#next').prop('disabled', true)
         }
       })
@@ -289,7 +278,6 @@ $(document).ready(function() {
     $('.genre-selector:checked').each( function() {
         genres.push(this.value)
     })
-    // console.log($('#starred-select'));
     let starred = $('#starred-select').prop('checked')
     let bookmarked = $('#bookmark-select').prop('checked')
     const params = {state, city, band, genres, starred, bookmarked}
@@ -362,8 +350,6 @@ $(document).ready(function() {
         getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
       }
         $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
-          console.log('fb data from band name', data);
-          console.log('data.link');
           $('#fb').val(data.link)
           $('#url').val(checkUrl(data.website))
           getLocationFromFb(data.current_location, data.hometown)
@@ -477,7 +463,6 @@ $(document).ready(function() {
       dataType: 'json',
       data: {newBand: JSON.stringify(newBand)},
       success: function (data) {
-                  console.log('data came back from add band ', data);
                   $('#errorMessage').empty()
                   $('input').val('');
                   $('.guesses').remove()

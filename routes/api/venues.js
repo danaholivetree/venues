@@ -114,11 +114,9 @@ router.get('/q', (req, res, next) => {
  }
   query.orderBy('state', 'asc').orderBy('city', 'asc').limit(25)
   if (req.query.offset) {
-    console.log('req.query.offset ', req.query.offset);
     query.offset(req.query.offset)
   }
   return query.then( venues => {
-    console.log(venues);
     res.send({venues, bookmarks})
     })
 });
@@ -264,7 +262,6 @@ router.put('/:id', (req, res, next) => {
                   res.send(addProfileToUpdatedVenue(updatedVenue, newData[0]))
                 })
               } else {
-                console.log('newprofile ');
                 newProfile(toProfile)
                   .then( newData => {
                     res.send(addProfileToUpdatedVenue(updatedVenue, newData[0]))

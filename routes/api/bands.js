@@ -60,7 +60,6 @@ router.get('/q', function(req, res, next) {
   }
 
   if (starred === 'true') {
-    console.log('filtering for stars');
       query.innerJoin('band_stars', function() {
         this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
       })
@@ -70,7 +69,6 @@ router.get('/q', function(req, res, next) {
     })
   }
   if (bookmarked === 'true') {
-      console.log('bookmark was selected');
       query.innerJoin('band_bookmarks', function() {
         this.on('bands.id', '=', 'band_bookmarks.band_id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
       })
@@ -87,7 +85,6 @@ router.get('/q', function(req, res, next) {
   .limit(25)
 
   if (req.query.offset) {
-    console.log('setting offset of req.query.offset ', req.query.offset);
     query.offset(req.query.offset)
   }
   return query

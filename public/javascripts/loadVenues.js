@@ -129,9 +129,7 @@ $(document).ready(function() {
 
   const setBookmarkListener = () => {
     $('.bookmark').click( e => {
-      console.log('e.target ', e.target);
       e.preventDefault()
-      console.log('e.target.dataset.id ', e.target.dataset.id);
       $.post(`/api/vBookmarks`, {venueId: e.target.dataset.id}, data => {
         if (data.bookmarked) {
           $(e.target).css("color", "lightblue").text('bookmark')
@@ -196,7 +194,6 @@ $(document).ready(function() {
       $('#prev').prop('disabled', false)
       off += 25
       params.offset = off
-      console.log('params should include offf', params);
       const newQueryString = $.param(params)
       $.get(`/api/venues/q?${off > 0 ? newQueryString : origQuery}`, ({venues, bookmarks}, status) => {
         listVenues(venues, bookmarks)
