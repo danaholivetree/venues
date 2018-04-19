@@ -4,7 +4,7 @@ const knex = require('../../knex')
 const boom = require('boom')
 
 router.get('/', (req, res, next) => {
-  return knex('venues')
+  let venueQuery = knex('venues')
     .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'up', 'down', 'vote', 'venue_bookmarks.id as bookmark'])
     .leftOuterJoin('venue_votes', function() {
       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
@@ -15,10 +15,15 @@ router.get('/', (req, res, next) => {
     .orderBy('state', 'asc')
     .orderBy('city', 'asc')
     .orderBy('venue', 'asc')
-    .then( venues => {
-      console.log(venues[1]);
-      res.send(venues)
-    })
+    .limit(25)
+
+    if (req.query.offset) {
+      venueQuery.offset(req.query.offset)
+    }
+    return venueQuery
+      .then( venues => {
+        res.send(venues)
+      })
 });
 
 router.get('/q', (req, res, next) => {
@@ -107,8 +112,14 @@ router.get('/q', (req, res, next) => {
      this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", req.cookies.user.id)
    })
  }
-  query.orderBy('state', 'asc').orderBy('city', 'asc').then( venues => {
-      res.send({venues, bookmarks})
+  query.orderBy('state', 'asc').orderBy('city', 'asc').limit(25)
+  if (req.query.offset) {
+    console.log('req.query.offset ', req.query.offset);
+    query.offset(req.query.offset)
+  }
+  return query.then( venues => {
+    console.log(venues);
+    res.send({venues, bookmarks})
     })
 });
 

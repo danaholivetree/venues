@@ -4,7 +4,7 @@ const knex = require('../../knex')
 const boom = require('boom')
 
 router.get('/', function(req, res, next) {
-  return knex('bands')
+  let bandQuery = knex('bands')
     .select(['bands.id', 'state', 'url', 'bandcamp', 'fb', 'spotify', 'city', 'band', 'genre', 'stars', 'band_stars.id as starred', 'band_bookmarks.id as bookmark'])
     .leftOuterJoin('band_stars', function() {
       this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
@@ -15,9 +15,15 @@ router.get('/', function(req, res, next) {
     .orderBy('state', 'asc')
     .orderBy('city', 'asc')
     .orderBy('band', 'asc')
-    .then( bands => {
-      res.send(bands)
-    })
+    .limit(25)
+
+    if (req.query.offset) {
+      bandQuery.offset(req.query.offset)
+    }
+    return bandQuery
+      .then( bands => {
+        res.send(bands)
+      })
 });
 
 router.get('/q', function(req, res, next) {
@@ -59,7 +65,6 @@ router.get('/q', function(req, res, next) {
         this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
       })
   } else {
-    console.log('no stars, outerjoining');
     query.leftOuterJoin('band_stars', function() {
       this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
     })
@@ -71,7 +76,6 @@ router.get('/q', function(req, res, next) {
       })
       var bookmarks = true
   } else {
-   console.log('no bookmark selected, outerjoining bookmarks');
    query.leftOuterJoin('band_bookmarks', function() {
      this.on('bands.id', '=', 'band_bookmarks.band_id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
    })
@@ -80,8 +84,14 @@ router.get('/q', function(req, res, next) {
   query.orderBy('state', 'asc')
   .orderBy('city', 'asc')
   .orderBy('band', 'asc')
-  .then( bands => {
-    console.log(bands.slice(0,3));
+  .limit(25)
+
+  if (req.query.offset) {
+    console.log('setting offset of req.query.offset ', req.query.offset);
+    query.offset(req.query.offset)
+  }
+  return query
+    .then( bands => {
       res.send(bands)
     })
 })

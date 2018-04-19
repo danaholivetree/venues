@@ -152,7 +152,7 @@
 
     <h2> <span class='stateDisplay' style='display:none'></span></h2>
 
-      <table class='table'>
+      <table id='bandTable' class='table'>
         <thead>
           <tr>
             <th width='5%' class='d-none d-md-table-cell'>State</th>
@@ -173,6 +173,14 @@
 
         </tbody>
       </table>
+      <div class='row'>
+        <div class='col-auto mx-auto'>
+          <div id='prevNext' style='display:none;' class='btn-group'>
+            <button id='prev' type='button' class='btn big-btn'>Prev</button>
+            <button id='next' type='button' class='btn big-btn'>Next</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="./javascripts/searchform.js"></script>

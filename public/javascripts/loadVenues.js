@@ -1,17 +1,56 @@
 $(document).ready(function() {
   const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage, copyToClipboard} = helpers
+  let off = 0
 
-  $.get(`/api/venues`, (data, status) => {
-    // console.log('got data ', data);
-    listVenues(data.slice(0,20))
-    setThumbListener()
-    setBookmarkListener()
+  $.get(`/api/venues/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
+    listVenues(data)
+    if (data.length < 25) {
+      ('#next').prop('disabled', true)
+    } else {
+      setPrevNextListener()
+    }
   })
 
+  const setPrevNextListener = () => {
+    $('#prev').prop('disabled', true)
+    $('#next').click( e => {
+      e.preventDefault()
+      $('#prev').prop('disabled', false)
+      off += 25
+      $.get(`/api/venues/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
+        listVenues(data)
+        $('#venueTable').get(0).scrollIntoView()
+        if ( data.length < 25 ) {
+          $('#next').prop('disabled', true)
+        }
+      })
+    })
+
+    $('#prev').click( e => {
+      e.preventDefault()
+      if (off >= 25) {
+        off -= 25
+      } else {
+        off = 0
+      }
+      if (off === 0) {
+        $('#prev').prop('disabled', true)
+      }
+      $.get(`/api/venues/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
+        listVenues(data)
+        $('#venueTable').get(0).scrollIntoView()
+        if ( data.length < 25 ) {
+          $('#next').prop('disabled', true)
+        }
+      })
+    })
+  }
+
   const listVenues = (data, bookmarks = false) => {
+    $('#venuesList').empty()
     data.forEach( venue => {
-      let bookmarkIcon = `<i class="material-icons md-18" data-id=${venue.id}>bookmark</i>`
+      let bookmarkIcon = `<i style="color:lightblue" class="material-icons md-18" data-id=${venue.id}>bookmark</i>`
       let bookmarkBorder = `<i class="material-icons md-18" data-id=${venue.id}>bookmark_border</i>`
       // let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
       let displayVenue = `<a href='/venues/${venue.id}' target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
@@ -43,9 +82,9 @@ $(document).ready(function() {
       if (venue.vote === 'down') {
         $(`#downVote${venue.id} button`).css("color", "red")
       }
-      if (venue.bookmark || bookmarks) {
-        $('.bookmark').css("color", "lightblue")
-      }
+      // if (venue.bookmark || bookmarks) {
+      //   $('.bookmark').css("color", "lightblue")
+      // }
     })
     $('.js-tooltip').tooltip()
     $('.js-copy').click( e => {
@@ -54,7 +93,12 @@ $(document).ready(function() {
       var el = $(e.currentTarget)
       copyToClipboard(text, el)
     })
+
+    setThumbListener()
+    setBookmarkListener()
+    $('#prevNext').show()
   }
+
   const setThumbListener = () => {
     $('.thumb-up').click( e => {
         $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'up'}, data => {
@@ -110,6 +154,7 @@ $(document).ready(function() {
 
   $('#venueSearchForm').submit( e => {
     e.preventDefault()
+    off = 0
     let formData = e.target.elements
     let state = formData.state.value
     let city = formData.city.value
@@ -127,18 +172,61 @@ $(document).ready(function() {
     })
     const params = {state, city, venue, capacity, selectors}
     const queryString = $.param(params)
+
       // ${bookmarked && starred ? 'and ' : ''}${starred ? 'Starred ' : '' }
     $.get(`/api/venues/q?${queryString}`, ({venues, bookmarks}, status) => {
       $('.stateDisplay').text(`Venues ${bookmarks ? 'I\'ve ' : ''}${bookmarks ? 'Bookmarked ' : '' }
-      ${city || state ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''} 
+      ${city || state ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
       ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${venue ? 'matching '+ makeUppercase(venue) : ''}`).show()
-
-        $('#venuesList').empty()
-        listVenues(venues, bookmarks)
-        setThumbListener()
-        setBookmarkListener()
+      listVenues(venues, bookmarks)
+      setThumbListener()
+      setBookmarkListener()
+      if (venues.length < 25) {
+        $('#next').prop('disabled', true)
+      } else {
+        setPrevNextQueryListener(params, queryString)
+      }
     })
   })
+  const setPrevNextQueryListener = (params, origQuery) => {
+    $('#prev').prop('disabled', true)
+    $('#next').off('click')
+    $('#next').click( e => {
+      e.preventDefault()
+      $('#prev').prop('disabled', false)
+      off += 25
+      params.offset = off
+      console.log('params should include offf', params);
+      const newQueryString = $.param(params)
+      $.get(`/api/venues/q?${off > 0 ? newQueryString : origQuery}`, ({venues, bookmarks}, status) => {
+        listVenues(venues, bookmarks)
+        $('#venueTable').get(0).scrollIntoView()
+        if ( venues.length < 25 ) {
+          $('#next').prop('disabled', true)
+        }
+      })
+    })
+    $('#prev').off('click')
+    $('#prev').click( e => {
+      e.preventDefault()
+      if (off >= 25) {
+        off -= 25
+        $('#next').prop('disabled', false)
+      } else {
+        off = 0
+      }
+      if (off === 0) {
+        $('#prev').prop('disabled', true)
+        $('#next').prop('disabled', false)
+      }
+      params.offset = off
+      const newQueryString = $.param(params)
+      $.get(`/api/venues/q?${off > 0 ? newQueryString : origQuery}`, ({venues, bookmarks}, status) => {
+        listVenues(venues, bookmarks)
+        $('#venueTable').get(0).scrollIntoView()
+      })
+    })
+  }
 
   $('#searchVenues').click( e => {
     e.preventDefault()
@@ -315,10 +403,6 @@ $(document).ready(function() {
       //why woudl i ahve been looking for a newvneue id?
 
       $.post(`/api/venues`, newVenue, (data, status) => {
-        // $('input[type="text"], textarea').val('');
-        // $('#state').val('All');
-        // $('#venuesList').empty()
-        // listVenues(data)
         if (!data.id) {
             return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${data}</div>`)
         } else {

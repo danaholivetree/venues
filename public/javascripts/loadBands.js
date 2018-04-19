@@ -2,12 +2,18 @@ $(document).ready(function() {
   const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
   let accessToken = localStorage.getItem('pa_token')
+  let off = 0
 
-  $.get(`/api/bands`, (data, status) => {
-    listBands(data.slice(0,20))
-    setBookmarkListener()
-    setStarListener()
+  $.get(`/api/bands/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
+    listBands(data)
+    if ( data.length < 25 ) {
+      $('#next').prop('disabled', true)
+    } else {
+      setPrevNextListener()
+    }
   })
+
+
 
   const getSpotifyWidgets = (token, band, target) => {
     $.ajax({
@@ -73,6 +79,7 @@ $(document).ready(function() {
   }
 
   const listBands = (data) => {
+    $('#bandsList').empty()
     data.forEach( ({id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars, bookmark}) => {
       let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
       let spotifyUri = spotify ? spotify.split('/')[4] : ''
@@ -82,7 +89,7 @@ $(document).ready(function() {
       let showSpotify = spotify ? `<iframe style="display:none;" src=${spotifySrc} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>` : ''
       let starBorder= `<i style="color:black;" class="material-icons md-18" data-id=${id}>star_border</i>`
       let starIcon = `<i style="color:lightblue;" class="material-icons md-18" data-id=${id}>star</i>`
-      let bookmarkIcon = `<i class="material-icons md-18" data-id=${id}>bookmark</i>`
+      let bookmarkIcon = `<i style="color:lightblue" class="material-icons md-18" data-id=${id}>bookmark</i>`
       let bookmarkBorder = `<i class="material-icons md-18" data-id=${id}>bookmark_border</i>`
       $('#bandsList').append($(`
         <tr>
@@ -95,17 +102,11 @@ $(document).ready(function() {
           <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${id}>${bookmark ? bookmarkIcon : bookmarkBorder}</button></td>
         </tr>`))
 
-        // console.log('bookmark ', bookmark);
-        if (bookmark) {
-          console.log('bookmark ', bookmark);
-          $('.bookmark').css("color", "lightblue")
-        }
-        // if (bookmarks) {
-        //   $('.bookmark').css("color", "lightblue")
-        // }
     })
 
-
+    setBookmarkListener()
+    setStarListener()
+    $('#prevNext').show()
 
     $('.playSpotify').click( e => {
       e.preventDefault()
@@ -179,7 +180,6 @@ $(document).ready(function() {
   }
 
   const setStarListener = () => {
-    console.log('setting star listener');
     $('.star').click( e => {
       console.log('e.target ', e.target);
       e.preventDefault()
@@ -199,9 +199,88 @@ $(document).ready(function() {
     })
   }
 
+  const setPrevNextListener = () => {
+    $('#prev').prop('disabled', true)
+    $('#next').click( e => {
+      e.preventDefault()
+      $('#prev').prop('disabled', false)
+      off += 25
+      $.get(`/api/bands/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
+        listBands(data)
+        $('#bandTable').get(0).scrollIntoView()
+        if ( data.length < 25 ) {
+          $('#next').prop('disabled', true)
+        }
+      })
+    })
+
+    $('#prev').click( e => {
+      e.preventDefault()
+      if (off >= 25) {
+        off -= 25
+      } else {
+        off = 0
+      }
+      if (off === 0) {
+        $('#prev').prop('disabled', true)
+      }
+      $.get(`/api/bands/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
+        listBands(data)
+        $('#bandTable').get(0).scrollIntoView()
+      })
+    })
+  }
+
+  const setPrevNextQueryListener = (params, origQuery) => {
+    $('#prev').prop('disabled', true)
+    $('#next').off('click')
+    $('#next').click( e => {
+      e.preventDefault()
+      $('#prev').prop('disabled', false)
+      off += 25
+      params.offset = off
+      console.log('params should include offf', params);
+      const newQueryString = $.param(params)
+      $.get(`/api/bands/q?${off > 0 ? newQueryString : queryString}`, (data, status) => {
+        listBands(data)
+        $('#bandTable').get(0).scrollIntoView()
+        if ( data.length < 25 ) {
+          $('#next').prop('disabled', true)
+        }
+      })
+    })
+    $('#prev').off('click')
+    $('#prev').click( e => {
+      e.preventDefault()
+      if (off >= 25) {
+        console.log('off was greater than 25 ', off);
+        $('#next').prop('disabled', false)
+        off -= 25
+        console.log('now its ', off);
+      } else {
+        off = 0
+        console.log('set off to 0');
+      }
+      if (off === 0) {
+        $('#prev').prop('disabled', true)
+      }
+      params.offset = off
+      const newQueryString = $.param(params)
+      $.get(`/api/bands/q?${off > 0 ? newQueryString : origQuery}`, (data, status) => {
+        listBands(data)
+        $('#bandTable').get(0).scrollIntoView()
+        if ( data.length < 25 ) {
+          console.log('disabling next button bc data.length was < 25');
+          $('#next').prop('disabled', true)
+        }
+      })
+    })
+  }
+
 
   $('#bandSearchForm').submit( e => {
     e.preventDefault()
+    off = 0
     let formData = e.target.elements
     let state = $('.stateSelector').val()
     let city = formData.city.value
@@ -219,22 +298,14 @@ $(document).ready(function() {
       $('.stateDisplay').text(`Bands ${bookmarked || starred ? 'I\'ve ' : ''}${bookmarked ? 'Bookmarked ' : '' }${bookmarked && starred ? 'and ' : ''}
       ${starred ? 'Starred ' : '' }${city || state ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
       ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${band ? 'matching '+ makeUppercase(band) : ''}`).show()
-      // if (band) {
-      //   $('.stateDisplay').text(`Bands matching '${makeUppercase(band)}'`).show()
-      // } else if (city) {
-      //   $('.stateDisplay').text(`Bands in ${makeUppercase(city)}`).show()
-      // } else if (state !== 'All') {
-      //   $('.stateDisplay').text(`Bands in ${state}`).show()
-      // }
-        $('#bandsList').empty()
-        // $('.genre-selector').prop('checked', false) //maybe dont want these three
-        // $('input[type="text"], textarea').val('');
-        // $('#state').val('All');
-        listBands(data)
-        setBookmarkListener()
-        setStarListener()
-
+      listBands(data)
+      if ( data.length < 25 ) {
+        $('#next').prop('disabled', true)
+      } else {
+        setPrevNextQueryListener(params, queryString)
+      }
     })
+
   })
 
   $('#searchBands').click( e => {
@@ -412,7 +483,6 @@ $(document).ready(function() {
                   $('.guesses').remove()
                   $('.genre-selector').prop('checked', false)
                   $('#state').val('All');
-                  $('#bandsList').empty()
                   listBands(data)
               },
       error: err => {
