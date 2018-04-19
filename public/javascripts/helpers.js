@@ -52,7 +52,7 @@
       copyTextArea.select();
       try {
         var successful = document.execCommand('copy');
-        var msg = successful ? 'Copied!' : 'Whoops, not copied!';
+        var msg = successful ? 'Copied!' : 'Unable to copy';
         el.attr('data-original-title', msg).tooltip('show');
       } catch (err) {
         console.log('Oops, unable to copy');

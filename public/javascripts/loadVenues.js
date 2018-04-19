@@ -3,127 +3,127 @@ $(document).ready(function() {
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage, copyToClipboard} = helpers
   let off = 0
 
-  $.get(`/api/venues/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
-    listVenues(data)
-    if (data.length < 25) {
-      ('#next').prop('disabled', true)
-    } else {
-      setPrevNextListener()
+
+
+
+
+  const getData = (offset = 0, scroll = false) => {
+    $.get(`/api/venues/${offset > 0 ? '?offset='+offset: ''}`, (data, status) => {
+      listVenues(data)
+    })
+    if (offset === 0) {
+      $('#prev').prop('disabled', true)
     }
-  })
+    if (scroll) {
+      $('#venueTable').get(0).scrollIntoView()
+    }
+  }
+
 
   const setPrevNextListener = () => {
+    $('#prevNext').show()
     $('#prev').prop('disabled', true)
     $('#next').click( e => {
       e.preventDefault()
-      $('#prev').prop('disabled', false)
       off += 25
-      $.get(`/api/venues/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
-        listVenues(data)
-        $('#venueTable').get(0).scrollIntoView()
-        if ( data.length < 25 ) {
-          $('#next').prop('disabled', true)
-        }
-      })
+      $('#prev').prop('disabled', false)
+      getData(off, true)
     })
-
     $('#prev').click( e => {
       e.preventDefault()
-      if (off >= 25) {
-        off -= 25
-      } else {
-        off = 0
-      }
-      if (off === 0) {
-        $('#prev').prop('disabled', true)
-      }
-      $.get(`/api/venues/${off > 0 ? '?offset='+off: ''}`, (data, status) => {
-        listVenues(data)
-        $('#venueTable').get(0).scrollIntoView()
-        if ( data.length < 25 ) {
-          $('#next').prop('disabled', true)
-        }
-      })
+      off -= 25
+      getData(off, true)
     })
   }
 
+  getData()
+  setPrevNextListener()
+
   const listVenues = (data, bookmarks = false) => {
     $('#venuesList').empty()
-    data.forEach( venue => {
-      let bookmarkIcon = `<i style="color:lightblue" class="material-icons md-18" data-id=${venue.id}>bookmark</i>`
-      let bookmarkBorder = `<i class="material-icons md-18" data-id=${venue.id}>bookmark_border</i>`
-      // let displayVenue = `<a href=${venue.url} target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
-      let displayVenue = `<a href='/venues/${venue.id}' target='_blank'>${venue.venue}${venue.diy ? '*' : ''}</a>`
-      let displayEmail = venue.email ?
+    data.forEach( ven => {
+      const {id, venue, diy, email, city, state, capacity, up, down, bookmark, vote} = ven
+      let displayVenue = `<a href='/venues/${id}' target='_blank'>${venue}${diy ? '*' : ''}</a>`
+      let displayEmail = email ?
       `<button type="button" class="btn btn-default thumb btn-copy js-tooltip js-copy"
-        data-toggle="tooltip" data-placement="top" data-copy=${venue.email} title="Copy to clipboard">
+        data-toggle="tooltip" data-placement="top" data-copy=${email} title="Copy to clipboard">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="18" height="18" viewBox="0 0 24 24">
           <path d="M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" />
         </svg>
       </button>` : ''
+      let displayCap = capacity ? capacity : ''
+      let thumbUp = `<span>${up}</span><button class='btn btn-default vote thumb thumb-up' data-voted='up' data-venueid=${id}><i class="material-icons md-18">thumb_up</i></button>`
+      let thumbDown = `<span>${down}</span><button class='btn btn-default vote thumb thumb-down' data-voted='down' data-venueid=${id}><i class="material-icons md-18">thumb_down</i></button>`
+      let bookmarkIcon = `<i style="color:lightblue" class="material-icons md-18" data-id=${id}>bookmark</i>`
+      let bookmarkBorder = `<i class="material-icons md-18" data-id=${id}>bookmark_border</i>`
+      let bkmk = `<button class='btn btn-default thumb bookmark' data-id=${id}>${bookmark ? bookmarkIcon : bookmarkBorder}</button>`
+
       $('#venuesList').append($(`
 
-        <tr scope='row' data-id=${venue.id} class='venue-row'>
-          <td>${abbrState(venue.state, 'abbr')}</td>
-          <td>${venue.city}</td>
+        <tr scope='row' data-id=${id} class='venue-row'>
+          <td>${abbrState(state, 'abbr')}</td>
+          <td>${city}</td>
           <td>${displayVenue}</td>
           <td class='d-none d-md-table-cell'>${displayEmail}</td>
-          <td class='d-none d-md-table-cell'>${venue.capacity ? venue.capacity : ''}</td>
-          <td class='d-none d-md-table-cell' id=upVote${venue.id}><span>${venue.up}</span><button class='btn btn-default thumb thumb-up' data-id=${venue.id}> <i class="material-icons md-18"  data-id=${venue.id}>thumb_up</i></button></td>
-          <td class='d-none d-md-table-cell' id=downVote${venue.id}><span>${venue.down}</span><button class='btn btn-default thumb thumb-down' data-id=${venue.id}><i class="material-icons md-18" data-id=${venue.id}>thumb_down</i></button></td>
-          <td class='d-none d-md-table-cell'><button class='btn btn-default thumb bookmark' data-id=${venue.id}>${venue.bookmark ? bookmarkIcon : bookmarkBorder}</button></td>
+          <td class='d-none d-md-table-cell'>${displayCap}</td>
+          <td class='d-none d-md-table-cell'>${thumbUp}</td>
+          <td class='d-none d-md-table-cell'>${thumbDown}</td>
+          <td class='d-none d-md-table-cell'>${bkmk}</td>
         </tr>
 
       `))
-
-      if (venue.vote === 'up') {
-        $(`#upVote${venue.id} button`).css("color", "green")
+      if (vote === 'up') {
+        $(`.thumb-up`).css("color", "green")
       }
-      if (venue.vote === 'down') {
-        $(`#downVote${venue.id} button`).css("color", "red")
+      if (vote === 'down') {
+        $(`.thumb-down`).css("color", "red")
       }
-      // if (venue.bookmark || bookmarks) {
-      //   $('.bookmark').css("color", "lightblue")
-      // }
-    })
-    $('.js-tooltip').tooltip()
-    $('.js-copy').click( e => {
-      e.preventDefault()
-      var text = $(e.currentTarget).attr('data-copy')
-      var el = $(e.currentTarget)
-      copyToClipboard(text, el)
     })
 
+    setClipboardListener()
     setThumbListener()
     setBookmarkListener()
-    $('#prevNext').show()
+
+    if (data.length < 25) {
+      $('#next').prop('disabled', true)
+    }
+  }
+
+  const setClipboardListener = () => {
+    $('.js-tooltip').tooltip()
+    $('.js-copy').click( function(e) {
+      e.preventDefault()
+      let el = $(this)
+      let text = el.attr('data-copy')
+      copyToClipboard(text, el)
+    })
   }
 
   const setThumbListener = () => {
-    $('.thumb-up').click( e => {
-        $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'up'}, data => {
-          $(`#upVote${data.id} span`).text(`${data.up}`)
-          $(`#downVote${data.id} span`).text(`${data.down}`)
-          $(`#downVote${data.id} button`).css("color", "black")
-          if (data.vote && data.vote === 'none') {
-            $(`#upVote${data.id} button`).css("color", "black")
-          } else {
-            $(`#upVote${data.id} button`).css("color", "green")
-          }
-        })
-    })
-
-    $('.thumb-down').click( e => {
-        $.post(`/api/votes`, {venueId: e.target.dataset.id, vote: 'down'}, data => {
-          $(`#upVote${data.id} span`).text(`${data.up}`)
-          $(`#downVote${data.id} span`).text(`${data.down}`)
-          $(`#upVote${data.id} button`).css("color", "black")
-          if (data.vote && data.vote === 'none') {
-            $(`#downVote${data.id} button`).css("color", "black")
-          } else {
-            $(`#downVote${data.id} button`).css("color", "red")
-          }
-        })
+    $('.vote').click( e => {
+      let clicked = $(e.currentTarget)
+      let {voted, venueid} = e.currentTarget.dataset
+      let upSpan, downSpan, otherBtn
+      if (voted === 'up') {
+        upSpan = clicked.prev('span')
+        downSpan = clicked.closest('td').next('td').find('span')
+        otherBtn = downSpan.next()
+      } else {
+        downSpan = clicked.prev('span')
+        upSpan = clicked.closest('td').prev('td').find('span')
+        otherBtn = upSpan.next()
+      }
+      $.post(`/api/votes`, {venueId: venueid, vote: voted}, data => {
+        let {id, up, down, vote} = data
+        upSpan.text(up)
+        downSpan.text(down)
+        otherBtn.css("color", "black")
+        if (vote && vote === 'none') {
+          clicked.css("color", "black")
+        } else {
+          clicked.css("color", `${voted === 'up' ? "green" : "red"}`)
+        }
+      })
     })
   }
 
@@ -147,7 +147,6 @@ $(document).ready(function() {
         $('#any').prop("checked", false)
     }
   })
-
 
 
   $('#venueSearchForm').submit( e => {
@@ -327,7 +326,6 @@ $(document).ready(function() {
     if (!$('#url').val().split('/')[3]) {
       $('#url').val(checkUrl(link))
     }
-
     let booking = checkForBookingEmail(about)
     if (!booking) {
       if (emails) {
@@ -354,11 +352,44 @@ $(document).ready(function() {
     })
   }
 
+  const checkForErrors = (formData) => {
+    if (!formData.state.value || formData.state.value === 'All') {
+      return "Please select a state"
+    }
+    if (!formData.city.value) {
+      return "Please enter a city"
+    }
+    if (!formData.venue.value) {
+      return "Please enter a venue name"
+    }
+    if (!formData.url.value) {
+      return "Please enter a URL"
+    }
+  }
 
+  const newVenueFromForm = (formData) => {
+    let newVenue = {
+      state: formData.state.value,
+      city: makeUppercase(formData.city.value),
+      venue: makeUppercase(formData.venue.value),
+      url: checkUrl(formData.url.value)
+    }
+    if (formData.email.value) {
+      newVenue.email = checkEmail(formData.email.value)
+    }
+    if (formData.capacity.value) {
+      newVenue.capacity = formData.capacity.value
+    }
+    newVenue.diy = formData.diy.checked ? true : false
+    return newVenue
+  }
 
   $('#addVenueForm').submit( e => {
     e.preventDefault()
     let formData = e.target.elements
+    if (checkForErrors(formData)) {
+      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${checkForErrors(formData)}</div>`)
+    }
     $('#checkInfoModal .modal-body').empty().append(`<p>Is this correct?</p>
       <p>Venue: ${formData.venue.value}</p>
       <p>Location: ${formData.city.value}, ${abbrState(formData.state.value, 'abbr')}</p>
@@ -368,37 +399,7 @@ $(document).ready(function() {
     $('#checkInfoModal').modal('show');
     $('#acceptInfo').click( e => {
       $('#checkInfoModal').modal('hide');
-      const newVenue = {}
-      newVenue.state = formData.state.value
-      if (!formData.state.value || formData.state.value == 'All') {
-        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a state</div>`)
-      } else {
-        newVenue.state = formData.state.value
-      }
-      if (!formData.city.value || formData.city === '') {
-        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a city</div>`)
-      } else {
-        newVenue.city = makeUppercase(formData.city.value)
-      }
-      if (!formData.venue.value || formData.venue === '') {
-        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a venue</div>`)
-      } else {
-        newVenue.venue = makeUppercase(formData.venue.value)
-      }
-      if (!formData.url.value) {
-        return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">Please enter a url</div>`)
-      } else {
-        newVenue.url = checkUrl(formData.url.value)
-      }
-      if (formData.email.value) {
-        newVenue.email = checkEmail(formData.email.value)
-      }
-      if (formData.capacity.value) {
-        newVenue.capacity = formData.capacity.value
-      }
-      newVenue.diy = formData.diy.checked ? true : false
-      //why woudl i ahve been looking for a newvneue id?
-
+      const newVenue = newVenueFromForm(formData)
       $.post(`/api/venues`, newVenue, (data, status) => {
         if (!data.id) {
             return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${data}</div>`)

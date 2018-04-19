@@ -4,28 +4,18 @@
 
     <div class='container'>
       <div class='button-header'><button class='btn' id="searchBands">SEARCH BANDS</button>  <button class='btn' id="addBand">ADD A BAND</button></div>
-      <!-- <div class='searchbox container-fluid' > -->
       <form id='bandSearchForm' style='display:inline;'>
         <div class='form-row'>
           <div class="input-group mb-3 col-12 col-lg">
-            <!-- <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text" id='bandState'>State</span>
-            </div> -->
               <label for='state' class="control-label col-3  col-form-label" >State:</label>
               <select class="custom-select form-control stateSelector" name='state'></select>
           </div>
 
           <div class="input-group mb-3 col-12 col-lg">
-            <!-- <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">City</span>
-            </div> -->
             <label for='city' class="control-label col-3  col-form-label" >City:</label>
             <input type="text" name='city' class="form-control" aria-label="Default">
           </div>
           <div class="input-group mb-3 col-12 col-lg">
-            <!-- <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">Band</span>
-            </div> -->
             <label for='band' class="control-label col-3  col-form-label" >Band:</label>
             <input type="text" name='band' class="form-control" aria-label="Default">
           </div>
@@ -40,7 +30,6 @@
         <div class='form-row'>
           <div id='selector' class='input-group mb-3 col-lg-5 col-12'>
               <label for='selector' class="control-label col-3 col-md-3 col-form-label" >Select Only:</label>
-              <!-- <div id='selector'> -->
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="checkbox" id="starred-select" value="starred">
                   <label class="form-check-label" for="up-select"><i class="material-icons md-18" style="color:lightblue;">star</i></label>
@@ -56,30 +45,21 @@
           </div>
         </div>
       </form>
-    <!-- </div> -->
+
 
 
 
     <form id='addBandForm' style='display:none;'>
       <div class='form-row'>
         <div class="input-group mb-3 col-12 col-md">
-          <!-- <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">State</span>
-          </div> -->
           <label for='state' class="control-label col-3  col-form-label" >State:</label>
             <select class="custom-select form-control stateSelector" id='state'></select>
         </div>
         <div class="input-group mb-3 col-12 col-md">
-          <!-- <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">City</span>
-          </div> -->
           <label for='city' class="control-label col-3  col-form-label" >City:</label>
           <input type="text" id='city' class="form-control" aria-label="Default">
         </div>
         <div class="input-group mb-3 col-12 col-md">
-          <!-- <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">Band</span>
-          </div> -->
           <label for='band' class="control-label col-3  col-form-label" >Band:</label>
           <input type="text" id='band' class="form-control"  autofocus aria-label="Default">
         </div>
@@ -87,23 +67,14 @@
 
       <div class='form-row'>
         <div class="input-group mb-3 col-12 col-md">
-          <!-- <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">FB</span>
-          </div> -->
           <label for='fb' class="control-label col-3 col-form-label">FB:</label>
           <input type="url" id='fb' class="form-control" >
         </div>
         <div class="input-group mb-3 col-12 col-md">
-          <!-- <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">URL</span>
-          </div> -->
           <label for='url' class="control-label col-3 col-form-label">Url:</label>
           <input type="url" id='url' class="form-control" >
         </div>
         <div class="input-group mb-3 col-12 col-md">
-          <!-- <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">Bandcamp</span>
-          </div> -->
           <label for='bandcamp' class="control-label col-3  col-form-label">Bandcamp:</label>
           <input type="url" id='bandcamp' class="form-control" >
         </div>
@@ -156,13 +127,11 @@
         <thead>
           <tr>
             <th width='5%' class='d-none d-md-table-cell'>State</th>
-            <th width='15%' >City</th>
-            <th width='25%' ><img src='/images/FB-f-Logo__blue_29.png'/></th>
+            <th width='15%'>City</th>
+            <th width='25%'><img src='/images/FB-f-Logo__blue_29.png'/></th>
             <th width='15%' class='d-none d-md-table-cell'>Genre</th>
-            <!-- <th width='5%' class='d-none d-md-table-cell'>Rating</th> -->
             <!-- <th width='5%' class='d-none d-md-table-cell'>Url</th> -->
-            <!-- <th width='5%'  class='d-none d-md-table-cell'>Bandcamp</th> -->
-            <th width='25%' >Stream</th>
+            <th width='25%'> Stream</th>
             <th width='5%' class='d-none d-md-table-cell hide-on-spot'></th>
             <th width='5%' class='d-none d-md-table-cell hide-on-spot'></th>
 
