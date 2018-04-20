@@ -61,24 +61,20 @@ router.get('/q', function(req, res, next) {
   }
 
   if (starred === 'true') {
-    console.log('starred was true, inner joining');
       query.innerJoin('band_stars', function() {
         this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
       })
   } else {
-    console.log('stars was false, outer joining');
     query.leftOuterJoin('band_stars', function() {
       this.on('bands.id', '=', 'band_stars.band_id').andOn('band_stars.user_id', '=', req.cookies.user.id)
     })
   }
   if (bookmarked === 'true') {
-    console.log('bookmarks true');
       query.innerJoin('band_bookmarks', function() {
         this.on('bands.id', '=', 'band_bookmarks.band_id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
       })
       var bookmarks = true
   } else {
-    console.log('bookmarks false');
    query.leftOuterJoin('band_bookmarks', function() {
      this.on('bands.id', '=', 'band_bookmarks.band_id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
    })

@@ -28,11 +28,8 @@ $(document).ready(function() {
     setPrevNextListener()
   }
 
-  loadPage()
-
   const processData = (data) => {
     if (data) {
-      console.log('listing bands');
       listBands(data)
       if (data.length === 0) {
         $('#prevNext').hide()
@@ -135,6 +132,8 @@ $(document).ready(function() {
     })
   }
 
+  loadPage()
+
   const setBookmarkListener = () => {
     $('.bookmark').click( e => {
       e.preventDefault()
@@ -200,6 +199,8 @@ $(document).ready(function() {
       getData(off, true, `q?${off > 0 ? newQueryString : origQuery}`).then( data => {
         if (data.length > 0) {
           processData(data)
+        } else {
+          $('#next').prop('disabled', true)
         }
       })
     })
@@ -229,9 +230,7 @@ $(document).ready(function() {
         genres.push(this.value)
     })
     let starred = $('#starred-select').prop('checked')
-    console.log('starred ', starred);
     let bookmarked = $('#bookmark-select').prop('checked')
-    console.log('bookmarked ', bookmarked);
     const params = {state, city, band, genres, starred, bookmarked}
     const queryString = $.param(params)
     getData(0, false, queryString).then( data => {

@@ -6,7 +6,7 @@ $(document).ready(function() {
 
   const getData = async (offset = 0, scroll = false, query = '') => {
     return $.get(`/api/venues/${query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''}`, (data, status) => {
-      if (offset > 0 && !data.venues) {
+      if (offset > 0 && data.length === 0) {
         $('#next').prop('disabled', true)
         $('#prev').prop('disabled', true)
         return
@@ -28,17 +28,30 @@ $(document).ready(function() {
     setPrevNextListener()
   }
 
-  loadPage()
+  const processData = (venues) => {
+    if (venues) {
+      listVenues(venues)
+      if (venues.length === 0) {
+        $('#prevNext').hide()
+      } else {
+        $('#prevNext').show()
+      }
+      if (venues.length < 25) {
+        $('#next').prop('disabled', true)
+      } else {
+        $('#next').prop('disabled', false)
+      }
 
-  const listVenues = (data, bookmarks = false) => {
-    $('#venuesList').empty()
-    if (data.length === 0) {
-      $('#prevNext').hide()
-    } else {
-      $('#prevNext').show()
     }
-    data.forEach( ven => {
+  }
+
+  const listVenues = (venues) => {
+    console.log('venues ', venues);
+    $('#venuesList').empty()
+
+    venues.forEach( ven => {
       const {id, venue, diy, email, city, state, capacity, up, down, bookmark, vote} = ven
+      console.log('up', up , 'down ', down ,' bookmark ', bookmark , ' vote ', vote);
       let displayVenue = `<a href='/venues/${id}' target='_blank'>${venue}${diy ? '*' : ''}</a>`
       let displayEmail = email ?
       `<button type="button" class="btn btn-default thumb btn-copy js-tooltip js-copy"
@@ -48,8 +61,8 @@ $(document).ready(function() {
         </svg>
       </button>` : ''
       let displayCap = capacity ? capacity : ''
-      let thumbUp = `<span>${up}</span><button class='btn btn-default vote thumb thumb-up' data-voted='up' data-venueid=${id}><i class="material-icons md-18">thumb_up</i></button>`
-      let thumbDown = `<span>${down}</span><button class='btn btn-default vote thumb thumb-down' data-voted='down' data-venueid=${id}><i class="material-icons md-18">thumb_down</i></button>`
+      let thumbUp = `<span>${up}</span><button ${vote === 'up' ? 'style="color:green;"' : ''} class='btn btn-default vote thumb thumb-up' data-voted='up' data-venueid=${id}><i class="material-icons md-18">thumb_up</i></button>`
+      let thumbDown = `<span>${down}</span><button ${vote === 'down' ? 'style="color:red;"' : ''} class='btn btn-default vote thumb thumb-down' data-voted='down' data-venueid=${id}><i class="material-icons md-18">thumb_down</i></button>`
       let bookmarkIcon = `<i style="color:lightblue" class="material-icons md-18" >bookmark</i>`
       let bookmarkBorder = `<i class="material-icons md-18" >bookmark_border</i>`
       let bkmk = `<button class='btn btn-default thumb bookmark' data-id=${id}>${bookmark ? bookmarkIcon : bookmarkBorder}</button>`
@@ -67,20 +80,14 @@ $(document).ready(function() {
           <td class='d-none d-md-table-cell'>${bkmk}</td>
         </tr>
       `))
-      if (vote === 'up') {
-        $(`.thumb-up`).css("color", "green")
-      }
-      if (vote === 'down') {
-        $(`.thumb-down`).css("color", "red")
-      }
     })
     setClipboardListener()
     setThumbListener()
     setBookmarkListener()
-    if (data.length < 25) {
-      $('#next').prop('disabled', true)
-    }
+
   }
+
+  loadPage()
 
   const setClipboardListener = () => {
     $('.js-tooltip').tooltip()
@@ -155,40 +162,19 @@ $(document).ready(function() {
     if (capacity.length < 1) {
       capacity.push('any')
     }
-    let selectors = []
-    $('#selector :checked').each( function(i, el) {
-      selectors.push(el.value)
-    })
-    const params = {state, city, venue, capacity, selectors}
+    let up = $('#up-select').prop('checked')
+    let down = $('#down-select').prop('checked')
+    let bookmarked = $('#bookmark-select').prop('checked')
+    const params = {state, city, venue, capacity, up, down, bookmarked}
     const queryString = $.param(params)
-    console.log(queryString);
     getData(0, false, queryString).then( data => {
       processData(data)
-      $('.stateDisplay').text(`Venues ${data.bookmarks ? 'I\'ve ' : ''}${data.bookmarks ? 'Bookmarked ' : '' }
+      $('.stateDisplay').text(`Venues ${params.bookmarked ? 'I\'ve ' : ''}${params.bookmarked ? 'Bookmarked ' : '' }
       ${city || state !=='All' ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
       ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${venue ? 'matching '+ makeUppercase(venue) : ''}`).show()
       setPrevNextQueryListener(params, queryString)
     })
   })
-
-  const processData = (data) => {
-    let {venues, bookmarks} = data
-    if (venues) {
-      console.log('listing bands');
-      listBands(data)
-      if (venues.length === 0) {
-        $('#prevNext').hide()
-      } else {
-        $('#prevNext').show()
-      }
-      if (venues.length < 25) {
-        $('#next').prop('disabled', true)
-      } else {
-        $('#next').prop('disabled', false)
-      }
-
-    }
-  }
 
   const setPrevNextListener = () => {
     $('#prevNext').show()
@@ -221,14 +207,13 @@ $(document).ready(function() {
     $('#next').click( e => {
       e.preventDefault()
       $('#prev').prop('disabled', false)
-      console.log('enabling prev');
       off += 25
-      console.log('incrementing off');
       const newQueryString = $.param({...params, offset: off})
-      console.log(newQueryString);
       getData(off, true, `q?${off > 0 ? newQueryString : origQuery}`).then( data => {
         if (data.length > 0) {
           processData(data)
+        } else {
+          $('#next').prop('disabled', true)
         }
       })
     })
