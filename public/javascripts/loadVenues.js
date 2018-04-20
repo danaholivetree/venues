@@ -3,44 +3,11 @@ $(document).ready(function() {
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage, copyToClipboard} = helpers
   let off = 0
 
-
-
-
-
-  const getData = (offset = 0, scroll = false) => {
-    $.get(`/api/venues/${offset > 0 ? '?offset='+offset: ''}`, (data, status) => {
-      listVenues(data)
-    })
-    if (offset === 0) {
-      $('#prev').prop('disabled', true)
-    }
-    if (scroll) {
-      $('#venueTable').get(0).scrollIntoView()
-    }
-  }
-
-
-  const setPrevNextListener = () => {
-    $('#prevNext').show()
-    $('#prev').prop('disabled', true)
-    $('#next').click( e => {
-      e.preventDefault()
-      off += 25
-      $('#prev').prop('disabled', false)
-      getData(off, true)
-    })
-    $('#prev').click( e => {
-      e.preventDefault()
-      off -= 25
-      getData(off, true)
-    })
-  }
-
-  getData()
-  setPrevNextListener()
-
   const listVenues = (data, bookmarks = false) => {
+    console.log('data.length at listvenues ', data.length);
+
     $('#venuesList').empty()
+
     data.forEach( ven => {
       const {id, venue, diy, email, city, state, capacity, up, down, bookmark, vote} = ven
       let displayVenue = `<a href='/venues/${id}' target='_blank'>${venue}${diy ? '*' : ''}</a>`
@@ -70,7 +37,6 @@ $(document).ready(function() {
           <td class='d-none d-md-table-cell'>${thumbDown}</td>
           <td class='d-none d-md-table-cell'>${bkmk}</td>
         </tr>
-
       `))
       if (vote === 'up') {
         $(`.thumb-up`).css("color", "green")
@@ -79,11 +45,9 @@ $(document).ready(function() {
         $(`.thumb-down`).css("color", "red")
       }
     })
-
     setClipboardListener()
     setThumbListener()
     setBookmarkListener()
-
     if (data.length < 25) {
       $('#next').prop('disabled', true)
     }
@@ -148,7 +112,6 @@ $(document).ready(function() {
     }
   })
 
-
   $('#venueSearchForm').submit( e => {
     e.preventDefault()
     off = 0
@@ -169,57 +132,95 @@ $(document).ready(function() {
     })
     const params = {state, city, venue, capacity, selectors}
     const queryString = $.param(params)
-
-      // ${bookmarked && starred ? 'and ' : ''}${starred ? 'Starred ' : '' }
-    $.get(`/api/venues/q?${queryString}`, ({venues, bookmarks}, status) => {
-      $('.stateDisplay').text(`Venues ${bookmarks ? 'I\'ve ' : ''}${bookmarks ? 'Bookmarked ' : '' }
+    getData(0, false, queryString).then( data => {
+      processData(data)
+      $('.stateDisplay').text(`Venues ${data.bookmarks ? 'I\'ve ' : ''}${data.bookmarks ? 'Bookmarked ' : '' }
       ${city || state ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
       ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${venue ? 'matching '+ makeUppercase(venue) : ''}`).show()
-      listVenues(venues, bookmarks)
-      setThumbListener()
-      setBookmarkListener()
-      if (venues.length < 25) {
-        $('#next').prop('disabled', true)
-      } else {
-        setPrevNextQueryListener(params, queryString)
-      }
+      setPrevNextQueryListener(params, queryString)
     })
   })
-  const setPrevNextQueryListener = (params, origQuery) => {
+
+  const getData = async (offset = 0, scroll = false, query = '') => {
+    return $.get(`/api/venues/${query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''}`, (data, status) => {
+      if (offset > 0 && !data.venues) {
+        $('#next').prop('disabled', true)
+        $('#prev').prop('disabled', true)
+        return
+      } else {
+        if (offset === 0) {
+          $('#prev').prop('disabled', true)
+        }
+        if (scroll) {
+          $('#venueTable').get(0).scrollIntoView()
+        }
+        return data
+      }
+    })
+  }
+
+  const loadPage = async () => {
+    let data = await getData(off)
+    processData(data)
+    setPrevNextListener()
+  }
+
+  loadPage()
+
+  const processData = (data) => {
+    let {venues, bookmarks} = data
+    if (venues && venues.length > 0) {
+      listVenues(venues)
+    }
+  }
+
+  const setPrevNextListener = () => {
+    $('#prevNext').show()
     $('#prev').prop('disabled', true)
+    $('#next').click( e => {
+      e.preventDefault()
+      off += 25
+      $('#prev').prop('disabled', false)
+      getData(off, true).then( data => {
+        processData(data)
+      })
+    })
+    $('#prev').click( e => {
+      e.preventDefault()
+      off -= 25
+      getData(off, true).then( data => {
+        processData(data)
+      })
+
+    })
+  }
+
+  const setPrevNextQueryListener = (params, origQuery) => {
+    off = 0 // ?
+    $('#prev').prop('disabled', true)
+    $('#next').prop('disabled', false)
+    console.log('disabling prev');
     $('#next').off('click')
+    console.log('removing previous listener');
     $('#next').click( e => {
       e.preventDefault()
       $('#prev').prop('disabled', false)
+      console.log('enabling prev');
       off += 25
-      params.offset = off
-      const newQueryString = $.param(params)
-      $.get(`/api/venues/q?${off > 0 ? newQueryString : origQuery}`, ({venues, bookmarks}, status) => {
-        listVenues(venues, bookmarks)
-        $('#venueTable').get(0).scrollIntoView()
-        if ( venues.length < 25 ) {
-          $('#next').prop('disabled', true)
-        }
+      console.log('incrementing off');
+      const newQueryString = $.param({...params, offset: off})
+      console.log(newQueryString);
+      getData(off, true, `q?${off > 0 ? newQueryString : origQuery}`).then( data => {
+        processData(data)
       })
     })
     $('#prev').off('click')
     $('#prev').click( e => {
       e.preventDefault()
-      if (off >= 25) {
-        off -= 25
-        $('#next').prop('disabled', false)
-      } else {
-        off = 0
-      }
-      if (off === 0) {
-        $('#prev').prop('disabled', true)
-        $('#next').prop('disabled', false)
-      }
-      params.offset = off
-      const newQueryString = $.param(params)
-      $.get(`/api/venues/q?${off > 0 ? newQueryString : origQuery}`, ({venues, bookmarks}, status) => {
-        listVenues(venues, bookmarks)
-        $('#venueTable').get(0).scrollIntoView()
+      off -= 25
+      const newQueryString = $.param({...params, offset: off})
+      getData(off, true, `q?${off > 0 ? newQueryString : origQuery}`).then( data => {
+        processData(data)
       })
     })
   }
@@ -409,6 +410,7 @@ $(document).ready(function() {
       })
     })
   })
+
 
 
 })
