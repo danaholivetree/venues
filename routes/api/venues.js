@@ -22,11 +22,12 @@ router.get('/', (req, res, next) => {
     }
     return venueQuery
       .then( venues => {
-        res.send(venues)
+        res.send({venues})
       })
 });
 
 router.get('/q', (req, res, next) => {
+  console.log('req.query in query ', req.query);
   var query = knex('venues')
               // .select('*')
               .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'email', 'city', 'capacity', 'vote', 'venue_bookmarks.id as bookmark')
@@ -112,11 +113,12 @@ router.get('/q', (req, res, next) => {
      this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", req.cookies.user.id)
    })
  }
-  query.orderBy('state', 'asc').orderBy('city', 'asc').limit(25)
+  query.orderBy('state', 'asc').orderBy('city', 'asc').orderBy('venue', 'asc').limit(25)
   if (req.query.offset) {
     query.offset(req.query.offset)
   }
   return query.then( venues => {
+    console.log(venues);
     res.send({venues, bookmarks})
     })
 });
