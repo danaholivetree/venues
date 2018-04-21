@@ -45,7 +45,7 @@
         } else if (!resp.error) {
           let {first_name, last_name, email, id} = resp
           let name = `${first_name} ${last_name}`
-          console.log('gonna post to login ', 'first_name ', first_name, 'last_name ', last_name, 'email ', email , 'fbid ', fbid , ' acessToken ', accesstoken);
+          console.log('gonna post to login ', 'first_name ', first_name, 'last_name ', last_name, 'email ', email , 'fbid ', id, ' acessToken ', accesstoken);
           $.post(`/auth/login`, {name, email, accessToken, id}, data => {
             console.log('data came back from auth post ', data);
             console.log('should reload window now');
