@@ -52,7 +52,7 @@ const authorize = (req, res, next) => {
     console.log('there was a user cookie');
     return knex('users')
       .where({id: req.cookies.user.id})
-      .returning('authorized')
+      .select('authorized')
       .then( auth => {
         console.log('auth orized' , auth);
         if (auth) {
