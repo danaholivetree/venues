@@ -55,6 +55,7 @@ const authorize = (req, res, next) => {
       .returning('authorized')
       .then( auth => {
         if (auth) {
+          console.log('user was authorized');
           next()
         } else {
           res.render('login')

@@ -77,7 +77,7 @@ router.post('/deauthfb', (req, res, next) => {
   // }
   console.log('parsedPayload.user_id' , parsedPayload.user_id);
   return knex('users')
-    .update({authorized, false}, '*')
+    .update({authorized: false}, '*')
     .where('fbid', parsedPayload.user_id)
     .then( updatedUser => {
       console.log(updatedUser);
