@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "bandcamp-scraper": "^1.2.3",
+    "base64url": "^2.0.0",
     "bcrypt": "^1.0.3",
     "body-parser": "~1.18.2",
     "boom": "^7.1.1",

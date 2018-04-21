@@ -48,8 +48,18 @@ const authorize = (req, res, next) => {
   if (!req.cookies.user) {
     console.log('there was no user cookie, rendering login');
     res.render('login') //should i have this redirect to './' ?
-  } else if (req.cookies.user.accessToken) {
-    console.log('there was an accessToken');
+  } else if (req.cookies.user) {
+    console.log('there was a user cookie');
+    return knex('users')
+      .where({id: req.cookies.user.id})
+      .returning('authorized')
+      .then( auth => {
+        if (auth) {
+          next()
+        } else {
+          res.render('login')
+        }
+      })
     // let path = `https://graph.facebook.com/debug_token?input_token=`
     // request.get(
     //   {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
