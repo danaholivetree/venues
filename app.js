@@ -54,6 +54,7 @@ const authorize = (req, res, next) => {
       .where({id: req.cookies.user.id})
       .returning('authorized')
       .then( auth => {
+        console.log('auth orized' , auth);
         if (auth) {
           console.log('user was authorized');
           next()
