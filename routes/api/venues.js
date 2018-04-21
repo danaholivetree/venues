@@ -4,22 +4,33 @@ const knex = require('../../knex')
 const boom = require('boom')
 
 router.get('/', (req, res, next) => {
-  return knex('venue_votes')
-    .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'up', 'down', 'vote'])
-    .rightOuterJoin('venues', function() {
+  let venueQuery = knex('venues')
+    .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'up', 'down', 'vote', 'venue_bookmarks.id as bookmark'])
+    .leftOuterJoin('venue_votes', function() {
       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+    })
+    .leftOuterJoin('venue_bookmarks', function() {
+      this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn('venue_bookmarks.user_id', '=', req.cookies.user.id)
     })
     .orderBy('state', 'asc')
     .orderBy('city', 'asc')
     .orderBy('venue', 'asc')
-    .then( venues => {
-      res.send(venues)
-    })
+    .limit(25)
+
+    if (req.query.offset) {
+      venueQuery.offset(req.query.offset)
+    }
+    return venueQuery
+      .then( venues => {
+        res.send(venues)
+      })
 });
 
 router.get('/q', (req, res, next) => {
+  console.log(req.query);
+  const {state, city, venue, capacity, up, down, bookmarked } = req.query
   var query = knex('venues')
-              .select('*')
+              .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'email', 'city', 'capacity', 'vote', 'venue_bookmarks.id as bookmark')
   const addState = (state) => {
     if (state !== 'All') {
       return query.where('state', state)
@@ -32,60 +43,73 @@ router.get('/q', (req, res, next) => {
     return query.where('venue', 'ilike', `%${venue}%`)
   }
 
-  if (req.query.state) {
-    addState(req.query.state)
+  if (state) {
+    addState(state)
   }
-  if (req.query.city) {
-    addCity(req.query.city)
+  if (city) {
+    addCity(city)
   }
-  if (req.query.venue) {
-    addVenue(req.query.venue)
+  if (venue) {
+    addVenue(venue)
   }
 
   var rawCapQuery = ''
   var rawBindings = []
-  if (req.query.capacity[0] !== 'any') {
-      req.query.capacity.forEach( (cap, i) => {
-        if (i === 0) {
-          if (cap !== 'capxl' && cap !== 'unlabeled') {
-              rawCapQuery += ' capacity BETWEEN ? and ?'
-          }
-          if (cap === 'capxl') {
-            rawCapQuery += ' capacity > ?'
-          }
-          if (cap === 'unlabeled') {
-            rawCapQuery += ' capacity IS NULL'
-          }
-          if (cap === 'capxs') rawBindings = rawBindings.concat([0, 100])
-          if (cap === 'caps') rawBindings = rawBindings.concat([101, 250])
-          if (cap === 'capm') rawBindings = rawBindings.concat([251, 600])
-          if (cap === 'capl') rawBindings = rawBindings.concat([601, 1200])
-          if (cap === 'capxl') rawBindings = rawBindings.concat([1200])
-        }
-        if (i > 0) {
-          if (cap !== 'capxl' && cap !== 'unlabeled') {
+  if (capacity[0] !== 'any') {
+    rawCapQuery += ' capacity IS NULL'
+      capacity.forEach( (cap, i) => {
+          if (cap !== 'capxl' ) {
               rawCapQuery += ' OR capacity BETWEEN ? AND ?'
           }
           if (cap === 'capxl') {
             rawCapQuery += ' OR capacity > ?'
-          }
-          if (cap === 'unlabeled') {
-            rawCapQuery += ' capacity IS NULL'
           }
           if (cap === 'capxs') rawBindings = rawBindings.concat([0, 100])
           if (cap === 'caps') rawBindings = rawBindings.concat([101, 250])
           if (cap === 'capm') rawBindings = rawBindings.concat([251, 600])
           if (cap === 'capl') rawBindings = rawBindings.concat([601, 1200])
           if (cap === 'capxl') rawBindings = rawBindings.concat(['capacity', 1200])
-        }
       })
   }
   rawCapQuery = '(' + rawCapQuery + ')'
-  if (req.query.capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
+  if (capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
 
-  query.orderBy('state', 'asc').orderBy('city', 'asc').then( venues => {
-    console.log('venues matched', venues);
-      res.send(venues)
+  if (bookmarked === 'true') {
+    query.innerJoin('venue_bookmarks', function() {
+      this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn('venue_bookmarks.user_id', '=', req.cookies.user.id)
+    })
+  } else {
+   query.leftOuterJoin('venue_bookmarks', function() {
+     this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", req.cookies.user.id)
+   })
+ }
+ if (up === 'true' && down === 'true') {
+   query.innerJoin('venue_votes', function() {
+     this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+   }).where('vote', '=', 'up').orWhere('vote', '=', 'down')
+ } else {
+   if (up === 'true') {
+     query.innerJoin('venue_votes', function() {
+       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+     }).where('vote', '=', 'up')
+   }
+   if (down === 'true') {
+     query.innerJoin('venue_votes', function() {
+       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+     }).where('vote', '=', 'down')
+   } else if (up !== 'true' && down !== 'true') {
+     query.leftOuterJoin('venue_votes', function() {
+       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+     })
+   }
+ }
+
+  query.orderBy('state', 'asc').orderBy('city', 'asc').orderBy('venue', 'asc').limit(25)
+  if (req.query.offset) {
+    query.offset(req.query.offset)
+  }
+  return query.then( venues => {
+    res.send(venues)
     })
 });
 
@@ -94,10 +118,12 @@ router.get('/:id', (req, res, next) => {
     .where('venues.id', Number(req.params.id))
     .leftOuterJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
     .rightOuterJoin('users', 'users.id', 'venues.contributed_by')
-    .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'venues.email', 'city', 'capacity','genres_booked as genres', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo',  'users.name as contributedBy', 'sound')
+    .leftOuterJoin('venue_votes', function() {
+      this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+    })
+    .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'vote', 'venues.email', 'city', 'capacity','genres_booked as genres', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo',  'users.name as contributedBy', 'sound')
     .first()
     .then( venue => {
-      console.log('got the venue ', venue);
       res.send(venue)
     })
 });
@@ -130,19 +156,8 @@ router.post('/', (req, res, next) => {
             return knex('venues')
               .insert(newVenue, '*')
               .then( venue => {
-                console.log('venue', venue[0]);
                 res.send(venue[0])
               })
-              // .insert(newVenue, 'state')
-              // .then( state => {
-              //   return knex('venues')
-              //     .select('*')
-              //     .where('state', state[0])
-              //     .orderBy('id', 'desc')
-              //     .then( venues => {
-              //       res.send(venues)
-              //     })
-              // })
           })
 
       }
@@ -150,8 +165,6 @@ router.post('/', (req, res, next) => {
 })
 
 router.put('/:id', (req, res, next) => {
-  console.log('put route by id ',  Number(req.params.id));
-  console.log('req.body ', req.body);
   const venueQuery =   knex('venues').where('id', Number(req.params.id))
   const profileQuery = knex('venue_profiles').where('venue_id', Number(req.params.id))
 
@@ -159,15 +172,17 @@ router.put('/:id', (req, res, next) => {
   let findProfile = profileQuery.select(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo', 'sound']).first()
 
   const updateVenue = (venue) => {
+    venue.updated_at = new Date()
     return venueQuery
       .update(venue)
       .returning('*')
   }
 
   const updateProfile = (venue) => {
+    venue.updated_at = new Date()
     return findProfile
-    .update(venue)
-    .returning(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo', 'sound'])
+      .update(venue)
+      .returning(['genres_booked as genres', 'type', 'crowd', 'ages', 'accessibility', 'pay', 'promo', 'sound'])
   }
 
   const newProfile = (venue) => {
@@ -222,8 +237,6 @@ router.put('/:id', (req, res, next) => {
   if (sound || sound === '') {
     toProfile.sound = sound
   }
-  console.log('toProfile ', toProfile);
-  console.log('toVenues ', toVenues);
   let updatedVenue = {}
   if (Object.keys(toVenues).length > 0) {
     toVenues.id = Number(req.params.id)
@@ -241,7 +254,6 @@ router.put('/:id', (req, res, next) => {
                   res.send(addProfileToUpdatedVenue(updatedVenue, newData[0]))
                 })
               } else {
-                console.log('newprofile ');
                 newProfile(toProfile)
                   .then( newData => {
                     res.send(addProfileToUpdatedVenue(updatedVenue, newData[0]))

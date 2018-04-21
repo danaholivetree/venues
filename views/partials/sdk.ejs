@@ -1,0 +1,80 @@
+
+<body>
+  <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.12&appId=188770131749358&autoLogAppEvents=1';
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '188770131749358',
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v2.12'
+      });
+
+      FB.AppEvents.logPageView();
+    }
+
+    const getLoginStatus = () => {
+      FB.getLoginStatus(function(response) {
+        console.log(response.status);
+        if (response.status === 'connected') {
+          console.log('logging in user');
+          getUserInfo(response.authResponse)
+        }
+        else {
+          FB.login()
+        }
+      })
+    }
+
+    const getUserInfo = (res) => {
+      console.log('res should be authresopnse', res);
+      let {accessToken} = res
+      FB.api(`/me`, 'GET', {fields: 'first_name, last_name, email, id'}, resp => {
+        console.log('response from fb.api/me ', resp);
+        if (resp.error) {
+          if (resp.error.error_subcode === 466) {
+            console.log('user has deauthorized app')
+          }
+        } else if (!resp.error) {
+          let {first_name, last_name, email, id} = resp
+          let name = `${first_name} ${last_name}`
+
+
+
+          $.post(`/auth/login`, {name, email, accessToken, id}, data => {
+            console.log('data came back from auth post ', data);
+            console.log('should reload window now');
+            window.location.reload()
+            console.log('this log is after reload from login');
+          })
+        }
+      })
+    }
+
+    const logout = () => {
+      console.log('clicked logout');
+      FB.getLoginStatus( res => {
+        console.log('getting login status ', res);
+        if (res.status !== 'connected') {
+          console.log('wasnt connected anyway');
+        } else {
+          console.log('gonna do auth logout');
+          $.post(`/auth/logout`, (data, status) => {
+            console.log(' /auth/logout + deleted cookie')
+            window.location = data.redirectURL
+          })
+
+        }
+      })
+
+
+
+    }
+  </script>

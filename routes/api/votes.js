@@ -10,7 +10,6 @@ router.get('/', function(req, res, next) {
       .innerJoin('venue_votes', function() {
         this.on('venue_id', '=', 'venues.id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
       }).then( venues => {
-        console.log('votes ', venues);
         res.send(venues)
       })
 })
@@ -27,6 +26,7 @@ router.post('/', (req, res, next) => {
           return knex('venue_votes')
             .insert({user_id: userId, venue_id: venueId, vote})
             .then( inserted => {
+              console.log('inserted ', inserted);
               return knex('venues')
                 .where('id', venueId)
                 .increment(`${vote}`, 1)
@@ -37,12 +37,25 @@ router.post('/', (req, res, next) => {
             })
         }
         else if (exists.vote === vote) {
-          next(Boom.badRequest(`you\'ve already voted thumbs-${vote} for this venue`))
+          return knex('venue_votes')
+            .del()
+            .where('user_id', userId).andWhere('venue_id', venueId)
+            .returning('vote')
+            .then( vote => {
+              return knex.raw('UPDATE venues SET ?? = ?? - 1 WHERE ?? = ? RETURNING *', [vote, vote, 'id', venueId])
+                .then ( updated => {
+                  let updatedVenue = updated.rows[0]
+                  updatedVenue.vote = 'none'
+                  res.send(updatedVenue)
+                }).catch( errr => {
+                  return next(err)
+                })
+            })
         } else {
           return knex('venue_votes')
             .where('user_id', userId).andWhere('venue_id', venueId)
             .update('vote', vote)
-            .returning('*')
+            .returning('vote')
             .then( blah => {
               let thisVote = (vote === 'up') ? 'up' : 'down'
               let oldVote =  (vote ==='up') ? 'down' : 'up'

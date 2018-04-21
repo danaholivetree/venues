@@ -1,59 +1,46 @@
-  <% include ./partials/header.ejs %>
-  <% include ./partials/nav.ejs %>
-  <body>
+<% include ./partials/header.ejs %>
+<% include ./partials/nav.ejs %>
+<% include ./partials/sdk.ejs %>
 
-    <div class='container'>
-      <div class='row intro'>
-        <p>
-          Welcome to Tour Popsicle! A few notes, since we're all new here:
-        </p>
-        <p>
-          Many of the venues have incomplete information. If you get to a venue page and there are suggestions for entries,
-          please review them and save them if they look correct. A few guidelines on that:
-        </p>
-        <p>
-          1. You used facebook to log in to this application. The only information the application is receiving is your email address!
-          Additionally, your login allows you to access venue and band data from Facebook's Graph API, which will make fields autofill
-          when you are adding venues or bands into the database. Our hope is that this will make it really easy for you to contribute.
-        </p>
-        <p>
-          2. If a venue already has an email address listed, there's a good chance it's a better booking email than one that
-          might be suggested. Please use your judgment when deciding whether to overwrite any information that's already provided :-)
-
-        </p>
-        <p>
-          3. If you have venues you know or bands you love that aren't in the database, please add them, and feel free to upvote them
-          to show support. The goal of this database is not to have EVERYTHING EVER listed. We want USEFUL information that will help
-          us have better shows and better experiences booking tours.
-        </p>
-      </div>
-      <div class='row'>
-        <div class='dash col-4'>
-          <h3>venues i've voted on</h3>
-          <table id='votedDash' class='table table-sm'>
-            <tbody id='dashVotes'>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- <div class='dash col'>
-          <h3>bands i've liked</h3>
-          <table id='starredDash' class='table table-sm'>
-            <tbody id='dashStars'>
-            </tbody>
-
-          </table>
-        </div> -->
-
-        </div>
-
-        <div class='dash col'>
-
-        </div>
-      </div>
-
+<div class='container mt-3'>
+  <div class='row'>
+    <div class='col-auto mx-auto'>
+      <h3> Welcome to Tour Popsicle! </h3>
     </div>
-    <script src='./javascripts/index.js'></script>
-  </body>
+  </div>
+  <div class='row'>
+    <div class='col-auto mx-auto'>
+      <div class='button-header'>
+        <a href='/venues'><button class='btn big-btn'>SEARCH VENUES</button></a>
+        <a href='/bands'><button class='btn big-btn'>SEARCH BANDS</button></a>
+      </div>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-auto mx-auto mb-3'>
+        <h6> A note about searching venues and bands: </h6>
+    </div>
+    <div class='col-10 mx-auto mb-3'>
+      <p>
+        Many of the venues have incomplete information. The fields in a venue page may autofill with information we're pulling from Facebook.
+        If you get to a venue page and there are suggestions for entries,please review and save them if they look correct.
+      </p>
+    </div>
+  </div>
+  <div class='row'>
+    <div class='col-auto mx-auto mb-3'>
+        <h6> A note about adding venues and bands: </h6>
+    </div>
+    <div class='col-10 mx-auto mb-3'>
+      <p>
+        When you are adding venues or bands into the database, fields on your form may autofill with data from various sources.
+        Our hope is that this will make it really easy for you to contribute.
+        If there are venues you know or bands you love that aren't already listed, please add them, and feel free to upvote them
+        to show support. We want to share information that will help us have better shows and better experiences booking tours.
+      </p>
+      </p>
+    </div>
+  </div>
+</div>
 
-</html>
+  <script src="./javascripts/index.js"></script>

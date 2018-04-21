@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_KEY
 const bcrypt = require('bcrypt')
 const knex = require('./knex')
+const request = require('request')
 
 
 var renders = require('./routes/renders')
@@ -20,6 +21,8 @@ var bandApi = require('./routes/api/bands')
 var userApi = require('./routes/api/users')
 var voteApi = require('./routes/api/votes')
 var starApi = require('./routes/api/stars')
+var vBookApi = require('./routes/api/vBookmarks')
+var bBookApi = require('./routes/api/bBookmarks')
 var token = require('./routes/token')
 var bc = require('./routes/bc')
 var auth = require('./routes/auth')
@@ -39,40 +42,42 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 const authorize = (req, res, next) => {
-  jwt.verify(req.cookies.token, secret, (err, payload) => {
-    if (!req.cookies.token) {
-      let users
-      let venues
-      let bands
-      return knex('users')
-        .count('id')
-        .first()
-        .then( usersCount => {
-          users = usersCount.count
-          return knex('venues')
-            .count('id')
-            .first()
-            .then( venuesCount => {
-              venues = venuesCount.count
-              return knex('bands')
-                .count('id')
-                .first()
-                .then( bandsCount => {
-                  bands = bandsCount.count
-                  res.render("login", {users, venues, bands})
-                })
-            })
-
-        })
-    } else {
-      next()
-    }
-  })
+  console.log('going through auth');
+  if (!req.cookies.user) {
+    console.log('there was no user cookie, rendering login');
+    res.render('login') //should i have this redirect to './' ?
+  } else if (req.cookies.user.accessToken) {
+    console.log('there was an accessToken');
+    // let path = `https://graph.facebook.com/debug_token?input_token=`
+    // request.get(
+    //   {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
+    //   (error, response, data) => {
+    //     let parsedData = JSON.parse(data)
+    //     if (parsedData.data.is_valid) {
+    //       next()
+    //     } else {
+    //       console.log(parsedData.data.error);
+    //       let err = parsedData.data.error.message
+    //       let subcode = parsedData.data.error.subcode
+    //       if (subcode === 463) {
+    //         //token expired
+    //
+    //       }
+    //       if (subcode === 467)  {
+    //         //user logged out of Facebook
+    //
+    //       }
+    //       res.render('login')
+    //
+    //     }
+    // })
+    next()
+  }
 }
-
 app.use('/auth', auth)
-app.use(authorize)
+// app.use(authorize)
 app.use('/', renders)
 app.use('/token', token)
 app.use('/bc', bc)
@@ -81,6 +86,9 @@ app.use('/api/users', userApi)
 app.use('/api/votes', voteApi)
 app.use('/api/bands', bandApi)
 app.use('/api/stars', starApi)
+app.use('/api/vBookmarks', vBookApi)
+app.use('/api/bBookmarks', bBookApi)
+
 
 
 

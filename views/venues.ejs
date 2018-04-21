@@ -1,146 +1,161 @@
   <% include ./partials/header.ejs %>
   <% include ./partials/nav.ejs %>
-  <body>
+  <% include ./partials/sdk.ejs %>
+  <script>
+    $(function () {
+      $('[data-toggle="popover"]').popover()
+    })
+  </script>
     <div class='container'>
-      <div class='button-header'>
-        <button class='btn' id='searchVenues'>SEARCH VENUES</button>
-        <button class='btn' id='addVenue'>ADD A VENUE</button>
-      </div>
-        <form id='venueSearchForm'>
-          <div class='form-row'>
-            <div class="input-group mb-3 col-12 col-lg">
-              <div class="d-none d-lg-inline-block input-group-prepend">
-                <span class="input-group-text" id="venueState">State</span>
-              </div>
-              <label for='state' class="control-label col-3 d-lg-none col-form-label" >State:</label>
-                <select class="custom-select form-control stateSelector" name='state'></select>
-            </div>
-            <div class="input-group mb-3 col-12 col-lg">
-              <div class="d-none d-lg-inline-block input-group-prepend">
-                <span class="input-group-text">City</span>
-              </div>
-              <label for='city' class="control-label col-3 d-lg-none col-form-label" >City:</label>
-              <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-            </div>
-            <div class="input-group mb-3 col-12 col-lg">
-              <div class="d-none d-lg-inline-block input-group-prepend">
-                <span class="input-group-text">Venue</span>
-              </div>
-              <label for='venue' class="control-label col-3 d-lg-none col-form-label" >State:</label>
-              <input type="text" name='venue' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-            </div>
+      <div class='row button-header'>
+          <div class='col-11 '>
+            <button class='btn' id='searchVenues'>SEARCH VENUES</button>
+            <button class='btn' id='addVenue'>ADD A VENUE</button>
           </div>
-          <div class='row'>
-            <div class='input-group mb-3 col-lg-8 col-12 offset-lg-1'>
-              <!-- <div class=input-group-text > -->
-                <!-- <span class="input-group-text capSelector">Capacity</span> -->
-                <label for='Capacity' class="control-label col-3 col-md-1  col-form-label capSelector" >Cap:</label>
+          <div class='col-1'>
+            <i data-trigger='click focus'  data-toggle="popover" data-placement="left" data-content="`${info}`" style="color:lightblue" class="material-icons md-36">help</i>
+          </div>
+    </div>
 
+      <form id='venueSearchForm'>
+        <div class='form-row'>
+          <div class="input-group mb-3 col-12 col-lg">
+            <label for='state' class="control-label col-3 col-form-label" >State:</label>
+              <select class="custom-select form-control stateSelector" name='state'></select>
+          </div>
+          <div class="input-group mb-3 col-12 col-lg">
+            <label for='city' class="control-label col-3  col-form-label" >City:</label>
+            <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          </div>
+          <div class="input-group mb-3 col-12 col-lg">
+            <label for='venue' class="control-label col-3  col-form-label" >Venue:</label>
+            <input type="text" name='venue' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          </div>
+        </div>
+
+        <div class='form-row'>
+          <div id='capacity' class='input-group mb-3 col-lg-7 col-12 mx-auto'>
+              <label for='capacity' class="control-label col-3 col-md-1  col-form-label capSelector" >Cap:</label>
+
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="any" value="any" checked>
+                <label class="form-check-label" for="any">Any</label>
+              </div>
+              <div class="form-check form-check-inline ">
+                <input class="form-check-input notany" type="checkbox" id="capxs" value="xsmall">
+                <label class="form-check-label" for="capxs">< 100</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input notany" type="checkbox" id="caps" value="small">
+                <label class="form-check-label" for="caps">101< 250</label>
+              </div>
+              <div class="form-check form-check-inline ">
+                <input class="form-check-input notany" type="checkbox" id="capm" value="medium">
+                <label class="form-check-label" for="capm">251 < 600</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input notany" type="checkbox" id="capl" value="large">
+                <label class="form-check-label" for="capl">601 < 1200</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input notany" type="checkbox" id="capxl" value="xlarge">
+                <label class="form-check-label" for="capxl">1200+</label>
+              </div>
+
+          </div>
+
+          <div id='selector' class='input-group mb-3 col-lg-5 col-12'>
+              <label for='selector' class="control-label col-3 col-md-3 col-form-label" >Select Only:</label>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="capAny" value="any" checked>
-                  <label class="form-check-label" for="any">Any</label>
+                  <input class="form-check-input" type="checkbox" id="up-select" value="up">
+                  <label class="form-check-label" for="up-select"><i class="material-icons md-18">thumb_up</i></label>
                 </div>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input notany" type="checkbox" id="unlabeled" value="unlabeled">
-                  <label class="form-check-label" for="unlabeled">Unknown</label>
-                </div>
-                <div class="form-check form-check-inline ">
-                  <input class="form-check-input notany" type="checkbox" id="capxs" value="xsmall">
-                  <label class="form-check-label" for="capxs">< 100</label>
+                  <input class="form-check-input" type="checkbox" id="down-select" value="down">
+                  <label class="form-check-label" for="down-select"><i class="material-icons md-18">thumb_down</i></label>
                 </div>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input notany" type="checkbox" id="caps" value="small">
-                  <label class="form-check-label" for="caps">101< 250</label>
+                  <input class="form-check-input" type="checkbox" id="bookmark-select" value="bookmarked">
+                  <label class="form-check-label" for="bookmark-select"><i class="material-icons md-18">bookmark</i></label>
                 </div>
-                <div class="form-check form-check-inline ">
-                  <input class="form-check-input notany" type="checkbox" id="capm" value="medium">
-                  <label class="form-check-label" for="capm">251 < 600</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input notany" type="checkbox" id="capl" value="large">
-                  <label class="form-check-label" for="capl">601 < 1200</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input notany" type="checkbox" id="capxl" value="xlarge">
-                  <label class="form-check-label" for="capxl">1200+</label>
-                </div>
-              <!-- </div> -->
-            </div>
+          </div>
+        </div>
+        <div class='form-row'>
+          <div class='input-group mb-3 col-12 ' >
+
             <div class="col-2 mx-auto col-lg-1 ">
               <button type="submit" class="btn btn-default big-btn">SUBMIT</button>
             </div>
-
-          </div>
-        </form>
-
-      <form id='addVenueForm' style='display:none;'>
-        <div class='form-row'>
-          <div class="input-group mb-3 col-12 col-lg-4">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">State</span>
-            </div>
-              <label for='state' class="control-label col-3 d-lg-none col-form-label" >State:</label>
-              <select class="custom-select form-control stateSelector" id='state'></select>
-          </div>
-          <div class="input-group mb-3 col-12 col-lg-4">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">City</span>
-            </div>
-            <label for='city' class="control-label col-3 d-lg-none col-form-label" >City:</label>
-            <input type="text" id='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-          </div>
-          <div class="input-group mb-3 col-12 col-lg-4">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">Venue</span>
-            </div>
-            <label for='venue' class="control-label col-3 d-lg-none col-form-label" >Venue:</label>
-            <input type="text" id='venue' autofocus class="form-control" data-target="#checkVenueModal" aria-label="Default" aria-describedby="inputGroup-sizing-default">
           </div>
         </div>
-        <div class='form-row'>
-          <div class="input-group mb-3 col-12 col-lg-3">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">URL</span>
-            </div>
-            <label for='url' class="control-label col-3 d-lg-none col-form-label" >Url:</label>
-            <input type="url" id='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-          </div>
-          <div class="input-group mb-3 col-12 col-lg-4">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">Booking Email</span>
-            </div>
-            <label for='email' class="control-label col-3 d-lg-none col-form-label" >Booking Email:</label>
-            <input type="email" id='email' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-          </div>
-          <div class="input-group mb-3 col-12 col-lg-3">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">Capacity</span>
-            </div>
-            <label for='capacity' class="control-label col-3 d-lg-none col-form-label" >Capacity:</label>
-            <input type="number" id='capacity' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+      </form>
 
-            <div class="form-check form-check-inline px-3 col-3 col-lg-2">
-              <input class="form-check-input" type="checkbox" id="diy" value="diy">
-              <label class="form-check-label" for="diy">DIY</label>
-            </div>
+    <form id='addVenueForm' style='display:none;'>
+      <div class='form-row'>
+        <div class="input-group mb-3 col-12 col-lg-4">
+            <label for='state' class="control-label col-3  col-form-label" >State:</label>
+            <select autocomplete="nope" class="custom-select form-control stateSelector" id='state'></select>
+        </div>
+        <div class="input-group mb-3 col-12 col-lg-4">
+          <label for='city' class="control-label col-3  col-form-label" >City:</label>
+          <input type="text" id='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-12 col-lg-4">
+          <label for='venue' class="control-label col-3  col-form-label" >Venue:</label>
+          <input type="text" id='venue' autofocus class="form-control" data-target="#checkVenueModal" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+      </div>
+      <div class='form-row'>
+        <div class="input-group mb-3 col-12 col-lg-4">
+          <label for='url' class="control-label col-3  col-form-label" >Url:</label>
+          <input type="url" id='url' class="form-control" placeholder="Facebook preferred!" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-12 col-lg-4">
+          <label for='email' class="control-label col-3 col-form-label" >Email:</label>
+          <input type="email" autocomplete="nope" id='email' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3 col-12 col-lg-4">
+          <label for='capacity' class="control-label col-3  col-form-label" >Cap:</label>
+          <input type="number" autocomplete="nope" id='capacity' class="form-control col-lg-3" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+
+          <div class="form-check form-check-inline px-3 col-3 col-lg-1">
+            <input class="form-check-input" type="checkbox" id="diy" value="diy">
+            <label class="form-check-label" for="diy">DIY</label>
           </div>
         </div>
+      </div>
 
-        <div class="modal" id="checkVenueModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal" id="checkVenueModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <!-- <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5> -->
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
             <div class="modal-body">
-              <!-- Did you mean venue in city, state? -->
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
               <button type="button" id='acceptVenue' class="btn btn-default">Yes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal" id="checkInfoModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+              <button type="button" id='acceptInfo' class="btn btn-default">Yes</button>
             </div>
           </div>
         </div>
@@ -153,36 +168,40 @@
         <div class="col-auto mx-auto my-3">
           <button type="submit" class="btn big-btn">SUBMIT</button>
         </div>
-          <!-- <div class="col-md-1 col-2 mx-auto mb-3">
-            <button type="submit" class="btn btn-default big-btn">SUBMIT</button>
+      </div>
+    </form>
+
+      <h2> <span class='stateDisplay' style='display:none'></span> </h2>
+
+      <table id='venueTable' class='table table-hover'>
+        <thead>
+          <th width='10%'>State</th>
+          <th width='15%'>City</th>
+          <th width='30%'>Venue</th>
+          <th width='15%' class='d-none d-md-table-cell'>Booking</th>
+          <th width='10%' class='d-none d-md-table-cell'>Capacity</th>
+          <th width='5%' class='d-none d-md-table-cell'></th>
+          <th width='5%' class='d-none d-md-table-cell'></th>
+          <th width='5%' class='d-none d-md-table-cell'></th>
+        </thead>
+        <tbody id='venuesList'>
+
+        </tbody>
+      </table>
+      <div class='row'>
+        <div class='col-auto mx-auto'>
+          <div id='prevNext' style='display:none;' class='btn-group'>
+            <button id='prev' type='button' class='btn big-btn'>Prev</button>
+            <button id='next' type='button' class='btn big-btn'>Next</button>
           </div>
-          <div id='errorMessage' class='col-lg-4 col-md-4 col-sm-5 col-10 mx-auto mb-3'></div> -->
-
-
         </div>
-      </form>
-      <h1> <span class='stateDisplay' style='display:none'></span> </h1>
-
-        <table class='table table-hover'>
-          <thead>
-            <th width='10%'>State</th>
-            <th width='15%'>City</th>
-            <th width='30%'>Venue</th>
-            <th width='10%' class='d-none d-md-table-cell'>Booking</th>
-            <th width='10%' class='d-none d-md-table-cell'>Capacity</th>
-            <th width='5%' class='d-none d-md-table-cell'></th>
-            <th width='5%' class='d-none d-md-table-cell'></th>
-          </thead>
-          <tbody id='venuesList'>
-
-          </tbody>
-        </table>
+      </div>
     </div>
 
 
 
-      <script src="./javascripts/searchform.js"></script>
-      <script src="./javascripts/loadVenues.js"></script>
+    <script src="./javascripts/searchform.js"></script>
+    <script src="./javascripts/loadVenues.js"></script>
 
   </body>
 </html>

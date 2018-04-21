@@ -1,95 +1,82 @@
   <% include ./partials/header.ejs %>
   <% include ./partials/nav.ejs %>
-  <body>
+  <% include ./partials/sdk.ejs %>
+
     <div class='container'>
       <div class='button-header'><button class='btn' id="searchBands">SEARCH BANDS</button>  <button class='btn' id="addBand">ADD A BAND</button></div>
-      <!-- <div class='searchbox container-fluid' > -->
       <form id='bandSearchForm' style='display:inline;'>
         <div class='form-row'>
           <div class="input-group mb-3 col-12 col-lg">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text" id='bandState'>State</span>
-            </div>
-              <label for='state' class="control-label col-3 d-lg-none col-form-label" >State:</label>
+              <label for='state' class="control-label col-3  col-form-label" >State:</label>
               <select class="custom-select form-control stateSelector" name='state'></select>
           </div>
 
           <div class="input-group mb-3 col-12 col-lg">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">City</span>
-            </div>
-            <label for='city' class="control-label col-3 d-lg-none col-form-label" >City:</label>
-            <input type="text" name='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            <label for='city' class="control-label col-3  col-form-label" >City:</label>
+            <input type="text" name='city' class="form-control" aria-label="Default">
           </div>
           <div class="input-group mb-3 col-12 col-lg">
-            <div class="d-none d-lg-inline-block input-group-prepend">
-              <span class="input-group-text">Band</span>
-            </div>
-            <label for='band' class="control-label col-3 d-lg-none col-form-label" >Band:</label>
-            <input type="text" name='band' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            <label for='band' class="control-label col-3  col-form-label" >Band:</label>
+            <input type="text" name='band' class="form-control" aria-label="Default">
           </div>
         </div>
-        <div class='row'>
-          <div class='input-group mb-3 col-12 col-md-11' >
+        <div class='form-row'>
+          <div class='input-group mb-3 col-12' >
             <div class='input-group-text genres' id='genreSelector'>
               <span class="capSelector">Genre</span>
             </div>
+          </div>
+        </div>
+        <div class='form-row'>
+          <div id='selector' class='input-group mb-3 col-lg-5 col-12'>
+              <label for='selector' class="control-label col-3 col-md-3 col-form-label" >Select Only:</label>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="starred-select" value="starred">
+                  <label class="form-check-label" for="up-select"><i class="material-icons md-18" style="color:lightblue;">star</i></label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="bookmark-select" value="bookmarked">
+                  <label class="form-check-label" for="bookmark-select"><i class="material-icons md-18" style="color:lightblue;">bookmark</i></label>
+                </div>
+
           </div>
           <div class="col-md-1 col-2 mx-auto">
             <button type="submit" class="btn big-btn">SUBMIT</button>
           </div>
         </div>
       </form>
-    <!-- </div> -->
+
 
 
 
     <form id='addBandForm' style='display:none;'>
       <div class='form-row'>
         <div class="input-group mb-3 col-12 col-md">
-          <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">State</span>
-          </div>
-          <label for='state' class="control-label col-3 d-md-none col-form-label" >State:</label>
+          <label for='state' class="control-label col-3  col-form-label" >State:</label>
             <select class="custom-select form-control stateSelector" id='state'></select>
         </div>
         <div class="input-group mb-3 col-12 col-md">
-          <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">City</span>
-          </div>
-          <label for='city' class="control-label col-3 d-md-none col-form-label" >City:</label>
-          <input type="text" id='city' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          <label for='city' class="control-label col-3  col-form-label" >City:</label>
+          <input type="text" id='city' class="form-control" aria-label="Default">
         </div>
         <div class="input-group mb-3 col-12 col-md">
-          <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">Band</span>
-          </div>
-          <label for='band' class="control-label col-3 d-md-none col-form-label" >Band:</label>
-          <input type="text" id='band' class="form-control"  autofocus aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          <label for='band' class="control-label col-3  col-form-label" >Band:</label>
+          <input type="text" id='band' class="form-control"  autofocus aria-label="Default">
         </div>
       </div>
 
-      <div class='form-row second-row'>
-        <div class="input-group mb-3 col col-12 col-md">
-          <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">FB</span>
-          </div>
-          <label for='fb' class="control-label col-3 d-md-none col-form-label" >FB:</label>
-          <input type="url" id='fb' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+      <div class='form-row'>
+        <div class="input-group mb-3 col-12 col-md">
+          <label for='fb' class="control-label col-3 col-form-label">FB:</label>
+          <input type="url" id='fb' class="form-control" >
         </div>
         <div class="input-group mb-3 col-12 col-md">
-          <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">URL</span>
-          </div>
-          <label for='url' class="control-label col-3 d-md-none col-form-label" >Url:</label>
-          <input type="url" id='url' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+          <label for='url' class="control-label col-3 col-form-label">Url:</label>
+          <input type="url" id='url' class="form-control" >
         </div>
-        <div class="input-group mb-3 col col-12 col-md">
-          <div class="d-none d-md-inline-block input-group-prepend">
-            <span class="input-group-text">Bandcamp</span>
-          </div>
-          <label for='bandcamp' class="control-label col-3 d-md-none col-form-label" >Bandcamp:</label>
-          <input type="url" id='bandcamp' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        <div class="input-group mb-3 col-12 col-md">
+          <label for='bandcamp' class="control-label col-3  col-form-label">Bandcamp:</label>
+          <input type="url" id='bandcamp' class="form-control" >
         </div>
       </div>
       <div id='spotifyGuess' class='form-row'>
@@ -103,6 +90,27 @@
           </div>
         </div>
       </div>
+
+      <div class="modal" id="checkBandModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <!-- <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5> -->
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Did you mean venue in city, state? -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            <button type="button" id='acceptBand' class="btn btn-default">Yes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
       <div class='form-row'>
         <div class='col-auto mx-auto' style="text-align:center;" id='errorMessage'></div>
       </div>
@@ -113,19 +121,19 @@
       </div>
     </form>
 
-    <h1> <span class='stateDisplay' style='display:none'></span></h1>
+    <h2> <span class='stateDisplay' style='display:none'></span></h2>
 
-      <table class='table'>
+      <table id='bandTable' class='table'>
         <thead>
           <tr>
             <th width='5%' class='d-none d-md-table-cell'>State</th>
-            <th width='15%' >City</th>
-            <th width='25%' >Band (click to fb)</th>
-            <th width='20%' class='d-none d-md-table-cell'>Genre</th>
-            <!-- <th width='5%' class='d-none d-md-table-cell'>Rating</th> -->
+            <th width='15%'>City</th>
+            <th width='25%'><img src='/images/FB-f-Logo__blue_29.png'/></th>
+            <th width='15%' class='d-none d-md-table-cell'>Genre</th>
             <!-- <th width='5%' class='d-none d-md-table-cell'>Url</th> -->
-            <th width='5%'  class='d-none d-md-table-cell'>Bandcamp</th>
-            <th width='25%' >Spotify</th>
+            <th width='25%'> Stream</th>
+            <th width='5%' class='d-none d-md-table-cell hide-on-spot'></th>
+            <th width='5%' class='d-none d-md-table-cell hide-on-spot'></th>
 
           </tr>
 
@@ -134,6 +142,14 @@
 
         </tbody>
       </table>
+      <div class='row'>
+        <div class='col-auto mx-auto'>
+          <div id='prevNext' style='display:none;' class='btn-group'>
+            <button id='prev' type='button' class='btn big-btn'>Prev</button>
+            <button id='next' type='button' class='btn big-btn'>Next</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="./javascripts/searchform.js"></script>

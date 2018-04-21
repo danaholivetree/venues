@@ -1,0 +1,47 @@
+  <% include ./partials/header.ejs %>
+  <% include ./partials/nav.ejs %>
+  <% include ./partials/sdk.ejs %>
+
+
+    <div class='container-fluid'>
+      <div class='row intro'>
+
+
+      </div>
+      <div class='row'>
+        <div class='dash col-4'>
+          <select id='dashSelect'>
+            <!-- <option value='bands'>bands i like</option> -->
+            <option value='venuesUp'>venues i like</option>
+            <option value='venuesDown'>venues i don't like</option>
+            <option value='venuesBookmarked'>venues i've bookmarked</option>
+            <option value='bandsBookmarked'>bands i've bookmarked</option>
+          </select>
+          <button id='showDashTable' type='button' classs='btn big-btn'>View</button>
+        </div>
+
+        <!-- <div class='dash col'>
+          <h3>bands i've liked</h3>
+          <table id='starredDash' class='table table-sm'>
+            <tbody id='dashStars'>
+            </tbody>
+
+          </table>
+        </div> -->
+
+        </div>
+
+        <div class='dash col'>
+          <h3 id='dashTableTitle'></h3>
+          <table id='dashTable' class='table table-sm'>
+            <tbody id='dashTableBody'>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+    <script src='./javascripts/dash.js'></script>
+  </body>
+
+</html>
