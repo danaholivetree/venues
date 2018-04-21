@@ -45,9 +45,7 @@
         } else if (!resp.error) {
           let {first_name, last_name, email, id} = resp
           let name = `${first_name} ${last_name}`
-
-
-
+          console.log('gonna post to login ', 'first_name ', first_name, 'last_name ', last_name, 'email ', email , 'fbid ', fbid , ' acessToken ', accesstoken);
           $.post(`/auth/login`, {name, email, accessToken, id}, data => {
             console.log('data came back from auth post ', data);
             console.log('should reload window now');
@@ -60,21 +58,10 @@
 
     const logout = () => {
       console.log('clicked logout');
-      FB.getLoginStatus( res => {
-        console.log('getting login status ', res);
-        if (res.status !== 'connected') {
-          console.log('wasnt connected anyway');
-        } else {
-          console.log('gonna do auth logout');
-          $.post(`/auth/logout`, (data, status) => {
-            console.log(' /auth/logout + deleted cookie')
-            window.location = data.redirectURL
-          })
-
-        }
-      })
-
-
-
-    }
+      console.log('gonna do auth logout');
+      $.post(`/auth/logout`, (data, status) => {
+        console.log(' /auth/logout + deleted cookie')
+        window.location = data.redirectURL
+        })
+      }
   </script>
