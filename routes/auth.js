@@ -32,7 +32,8 @@ router.post('/login', (req, res, next) => {
           return knex('users')
             .update({authorized: true}, '*')
             .where('id', exists.id)
-            .then( upatedUser => {
+            .then( updatedUser => {
+              console.log('updatedUser[0] ', updatedUser[0]);
               res.cookie('user', {
                               id: exists.id,
                               admin: exists.admin,

@@ -60,6 +60,7 @@ const authorize = (req, res, next) => {
           console.log('user was authorized');
           next()
         } else {
+          res.clearCookie('user')
           res.render('login')
         }
       })
