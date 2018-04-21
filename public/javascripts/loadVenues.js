@@ -46,12 +46,10 @@ $(document).ready(function() {
   }
 
   const listVenues = (venues) => {
-    console.log('venues ', venues);
     $('#venuesList').empty()
 
     venues.forEach( ven => {
       const {id, venue, diy, email, city, state, capacity, up, down, bookmark, vote} = ven
-      console.log('up', up , 'down ', down ,' bookmark ', bookmark , ' vote ', vote);
       let displayVenue = `<a href='/venues/${id}' target='_blank'>${venue}${diy ? '*' : ''}</a>`
       let displayEmail = email ?
       `<button type="button" class="btn btn-default thumb btn-copy js-tooltip js-copy"

@@ -27,19 +27,34 @@
           console.log('logging in user');
           getUserInfo(response.authResponse)
         }
+        else {
+          FB.login()
+        }
       })
     }
 
     const getUserInfo = (res) => {
+      console.log('res should be authresopnse', res);
       let {accessToken} = res
       FB.api(`/me`, 'GET', {fields: 'first_name, last_name, email, id'}, resp => {
         console.log('response from fb.api/me ', resp);
-        let {first_name, last_name, email, id} = resp
-        let name = `${first_name} ${last_name}`
-        $.post(`/auth/login`, {name, email, accessToken, id}, data => {
-          console.log('data came back from auth post ', data);
-          window.location.reload()
-        })
+        if (resp.error) {
+          if (resp.error.error_subcode === 466) {
+            console.log('user has deauthorized app')
+          }
+        } else if (!resp.error) {
+          let {first_name, last_name, email, id} = resp
+          let name = `${first_name} ${last_name}`
+
+
+
+          $.post(`/auth/login`, {name, email, accessToken, id}, data => {
+            console.log('data came back from auth post ', data);
+            console.log('should reload window now');
+            window.location.reload()
+            console.log('this log is after reload from login');
+          })
+        }
       })
     }
 

@@ -1,12 +1,22 @@
   <% include ./partials/header.ejs %>
   <% include ./partials/nav.ejs %>
   <% include ./partials/sdk.ejs %>
-
+  <script>
+    $(function () {
+      $('[data-toggle="popover"]').popover()
+    })
+  </script>
     <div class='container'>
-      <div class='button-header'>
-        <button class='btn' id='searchVenues'>SEARCH VENUES</button>
-        <button class='btn' id='addVenue'>ADD A VENUE</button>
-      </div>
+      <div class='row button-header'>
+          <div class='col-11 '>
+            <button class='btn' id='searchVenues'>SEARCH VENUES</button>
+            <button class='btn' id='addVenue'>ADD A VENUE</button>
+          </div>
+          <div class='col-1'>
+            <i data-trigger='click focus'  data-toggle="popover" data-placement="left" data-content="`${info}`" style="color:lightblue" class="material-icons md-36">help</i>
+          </div>
+    </div>
+
       <form id='venueSearchForm'>
         <div class='form-row'>
           <div class="input-group mb-3 col-12 col-lg">
@@ -187,6 +197,8 @@
         </div>
       </div>
     </div>
+
+
 
     <script src="./javascripts/searchform.js"></script>
     <script src="./javascripts/loadVenues.js"></script>

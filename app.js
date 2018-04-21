@@ -42,37 +42,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// const authorize = (req, res, next) => {
-//   jwt.verify(req.cookies.token, secret, (err, payload) => {
-//     if (!req.cookies.token) {
-//       let users
-//       let venues
-//       let bands
-//       return knex('users')
-//         .count('id')
-//         .first()
-//         .then( usersCount => {
-//           users = usersCount.count
-//           return knex('venues')
-//             .count('id')
-//             .first()
-//             .then( venuesCount => {
-//               venues = venuesCount.count
-//               return knex('bands')
-//                 .count('id')
-//                 .first()
-//                 .then( bandsCount => {
-//                   bands = bandsCount.count
-//                   res.render("login", {users, venues, bands})
-//                 })
-//             })
-//
-//         })
-//     } else {
-//       next()
-//     }
-//   })
-// }
 
 const authorize = (req, res, next) => {
   console.log('going through auth');
@@ -108,7 +77,7 @@ const authorize = (req, res, next) => {
   }
 }
 app.use('/auth', auth)
-app.use(authorize)
+// app.use(authorize)
 app.use('/', renders)
 app.use('/token', token)
 app.use('/bc', bc)

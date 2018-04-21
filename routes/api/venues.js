@@ -29,12 +29,6 @@ router.get('/', (req, res, next) => {
 router.get('/q', (req, res, next) => {
   console.log(req.query);
   const {state, city, venue, capacity, up, down, bookmarked } = req.query
-  // console.log('state', state, 'city', city, 'up', up , 'down ', down, 'bookmarked ', bookmarked);
-  // console.log('up == true ', up == true);
-  // console.log('up == false ', up == false);
-  // console.log('!up ', !up);
-  // console.log('!up && !down ', !up && !down);
-  // console.log('up == true && down == true ',up == true && down == true  );
   var query = knex('venues')
               .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'email', 'city', 'capacity', 'vote', 'venue_bookmarks.id as bookmark')
   const addState = (state) => {
@@ -81,35 +75,29 @@ router.get('/q', (req, res, next) => {
   if (capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
 
   if (bookmarked === 'true') {
-    console.log('add bookmarked');
     query.innerJoin('venue_bookmarks', function() {
       this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn('venue_bookmarks.user_id', '=', req.cookies.user.id)
     })
   } else {
-    console.log('no bookmark');
    query.leftOuterJoin('venue_bookmarks', function() {
      this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", req.cookies.user.id)
    })
  }
  if (up === 'true' && down === 'true') {
-   console.log('both up and down');
    query.innerJoin('venue_votes', function() {
      this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
    }).where('vote', '=', 'up').orWhere('vote', '=', 'down')
  } else {
    if (up === 'true') {
-     console.log('only up');
      query.innerJoin('venue_votes', function() {
        this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
      }).where('vote', '=', 'up')
    }
    if (down === 'true') {
-     console.log('only down');
      query.innerJoin('venue_votes', function() {
        this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
      }).where('vote', '=', 'down')
    } else if (up !== 'true' && down !== 'true') {
-     console.log('neither up nor down');
      query.leftOuterJoin('venue_votes', function() {
        this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
      })

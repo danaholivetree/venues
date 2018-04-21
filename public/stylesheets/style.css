@@ -18,6 +18,35 @@ ul {
   list-style-type: none;
   padding-left: 15px;
 }
+/* .tooltip.bs-tooltip-auto[x-placement^=left] .arrow::before, .tooltip.bs-tooltip-left .arrow::before {
+    right: 0;
+    margin-top: -3px;
+    content: "";
+    border-width: 5px 0 5px 5px;
+    border-left-color: #000;
+    border-left: none;
+}
+.tooltip-inner {
+    max-width: 200px;
+    padding: 3px 8px;
+    color: lightblue;
+    text-align: center;
+    background-color: inherit;
+    border-radius: .25rem;
+    border: 1px lightblue;
+} */
+
+.arrow {
+    display:none !important;
+}
+.popover {
+  max-width: 200px;
+}
+/*
+
+.tooltip {
+    color:lightblue;
+} */
 
 li {
   padding-bottom: 10px;

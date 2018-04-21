@@ -38,6 +38,21 @@ router.post('/login', (req, res, next) => {
     })
 })
 
+router.post('/deauthfb', (req, res, next) => {
+  console.log(' /deauthfb was pinged');
+
+
+  console.log('req /deauthfb', req.body);
+  // let log = req.signed_request.split('.').forEach( part => Buffer.from(part, 'base64').toString())
+  // console.log(Buffer.from(req.body.signed_request, 'base64').toString())
+  // console.log('>>>>>>>>>req.signed_request ' , req.signed_request);
+
+  // console.log('++++++++req.params.signed_request split and decoded ', log)
+  // console.log(req.body.signed_request.split('.'));
+
+})
+
+
 router.post('/logout', (req, res, next) => {
   // res.clearCookie('token')
   res.clearCookie('user')
