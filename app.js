@@ -77,7 +77,7 @@ const authorize = (req, res, next) => {
   }
 }
 app.use('/auth', auth)
-// app.use(authorize)
+app.use(authorize)
 app.use('/', renders)
 app.use('/token', token)
 app.use('/bc', bc)
