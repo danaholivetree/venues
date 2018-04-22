@@ -62,15 +62,21 @@ const authorize = (req, res, next) => {
           request.get(
             {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
             (err, response, data) => {
+
               let parsedData = JSON.parse(data)
+              let expires = parsedData.data.expires_at
+                console.log('expires at ',(new Date(expires*1000)).toString());
+                console.log('currently ', (new Date()).toString());
+                // console.log();
               if (parsedData.data.is_valid) {
                 console.log('was valid', parsedData.data);
                 next()
               } else {
                 console.log(parsedData.data.error.message);
                 let error = parsedData.data.error.message
+                let code = parsedData.data.error.subcode
                 console.log('access token wasnt valid');
-                res.render('login', {error})
+                res.render('login', {error, code})
               }
             })
         }

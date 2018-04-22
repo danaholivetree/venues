@@ -22,6 +22,16 @@
 
     </div>
 
+    <script>
+    const error = '<%= error%>'
+    const code = '<%= code%>'
+    console.log('error all the way in client side js and code ',error, code);
+    console.log('typeof code ', typeof code);
+    if (code == 463 ) {
+      console.log('token was expired');
+      setTimeout(function(){ getLoginStatus(); }, 3000); //wait for sdk to load
+    }
+    </script>
 
 <!--
   </body>
