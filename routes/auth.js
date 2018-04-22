@@ -26,6 +26,7 @@ router.post('/login', (req, res, next) => {
                           }, {
                             httpOnly: true
                           })
+            res.send({redirectURL: './'})
           })
       } else {
         if (exists.authorized === false) {
@@ -41,6 +42,7 @@ router.post('/login', (req, res, next) => {
                             }, {
                               httpOnly: true
                             })
+              res.send({redirectURL: './'})
             })
         } else {
           res.cookie('user', {
@@ -50,11 +52,12 @@ router.post('/login', (req, res, next) => {
                         }, {
                           httpOnly: true
                         })
+          res.send({redirectURL: './'})
 
         }
       }
-
-      res.send({redirectURL: './'})
+      console.log('getting to send at end of login');
+      // res.send({redirectURL: './'})
     })
 })
 
