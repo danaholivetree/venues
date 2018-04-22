@@ -26,7 +26,7 @@ router.post('/login', (req, res, next) => {
                           }, {
                             httpOnly: true
                           })
-            res.send({redirectURL: './'})
+            res.send({redirectURL: './'}) //should it just be  a reload?
           })
       } else {
         if (exists.authorized === false) {
@@ -56,7 +56,7 @@ router.post('/login', (req, res, next) => {
 
         }
       }
-      console.log('getting to send at end of login');
+      console.log('getting to send at end of login, removed send tho');
       // res.send({redirectURL: './'})
     })
 })

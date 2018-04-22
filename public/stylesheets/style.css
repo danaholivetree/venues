@@ -1,5 +1,13 @@
+html {
+  position: relative;
+  min-height: 100%;
+  font-size: 1rem;
+}
+
+
 body {
   margin: 0;
+  margin-bottom: 50px;
   padding: 0;
   background-color:whitesmoke;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -11,13 +19,45 @@ body {
 a {
   color: #00B7FF;
 }
-html {
-  font-size: 1rem;
+a:link {
+    color: black;
 }
+
+a:visited {
+    color: black;
+}
+a:hover {
+  text-decoration: none;
+}
+a:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 ul {
   list-style-type: none;
   padding-left: 15px;
 }
+footer {
+  background-color:#f8f9fa;
+  height: 40px;
+  position: absolute !important;
+  line-height:40px;
+  bottom: 0;
+  font-size:0.8rem;
+  min-width:100%;
+  margin-top:40px;
+  /* color:#495057; */
+
+}
+footer a:link {
+  color: rgba(0,0,0,.5);
+}
+footer a:hover {
+  color: rgba(0,0,0,.7);
+  /* color:#495057; */
+}
+
 /* .tooltip.bs-tooltip-auto[x-placement^=left] .arrow::before, .tooltip.bs-tooltip-left .arrow::before {
     right: 0;
     margin-top: -3px;
@@ -74,19 +114,10 @@ li {
     font-size: 1.2rem;
   }
 } */
-
-a:link {
-    color: black;
+.main-container {
+  margin-bottom:75px;
 }
 
-a:visited {
-    color: black;
-}
-
-a:focus {
-  outline: none !important;
-  box-shadow: none !important;
-}
 .voteVenue {
   min-width:261px;
 }
@@ -169,14 +200,6 @@ a:focus {
   border:0;
   /* border-bottom: 1px solid pink; */
 }
-
-/* .nav-link>a {
-    color: grey;
-}
-
-.nav-link>a:hover {
-    color:teal;
-} */
 
 .material-icons.md-18 {
 font-size: 18px !important;
@@ -264,4 +287,10 @@ h3 {
 .close {
   position: relative;
   left: 10px;
+}
+
+@media only screen and (max-width: 550px) {
+    footer {
+      font-size:0.7rem;
+    }
 }

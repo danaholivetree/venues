@@ -57,20 +57,33 @@ const authorize = (req, res, next) => {
       .then( user => {
         console.log('authorized' , user.authorized);
         if (user.authorized) {
-          console.log('user was authorized');
-          next()
-        } else {
+          console.log('user was authorized, checking if access token is valid');
+          let path = `https://graph.facebook.com/debug_token?input_token=`
+          request.get(
+            {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
+            (err, response, data) => {
+              let parsedData = JSON.parse(data)
+              if (parsedData.data.is_valid) {
+                console.log('was valid', parsedData.data);
+                next()
+              } else {
+                console.log(parsedData.data.error.message);
+                let error = parsedData.data.error.message
+                console.log('access token wasnt valid');
+                res.render('login', {error})
+              }
+            })
+        }
+          // next()
+         else {
+          console.log('user wasnt authorized');
           res.clearCookie('user')
           res.redirect('/')
         }
       })
-    // let path = `https://graph.facebook.com/debug_token?input_token=`
-    // request.get(
-    //   {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
-    //   (error, response, data) => {
-    //     let parsedData = JSON.parse(data)
-    //     if (parsedData.data.is_valid) {
-    //       next()
+    }
+  }
+
     //     } else {
     //       console.log(parsedData.data.error);
     //       let err = parsedData.data.error.message
@@ -82,14 +95,9 @@ const authorize = (req, res, next) => {
     //       if (subcode === 467)  {
     //         //user logged out of Facebook
     //
-    //       }
-    //       res.render('login')
-    //
-    //     }
-    // })
-    next()
-  }
-}
+
+
+
 app.use('/auth', auth)
 app.use(authorize)
 app.use('/', renders)

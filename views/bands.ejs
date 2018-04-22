@@ -2,7 +2,7 @@
   <% include ./partials/nav.ejs %>
   <% include ./partials/sdk.ejs %>
 
-    <div class='container'>
+    <div class='container main-container'>
       <div class='button-header'><button class='btn' id="searchBands">SEARCH BANDS</button>  <button class='btn' id="addBand">ADD A BAND</button></div>
       <form id='bandSearchForm' style='display:inline;'>
         <div class='form-row'>
@@ -154,5 +154,5 @@
 
     <script src="./javascripts/searchform.js"></script>
     <script src="./javascripts/loadBands.js"></script>
-  </body>
-</html>
+
+<% include ./partials/footer.ejs %>
