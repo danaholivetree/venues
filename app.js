@@ -64,20 +64,30 @@ const authorize = (req, res, next) => {
             (err, response, data) => {
 
               let parsedData = JSON.parse(data)
-              let expires = parsedData.data.expires_at
+              console.log('>>>data', data);
+              console.log('>>>> parsed Data ', parsedData);
+              if (parsedData.data) {
+                let expires = parsedData.data.expires_at
                 console.log('expires at ',(new Date(expires*1000)).toString());
                 console.log('currently ', (new Date()).toString());
-                // console.log();
-              if (parsedData.data.is_valid) {
-                console.log('was valid', parsedData.data);
-                next()
+                if (parsedData.data.is_valid) {
+                  console.log('was valid', parsedData.data);
+                  next()
+                }
+                else {
+                  console.log(parsedData.data.error.message);
+                  let error = parsedData.data.error.message
+                  let code = parsedData.data.error.subcode
+                  console.log('access token wasnt valid');
+                  res.render('login', {error, code})
+                }
               } else {
-                console.log(parsedData.data.error.message);
-                let error = parsedData.data.error.message
-                let code = parsedData.data.error.subcode
-                console.log('access token wasnt valid');
-                res.render('login', {error, code})
+                console.log('err, ' err);
               }
+
+
+                // console.log();
+
             })
         }
           // next()
