@@ -55,13 +55,13 @@ const authorize = (req, res, next) => {
       .select('authorized')
       .first()
       .then( user => {
-        console.log('auth orized' , typeof user.authorized);
+        console.log('authorized' , user.authorized);
         if (user.authorized) {
           console.log('user was authorized');
           next()
         } else {
           res.clearCookie('user')
-          res.render('login')
+          res.redirect('/')
         }
       })
     // let path = `https://graph.facebook.com/debug_token?input_token=`
