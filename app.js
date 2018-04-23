@@ -73,12 +73,20 @@ const authorize = (req, res, next) => {
             (err, response, data) => {
 
               console.log('>>>> data ', data);
-              if (data.error) {
+              if (data.error) { // works for certain errors
+                console.log('data.error ', data.error);
                   let error = data.error.message
                   let code = data.error.code
                   console.log('error ', error ,'code ', code);
                   console.log('access token wasnt valid');
                   res.render('login', {error, code})
+                } else if (data.data.error) { // works for local server
+                  console.log('data.data.error ', data.data.error);
+                    let error = data.data.error.message
+                    let code = data.data.error.code
+                    console.log('error ', error ,'code ', code);
+                    console.log('access token wasnt valid');
+                    res.render('login', {error, code})
                 }
 
               else if (data.data) {

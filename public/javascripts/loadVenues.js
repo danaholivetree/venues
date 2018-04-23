@@ -3,7 +3,7 @@ $(document).ready(function() {
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage, copyToClipboard} = helpers
   let off = 0
 
-
+  let info = 'here is some text'
   const getData = async (offset = 0, scroll = false, query = '') => {
     return $.get(`/api/venues/${query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''}`, (data, status) => {
       if (offset > 0 && data.length === 0) {
