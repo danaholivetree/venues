@@ -29,9 +29,9 @@ router.post('/login', (req, res, next) => {
             res.send({redirectURL: './'}) //should it just be  a reload?
           })
       } else {
-        if (exists.authorized === false) {
+        // if (exists.authorized === false) {
           return knex('users')
-            .update({authorized: true}, '*')
+            .update({authorized: true, logged_in: true}, '*')
             .where('id', exists.id)
             .then( updatedUser => {
               console.log('updatedUser[0] ', updatedUser[0]);
@@ -44,17 +44,18 @@ router.post('/login', (req, res, next) => {
                             })
               res.send({redirectURL: './'})
             })
-        } else {
-          res.cookie('user', {
-                          id: exists.id,
-                          admin: exists.admin,
-                          accessToken
-                        }, {
-                          httpOnly: true
-                        })
-          res.send({redirectURL: './'})
-
-        }
+        // }
+        // else {
+        //   res.cookie('user', {
+        //                   id: exists.id,
+        //                   admin: exists.admin,
+        //                   accessToken
+        //                 }, {
+        //                   httpOnly: true
+        //                 })
+        //   res.send({redirectURL: './'})
+        //
+        // }
       }
       console.log('getting to send at end of login, removed send tho');
       // res.send({redirectURL: './'})

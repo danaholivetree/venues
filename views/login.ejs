@@ -5,15 +5,22 @@
       <h1> Welcome to Tour Popsicle! </h1>
       <div class='mt-3' style='text-align:center;'>
         <p>The easiest way to find venues and local bands for your next tour.</p>
-
-      </div>
-
-      <div class='row mb-3'>
-        <div class="fb-login-button col-4 mt-3 mx-auto"  scope="public_profile,email" onlogin="getLoginStatus()" data-max-rows="1" data-size="large" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
       </div>
 
 
-      <div class='row mt-3'>
+    <div id="spinner" class='mx-auto' style="background: #4267b2; border-radius:5px; color:white;
+            height:40px; text-align:center; line-height:40px; width: 236px;"> Loading...
+        <div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="login_with"
+        data-use-continue-as="true" scope="public_profile,email" onlogin="getLoginStatus()">
+        </div>
+    </div>
+          <!-- <div class="fb-login-button"  scope="public_profile,email" onlogin="getLoginStatus()" data-max-rows="1" data-size="large" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div> -->
+
+
+
+ <!--  -->
+
+      <div class='row mt-3' style="position:static;">
         <div class='col-12 mx-auto'>
           <h3> Tour Popsicle explained in 30 seconds </h3>
           <p>video here</p>
@@ -23,10 +30,14 @@
     </div>
 
     <script>
-    // const error = '<%= error%>'
-    // const code = '<%= code%>'
-    // console.log(error, code);
-      setTimeout(function(){ getLoginStatus(); }, 2000); //wait for sdk to load
+
+      let error = '<%= error%>'
+      if (error !== 'No user cookie') {
+        setTimeout(function(){ getLoginStatus(); }, 2000); //wait for sdk to load
+      }
+
+
+
     </script>
 
 <% include ./partials/footer.ejs %>

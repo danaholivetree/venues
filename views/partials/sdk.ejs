@@ -1,7 +1,9 @@
 
 <body>
   <div id="fb-root"></div>
-    <script>(function(d, s, id) {
+    <script>
+
+    (function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
       js = d.createElement(s); js.id = id;
@@ -9,7 +11,10 @@
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
 
+
+
     window.fbAsyncInit = function() {
+      let done = false
       FB.init({
         appId      : '188770131749358',
         cookie     : true,
@@ -18,14 +23,24 @@
       });
 
       FB.AppEvents.logPageView();
+
+
+      FB.Event.subscribe('xfbml.render', function() {
+        console.log("finished rendering plugins");
+        if (!done) {
+        $('#spinner').css('display:none')
+        spinner.removeChild(spinner.childNodes[0]);
+        done = true
+        }
+      })
+
     }
 
     const getLoginStatus = () => {
       FB.getLoginStatus(function(response) {
         console.log(response.status);
         if (response.status === 'connected') {
-          console.log('login status was connected');
-          console.log('logging in user');
+          console.log('login status was connected, logging in user to db');
           getUserInfo(response.authResponse)
         }
         else {

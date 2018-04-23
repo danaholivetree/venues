@@ -54,63 +54,77 @@ const authorize = (req, res, next) => {
     //               }, {
     //                 httpOnly: true
     //               })
-    res.render('login') //should i have this redirect to './' ?
+    res.render('login', {error: 'No user cookie'}) //should i have this redirect to './' ?
   } else if (req.cookies.user) {
     console.log('there was a user cookie');
     return knex('users')
       .where({id: req.cookies.user.id})
-      .select('authorized')
+      .select('authorized', 'logged_in as loggedIn')
       .first()
       .then( user => {
         console.log('authorized' , user.authorized);
-        if (user.authorized) {
-          console.log('user was authorized, checking if access token is valid');
-          let path = `https://graph.facebook.com/debug_token?input_token=`
-          request.get(
-            {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`,
-            json:true
-          },
-            (err, response, data) => {
+        if (user.loggedIn) {
 
-              console.log('>>>> data ', data);
-              if (data.error) { // works for certain errors
-                console.log('data.error ', data.error);
-                  let error = data.error.message
-                  let code = data.error.code
-                  console.log('error ', error ,'code ', code);
-                  console.log('access token wasnt valid');
-                  res.render('login', {error, code})
-                } else if (data.data.error) { // works for local server
-                  console.log('data.data.error ', data.data.error);
-                    let error = data.data.error.message
-                    let code = data.data.error.code
+          if (user.authorized) {
+            console.log('user was authorized, checking if access token is valid');
+            let path = `https://graph.facebook.com/debug_token?input_token=`
+            request.get(
+              {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`,
+              json:true
+            },
+              (err, response, data) => {
+
+                console.log('>>>> data ', data);
+                if (data.error) { // works for certain errors
+                  console.log('data.error ', data.error);
+                    let error = data.error.message
+                    let code = data.error.code
                     console.log('error ', error ,'code ', code);
                     console.log('access token wasnt valid');
                     res.render('login', {error, code})
+                  } else if (data.data.error) { // works for local server
+                    console.log('data.data.error ', data.data.error);
+                      let error = data.data.error.message
+                      let code = data.data.error.code
+                      console.log('error ', error ,'code ', code);
+                      console.log('access token wasnt valid');
+                      res.render('login', {error, code})
+                  }
+
+                else if (data.data) {
+                  if (data.data.expires_at) {
+                    console.log('expires at ',(new Date(data.data.expires_at*1000)).toString());
+                    console.log('currently ', (new Date()).toString());
+                  }
+                  if (data.data.is_valid) {
+                    console.log('was valid', data.data);
+                    next()
+                  } else {
+                    res.render('login', {error: 'User accesss token wasn not valid'})
+                  }
+
+                } else {
+                  throw new Error
                 }
 
-              else if (data.data) {
-                if (data.data.expires_at) {
-                  console.log('expires at ',(new Date(data.data.expires_at*1000)).toString());
-                  console.log('currently ', (new Date()).toString());
-                }
-                if (data.data.is_valid) {
-                  console.log('was valid', data.data);
-                  next()
-                }
+              })
+          } else {
+           console.log('user wasnt authorized');
+           res.clearCookie('user')
+           // res.redirect('/')
+           res.render('login', {error: 'User has deauthorized the App'}) //haven't tested this
+         }
 
-              } else {
-                throw new Error
-              }
 
-            })
-        }
+       } else {
+         console.log('user had logged out');
+         res.clearCookie('user')
+         // res.redirect('/')
+         res.render('login', {error: 'User has logged out'})
+       }
+
           // next()
-         else {
-          console.log('user wasnt authorized');
-          res.clearCookie('user')
-          res.redirect('/')
-        }
+
       })
     }
   }
