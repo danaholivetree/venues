@@ -70,8 +70,10 @@ const authorize = (req, res, next) => {
             {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`,
             json:true
           },
-            (err, response, {data}) => {
-              console.log('>>>> data ', data);
+            (err, response, dat) => {
+              console.log('>>>> data ', dat);
+              const {data} = dat
+              console.log('data ', data);
               if (data) {
                 if (data.expires_at) {
                   console.log('expires at ',(new Date(data.expires_at*1000)).toString());
