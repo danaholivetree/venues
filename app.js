@@ -68,18 +68,17 @@ const authorize = (req, res, next) => {
           let path = `https://graph.facebook.com/debug_token?input_token=`
           request.get(
             {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
-            (err, response, dat) => {
-              console.log('err', err);
-              // console.log('response ', response);
-              console.log('dat', dat);
-              let parsedData = JSON.parse(dat)
-              const {data} = parsedData
+            (err, response, data) => {
+              // console.log('dat', dat);
+              // let parsedData = JSON.parse(dat)
+              // const {data} = parsedData
 
-              console.log('>>>> parsed Data ', data);
+              console.log('>>>> data ', data);
               if (data) {
-                let expires = data.expires_at
-                console.log('expires at ',(new Date(expires*1000)).toString());
-                console.log('currently ', (new Date()).toString());
+                if (data.expires_at) {
+                  console.log('expires at ',(new Date(data.expires_at*1000)).toString());
+                  console.log('currently ', (new Date()).toString());
+                }
                 if (data.is_valid) {
                   console.log('was valid', data);
                   next()
