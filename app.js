@@ -71,30 +71,29 @@ const authorize = (req, res, next) => {
             json:true
           },
             (err, response, data) => {
-              console.log('>>>> data ', data);
-              if (data) {
-                if (data.expires_at) {
-                  console.log('expires at ',(new Date(data.expires_at*1000)).toString());
-                  console.log('currently ', (new Date()).toString());
-                }
-                if (data.is_valid) {
-                  console.log('was valid', data);
-                  next()
-                }
-                else {
 
+              console.log('>>>> data ', data);
+              if (data.error) {
                   let error = data.error.message
                   let code = data.error.code
                   console.log('error ', error ,'code ', code);
                   console.log('access token wasnt valid');
                   res.render('login', {error, code})
                 }
+
+              else if (data.data) {
+                if (data.data.expires_at) {
+                  console.log('expires at ',(new Date(data.data.expires_at*1000)).toString());
+                  console.log('currently ', (new Date()).toString());
+                }
+                if (data.data.is_valid) {
+                  console.log('was valid', data.data);
+                  next()
+                }
+
               } else {
-                console.log('err ', err);
+                throw new Error
               }
-
-
-                // console.log();
 
             })
         }
