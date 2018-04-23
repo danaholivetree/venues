@@ -70,7 +70,7 @@ const authorize = (req, res, next) => {
             {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
             (err, response, dat) => {
               console.log('err', err);
-              console.log('response ', response);
+              // console.log('response ', response);
               console.log('dat', dat);
               let parsedData = JSON.parse(dat)
               const {data} = parsedData
