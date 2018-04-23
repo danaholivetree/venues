@@ -67,12 +67,10 @@ const authorize = (req, res, next) => {
           console.log('user was authorized, checking if access token is valid');
           let path = `https://graph.facebook.com/debug_token?input_token=`
           request.get(
-            {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
-            (err, response, data) => {
-              // console.log('dat', dat);
-              // let parsedData = JSON.parse(dat)
-              // const {data} = parsedData
-
+            {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`,
+            json:true
+          },
+            (err, response, {data}) => {
               console.log('>>>> data ', data);
               if (data) {
                 if (data.expires_at) {
