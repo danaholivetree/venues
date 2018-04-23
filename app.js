@@ -47,6 +47,13 @@ const authorize = (req, res, next) => {
   console.log('going through auth');
   if (!req.cookies.user) {
     console.log('there was no user cookie, rendering login');
+    // res.cookie('user', {
+    //                 id: 17,
+    //                 admin: true,
+    //                 accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImFkbWluIjpmYWxzZSwiaWF0IjoxNTIzMDQ5Mjk4fQ.4gck4LsQndrCnuveTb_MeTQRxRjhUGaJZ4vqWJzVfGY'
+    //               }, {
+    //                 httpOnly: true
+    //               })
     res.render('login') //should i have this redirect to './' ?
   } else if (req.cookies.user) {
     console.log('there was a user cookie');
@@ -61,28 +68,30 @@ const authorize = (req, res, next) => {
           let path = `https://graph.facebook.com/debug_token?input_token=`
           request.get(
             {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`},
-            (err, response, data) => {
+            (err, response, dat) => {
 
-              let parsedData = JSON.parse(data)
-              console.log('>>>data', data);
-              console.log('>>>> parsed Data ', parsedData);
-              if (parsedData.data) {
-                let expires = parsedData.data.expires_at
+              let parsedData = JSON.parse(dat)
+              const {data} = parsedData
+
+              console.log('>>>> parsed Data ', data);
+              if (data) {
+                let expires = data.expires_at
                 console.log('expires at ',(new Date(expires*1000)).toString());
                 console.log('currently ', (new Date()).toString());
-                if (parsedData.data.is_valid) {
-                  console.log('was valid', parsedData.data);
+                if (data.is_valid) {
+                  console.log('was valid', data);
                   next()
                 }
                 else {
-                  console.log(parsedData.data.error.message);
-                  let error = parsedData.data.error.message
-                  let code = parsedData.data.error.subcode
+
+                  let error = data.error.message
+                  let code = data.error.code
+                  console.log('error ', error ,'code ', code);
                   console.log('access token wasnt valid');
                   res.render('login', {error, code})
                 }
               } else {
-                console.log('err, ' err);
+                console.log('err ', err);
               }
 
 
