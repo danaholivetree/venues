@@ -1,4 +1,3 @@
-
 $(document).ready(function() {
 
   const { states, abbrState, genreKeywords } = usStates
@@ -12,15 +11,4 @@ $(document).ready(function() {
         <input class="form-check-input genre-selector ${genre}" type="checkbox" value="${genre}">
         <label class="form-check-label" for=${genre}>${genre}</label></div>`))
   })
-
-
-
-
-
-
-
-
-
-
-
 })
