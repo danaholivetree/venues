@@ -196,7 +196,7 @@ $(document).ready(function() {
       $('#prev').prop('disabled', false)
       off += 25
       const newQueryString = $.param({...params, offset: off})
-      getData(off, true, `q?${off > 0 ? newQueryString : origQuery}`).then( data => {
+      getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
         if (data.length > 0) {
           processData(data)
         } else {
@@ -209,7 +209,7 @@ $(document).ready(function() {
       e.preventDefault()
       off -= 25
       const newQueryString = $.param({...params, offset: off})
-      getData(off, true, `q?${off > 0 ? newQueryString : origQuery}`).then( data => {
+      getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
         processData(data)
         if (off === 0) {
           $('#next').prop('disabled', false)

@@ -28,7 +28,8 @@ router.get('/', (req, res, next) => {
 
 router.get('/q', (req, res, next) => {
   console.log(req.query);
-  const {state, city, venue, capacity, up, down, bookmarked } = req.query
+  const {state, city, venue, capacity, up, down, bookmarked, offset } = req.query
+
   var query = knex('venues')
               .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'email', 'city', 'capacity', 'vote', 'venue_bookmarks.id as bookmark')
   const addState = (state) => {
@@ -109,6 +110,7 @@ router.get('/q', (req, res, next) => {
     query.offset(req.query.offset)
   }
   return query.then( venues => {
+    console.log(venues.slice(0,5));
     res.send(venues)
     })
 });

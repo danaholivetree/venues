@@ -26,14 +26,9 @@
 
 
       FB.Event.subscribe('xfbml.render', function() {
-        console.log("finished rendering plugins");
         if (!done) {
-
           $('#spinner').css('display:none')
           $('#spinner').contents().first().remove()
-          console.log($('#spinner').contents().first());
-          // spinner.removeChild(spinner.childNodes[0]);
-
           done = true
         }
       })
@@ -57,7 +52,7 @@
       console.log('res should be authresponse', res);
       let {accessToken} = res
       FB.api(`/me`, 'GET', {fields: 'first_name, last_name, email, id'}, resp => {
-        console.log('response from fb.api/me ', resp);
+        console.log(resp);
         if (resp.error) {
           if (resp.error.error_subcode === 466) {
             console.log('user has deauthorized app')
@@ -67,22 +62,15 @@
         } else if (!resp.error) {
           let {first_name, last_name, email, id} = resp
           let name = `${first_name} ${last_name}`
-          console.log('gonna post to login ', 'first_name ', first_name, 'last_name ', last_name, 'email ', email , 'fbid ', id, ' acessToken ', accessToken);
           $.post(`/auth/login`, {name, email, accessToken, id}, data => {
-            console.log('data came back from auth post ', data);
-            console.log('should reload window now, auth should catch an expired access token');
             window.location.reload()
-            console.log('this log is after reload from login');
           })
         }
       })
     }
 
     const logout = () => {
-      console.log('clicked logout');
-      console.log('gonna do auth logout');
       $.post(`/auth/logout`, (data, status) => {
-        console.log(' /auth/logout + deleted cookie')
         window.location = data.redirectURL
         })
       }

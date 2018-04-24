@@ -206,11 +206,16 @@ $(document).ready(function() {
       e.preventDefault()
       $('#prev').prop('disabled', false)
       off += 25
+      console.log('origQuery ' ,origQuery);
       const newQueryString = $.param({...params, offset: off})
-      getData(off, true, `q?${off > 0 ? newQueryString : origQuery}`).then( data => {
+      console.log('newQueryString ', newQueryString);
+      getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
+        console.log('data length ', data.length);
         if (data.length > 0) {
+          console.log('going to process data');
           processData(data)
         } else {
+          console.log('no data');
           $('#next').prop('disabled', true)
         }
       })
@@ -220,7 +225,7 @@ $(document).ready(function() {
       e.preventDefault()
       off -= 25
       const newQueryString = $.param({...params, offset: off})
-      getData(off, true, `q?${off > 0 ? newQueryString : origQuery}`).then( data => {
+      getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
         processData(data)
         if (off === 0) {
           $('#next').prop('disabled', false)
