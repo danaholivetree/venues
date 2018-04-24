@@ -11,3 +11,14 @@
     </div>
   </div>
 </nav>
+
+<script>
+
+  const logout = () => {
+    $.post(`/auth/logout`, (data, status) => {
+      window.location = data.redirectURL
+      })
+  }
+
+
+</script>

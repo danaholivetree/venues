@@ -26,14 +26,18 @@
 
 
       FB.Event.subscribe('xfbml.render', function() {
-        if (!done) {
+        if (error !== 'No user cookie') {
+          console.log('rendering login with user cookie and an error ', error);
+          console.log('should automatically log in without spinner stopping');
+          // setTimeout(function(){ getLoginStatus(); }, 2000); //wait for sdk to load
+          getLoginStatus()
+        } else if (!done) {
+          console.log('sdk loaded, no user cookie. user must log in');
           $('#spinner').css('display:none')
-          // $('#spinner').contents().first().remove()
           $('.spinner').remove()
           done = true
         }
       })
-
     }
 
     const getLoginStatus = () => {
@@ -70,9 +74,9 @@
       })
     }
 
-    const logout = () => {
-      $.post(`/auth/logout`, (data, status) => {
-        window.location = data.redirectURL
-        })
-      }
+    // const logout = () => {
+    //   $.post(`/auth/logout`, (data, status) => {
+    //     window.location = data.redirectURL
+    //     })
+    //   }
   </script>
