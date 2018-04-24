@@ -28,7 +28,8 @@
       FB.Event.subscribe('xfbml.render', function() {
         if (!done) {
           $('#spinner').css('display:none')
-          $('#spinner').contents().first().remove()
+          // $('#spinner').contents().first().remove()
+          $('.spinner').remove()
           done = true
         }
       })
