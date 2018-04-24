@@ -28,9 +28,13 @@
       FB.Event.subscribe('xfbml.render', function() {
         console.log("finished rendering plugins");
         if (!done) {
-        $('#spinner').css('display:none')
-        spinner.removeChild(spinner.childNodes[0]);
-        done = true
+
+          $('#spinner').css('display:none')
+          $('#spinner').contents().first().remove()
+          console.log($('#spinner').contents().first());
+          // spinner.removeChild(spinner.childNodes[0]);
+
+          done = true
         }
       })
 
