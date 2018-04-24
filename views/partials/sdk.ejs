@@ -32,9 +32,11 @@
           // setTimeout(function(){ getLoginStatus(); }, 2000); //wait for sdk to load
           getLoginStatus()
         } else if (!done) {
-          console.log('sdk loaded, no user cookie. user must log in');
+          console.log('user\'s accessToken is good til ', new Date(1524589200*1000).toString());
+          console.log('but they have no user cookie. and so must log in');
           $('#spinner').css('display:none')
           $('.spinner').remove()
+          $('.fb-login-button').show()
           done = true
         }
       })
