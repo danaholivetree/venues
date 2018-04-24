@@ -22,12 +22,6 @@ router.get('/venues/:id', function(req, res, next) {
 router.get('/dash', (req, res, next) => {
   res.render('dash')
 })
-// router.get('/users', function(req, res, next) {
-//   res.render('users')
-// })
-// router.get('/user/settings', function(req, res, next) {
-//   console.log('req.cookies.user.id ', req.cookies.user.id);
-//   res.render('settings', {userId: req.cookies.user.id})
-// })
+
 
 module.exports = router;

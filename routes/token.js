@@ -38,9 +38,9 @@ router.get('/facebook/venues/:qs', (req, res, next) => {
   //use app token (once approved)
   // let auth = `&access_token=${app_id}|${app_secret}`
   //use token stolen from graph api for testing
-  // let auth = `&access_token=${process.env.TEMP_TOKEN}`
+  let auth = `&access_token=${process.env.TEMP_TOKEN}`
   //use user access token
-  let auth = `&access_token=${req.cookies.user.accessToken}`
+  // let auth = `&access_token=${req.cookies.user.accessToken}`
   request.get({url: uri+qs+auth, json: true}, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       res.send(body)
@@ -62,18 +62,15 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
   //use app token (once approved)
   // let auth = `&access_token=${app_id}|${app_secret}`
   //use token stolen from graph api for testing
-  // let auth = `&access_token=${process.env.TEMP_TOKEN}`
-  //use user access token
-  let auth = `&access_token=${req.cookies.user.accessToken}`
+  let auth = `&access_token=${process.env.TEMP_TOKEN}`
+  //use user access token doesn't work either
+  // let auth = `&access_token=${req.cookies.user.accessToken}`
   request.get({url: uri+qs+auth, json: true}, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       res.send(body)
     } else if (body.error.message) {
-      // console.log('error, ', data.error.message);
-      // console.log('now attempting ', uri+'music'+qs);
       request.get({url: uri+'music'+qs+auth, json: true}, (error, response, body) => {
         if (!error && response.statusCode === 200) {
-          // console.log('no error sending data for', data);
           res.send(body)
         } else {
           console.log(body.error.message);

@@ -17,7 +17,7 @@ router.get('/search/:q', (req, res, next) => {
     } else {
       res.send(searchResults.slice(0,2))
     }
-  });
+  })
 
 })
 
@@ -30,7 +30,6 @@ router.get('/album/:q', (req, res, next) => {
       let albums = albumUrls.filter( alb => {
         return alb.split('/').includes('album')
       })
-      console.log('albums '  ,albums);
       bc.getAlbumInfo(albums[0], function(error, albumInfo) {
         if (error) {
           console.log(error);
@@ -40,22 +39,6 @@ router.get('/album/:q', (req, res, next) => {
       })
     }
   })
-  // var params = {
-  //   query: req.params.q,
-  //   page: 1
-  // };
-  //
-  // bc.search(params, function(error, searchResults) {
-  //   if (error) {
-  //     // console.log(error);
-  //   } else {
-  //     console.log('search results ', searchResults[0]);
-  //     // res.send(searchResults.slice(0,2))
-  //   }
-  // })
-
-
-
 })
 
 

@@ -44,18 +44,6 @@ router.post('/login', (req, res, next) => {
                             })
               res.send({redirectURL: './'})
             })
-        // }
-        // else {
-        //   res.cookie('user', {
-        //                   id: exists.id,
-        //                   admin: exists.admin,
-        //                   accessToken
-        //                 }, {
-        //                   httpOnly: true
-        //                 })
-        //   res.send({redirectURL: './'})
-        //
-        // }
       }
       console.log('getting to send at end of login, removed send tho');
       // res.send({redirectURL: './'})
@@ -64,7 +52,6 @@ router.post('/login', (req, res, next) => {
 
 router.post('/deauthfb', (req, res, next) => {
   console.log(' /deauthfb was pinged');
-  console.log('req /deauthfb', req.body.signed_request);
   let split = req.body.signed_request.split('.')
   let encodedSig = base64url.decode(split[0])
   let payload = base64url.decode(split[1])
@@ -80,7 +67,6 @@ router.post('/deauthfb', (req, res, next) => {
   //   console.log('Bad Signed JSON signature!');
   //   res.send({encodedSig, expectedSig})
   // }
-  console.log('parsedPayload.user_id' , parsedPayload.user_id);
   return knex('users')
     .update({authorized: false}, '*')
     .where('fbid', parsedPayload.user_id)
