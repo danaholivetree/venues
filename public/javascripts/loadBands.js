@@ -271,71 +271,103 @@ $(document).ready(function() {
      }
   })
 
+  const getBandcamp = (band) => {
+    $.get(`/bc/search/${band}`, data => {
+      $('#bandcamp').val(data[0].url)
+      data[0].tags.forEach( tag => {
+        tag = tag[0].toUpperCase()+tag.slice(1)
+        $(`.genres input.${tag}`).prop('checked', true)
+      })
+    })
+  }
+  const getSpotifyToken = () => {
+    $.get('/token/spotify', ({access_token, expires_in}) => {
+      localStorage.setItem('pa_token', access_token)
+      localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
+      accessToken = access_token
+    })
+  }
+
+  const checkForSpotifyToken = () => {
+    if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
+      getSpotifyToken()
+    }
+  }
   $('#band').change( e => {
     e.preventDefault()
     let band = e.currentTarget.value
     if (band !== '') {
-      $.get(`/bc/search/${band}`, data => {
-        $('#bandcamp').val(data[0].url)
-        data[0].tags.forEach( tag => {
-          tag = tag[0].toUpperCase()+tag.slice(1)
-          $(`.genres input.${tag}`).prop('checked', true)
-        })
-      })
-
-      if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
-        $.get('/token/spotify', ({access_token, expires_in}) => {
-          localStorage.setItem('pa_token', access_token)
-          localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
-          accessToken = access_token
-          getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
-        })
-      } else {
-        getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
-      }
-        $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
+      getBandcamp(band)
+      checkForSpotifyToken()
+      getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
+      $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
+        if (data.category === 'Musician/Band' || data.category === 'Music') {
           $('#fb').val(data.link)
           $('#url').val(checkUrl(data.website))
           getLocationFromFb(data.current_location, data.hometown)
-        })
+        }
+      })
     }
   })
 
-  $('#fb').change( e => {
-    e.preventDefault()
+  const getFbId = (url) => {
+    let fbid
+    if (url.split('/')[3]) { // like name in facebook.com/name
 
-    let url = e.currentTarget.value
-    if (!url.split('/')[3]) {
-      let fbid
-      if (url.split('.')[1] === 'facebook') {
+      if (url.split('.')[1] === 'facebook') {  //from facebook
+
         fbid = url.split('/')[3]
+        console.log('set fbid to ', url.split('/')[3]);
         if (fbid.split('-').length > 1) {
+          console.log('had to get id out of - separated fbid');
           fbid = fbid.split('-')
           fbid = fbid[fbid.length-1]
+            console.log('set fbid to ',   fbid );
         }
-      } else {
-        fbid = url.split('.')[1]
       }
-      $.get(`/token/facebook/bands/${fbid}`, ({name,website,link,genre,hometown,current_location,fan_count}) => {
+    } else { //from url
+        fbid = url.split('.')[1]
+        console.log('set fbid to ',   fbid );
+    }
+    return fbid
+  }
+
+  $('#fb').change( e => {
+    e.preventDefault()
+    let fbid = getFbId(e.currentTarget.value)
+    console.log('querying fbid ', fbid);
+    $.get(`/token/facebook/bands/${fbid}`, ({name,website,link,genre,hometown,current_location,fan_count,category}) => {
+      console.log('category ', category);
+      if (category === 'Musician/Band' || category === 'Music') {
         let url = checkUrl(website)
         getLocationFromFb(current_location, hometown)
+        if ($('#band').val() === '') {
+          $('#band').val(name)
+          getBandcamp(name)
+          checkForSpotifyToken()
+          getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
+        }
         if (url.split('.')[1] ==='bandcamp') {
           $('#bandcamp').val(url)
         } else if (url.split('/')[2].split('.')[0] === 'www') {
           $('#url').val(url)
         }
-      })
-    }
+      }
+    })
   })
 
   const getLocationFromFb = (curr, home) => {
-    if ($('#city').val() === '' || ($('#state').val() === '')) {
-      if (curr) {
+    console.log('curr ', curr);
+    console.log('home ', home);
+    if ($('#city').val() === '' || ($('#state').val() === 'Any')) {
+      if (curr && curr.split(',').length > 1) {
         $('#city').val(curr.split(',')[0])
         if (curr.split(',').length > 1) {
           if (curr.split(',')[1].trim().length === 2) {
+            console.log('setting state to ', abbrState(curr.split(',')[1].trim(), 'name'));
             $('#state').val(abbrState(curr.split(',')[1].trim(), 'name'))
           } else {
+            console.log('setting state to ', curr.split(',')[1].trim());
             $('#state').val(curr.split(',')[1].trim())
           }
         }
@@ -343,8 +375,10 @@ $(document).ready(function() {
         $('#city').val(home.split(',')[0])
         if (home.split(',').length > 1) {
           if (home.split(',')[1].trim().length === 2) {
+            console.log('setting state to ', abbrState(home.split(',')[1].trim(), 'name'));
             $('#state').val(abbrState(home.split(',')[1].trim(), 'name'))
           } else {
+            console.log('setting state to ', home.split(',')[1].trim());
             $('#state').val(home.split(',')[1].trim())
           }
         }

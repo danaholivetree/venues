@@ -8,6 +8,7 @@ $(document).ready(function() {
   $.get(`/api/venues/${venueId}`, data => {
     venueData = data
     showVenue(data)
+    console.log('url to get fb info ', data.url);
     getFbInfo(data.url) //maybe not have to do this more than once?
     getSi(data.venue, data.city, data.state)
     editSingleOn()
@@ -102,8 +103,8 @@ $(document).ready(function() {
       }
     } else {
       fbid = url.split('.')[1]
-      console.log('trying fbid from website url', fbid);
     }
+    console.log('fbid to be serached', fbid);
       $.get(`/token/facebook/venues/${fbid}`, data => {
         console.log('fb data ', data);
         if (data.events) {

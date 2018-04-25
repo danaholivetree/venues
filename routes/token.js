@@ -57,8 +57,9 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
   const app_id = process.env.FACEBOOK_APP_ID;
   const app_secret = process.env.FACEBOOK_APP_SECRET;
   const query = req.params.qs
+  console.log(req.params.qs);
   let uri = `https://graph.facebook.com/v2.12/${query}`
-  let qs = `?fields=name,website,link,genre,hometown,current_location,fan_count,events.limit(5){name,start_time,place{name,location{city,state}}}`
+  let qs = `?fields=name,website,link,genre,hometown,current_location,category,fan_count,events.limit(5){name,start_time,place{name,location{city,state}}}`
   //use app token (once approved)
   // let auth = `&access_token=${app_id}|${app_secret}`
   //use token stolen from graph api for testing
@@ -68,16 +69,20 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
   request.get({url: uri+qs+auth, json: true}, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       res.send(body)
-    } else if (body.error.message) {
-      request.get({url: uri+'music'+qs+auth, json: true}, (error, response, body) => {
-        if (!error && response.statusCode === 200) {
-          res.send(body)
-        } else {
-          console.log(body.error.message);
-          //sending anyway
-          res.send(body)
-        }
-      })
+    } else if (body.error) {
+      console.log(body.error);
+      if (body.error.code == 803) { //try adding music to fb name
+        console.log('try adding music to fb name');
+        request.get({url: uri+'music'+qs+auth, json: true}, (error, response, body) => {
+          console.log(body)
+          if (!error && response.statusCode === 200) {
+            res.send(body)
+          } else {
+            console.log(body.error);
+            // res.send(body)
+          }
+        })
+      }
     } else {
       //shouldn't ever get here, i dont think
       res.send({error: {message: 'no such data'}})
