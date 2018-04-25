@@ -84,6 +84,7 @@ const authorize = (req, res, next) => {
                     res.render('login', {error, code})
                   } else if (data.data.error) { // works for local server
                     console.log('data.data.error ', data.data.error);
+                    console.log('subcode here seems more relevant - ',data.data.error.code);
                       let error = data.data.error.message
                       let code = data.data.error.code
                       console.log('error ', error ,'code ', code);

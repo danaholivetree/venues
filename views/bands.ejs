@@ -27,22 +27,26 @@
             </div>
           </div>
         </div>
-        <div class='form-row'>
-          <div id='selector' class='input-group mb-3 col-lg-5 col-12'>
-              <label for='selector' class="control-label col-3 col-md-3 col-form-label" >Select Only:</label>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="starred-select" value="starred">
-                  <label class="form-check-label" for="up-select"><i class="material-icons md-18" style="color:lightblue;">star</i></label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="checkbox" id="bookmark-select" value="bookmarked">
-                  <label class="form-check-label" for="bookmark-select"><i class="material-icons md-18" style="color:lightblue;">bookmark</i></label>
-                </div>
+        <div class='form-row mb-3'>
 
+          <div id='selector' class='input-group order-md-10 mb-3 col-12 col-md-6 mx-auto ml-md-3 mr-md-0 '>
+        <!-- <div id='selector' class='input-group mb-3 col-lg-5 offset-lg-7 col-12'> -->
+            <label for='selector' class="control-label col-form-label pr-3" >Select Only:</label>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="starred-select" value="starred">
+              <label class="form-check-label" for="up-select"><i class="material-icons md-18">star</i></label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="checkbox" id="bookmark-select" value="bookmarked">
+              <label class="form-check-label" for="bookmark-select"><i class="material-icons md-18">bookmark</i></label>
+            </div>
           </div>
-          <div class="col-md-1 col-2 mx-auto">
+
+          <div class="col-md-1 col-2 order-md-1 mx-auto mr-md-0 ml-md-auto">
             <button type="submit" class="btn big-btn">SUBMIT</button>
           </div>
+
+
         </div>
       </form>
 
@@ -121,7 +125,7 @@
       </div>
     </form>
 
-    <h2> <span class='stateDisplay' style='display:none'></span></h2>
+    <div class='stateDisplay' style='display:none;text-align:center;'></div>
 
       <table id='bandTable' class='table'>
         <thead>

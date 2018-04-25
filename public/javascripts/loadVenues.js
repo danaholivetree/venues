@@ -167,9 +167,11 @@ $(document).ready(function() {
     const queryString = $.param(params)
     getData(0, false, queryString).then( data => {
       processData(data)
-      $('.stateDisplay').text(`Venues ${params.bookmarked ? 'I\'ve ' : ''}${params.bookmarked ? 'Bookmarked ' : '' }
+      $('.stateDisplay').html(`<h2>Venues ${bookmarked || up || down ? 'I\'ve ' : ''}
+      ${up ? 'Upvoted' : ''}${up && (down || bookmarked) ? ' and ' : ''}${down ? 'Downvoted ' : ''}
+      ${down && bookmarked ? 'and ' : ''}${params.bookmarked ? 'Bookmarked ' : '' }
       ${city || state !=='All' ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
-      ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${venue ? 'matching '+ makeUppercase(venue) : ''}`).show()
+      ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${venue ? 'matching '+ makeUppercase(venue) : ''}</h2>`).show()
       setPrevNextQueryListener(params, queryString)
     })
   })
@@ -210,6 +212,7 @@ $(document).ready(function() {
       const newQueryString = $.param({...params, offset: off})
       console.log('newQueryString ', newQueryString);
       getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
+        console.log('data ', data);
         console.log('data length ', data.length);
         if (data.length > 0) {
           console.log('going to process data');
