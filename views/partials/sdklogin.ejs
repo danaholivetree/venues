@@ -25,39 +25,37 @@
       FB.AppEvents.logPageView();
 
 
-      // FB.Event.subscribe('xfbml.render', function() {
-      //
-      //   if (error !== 'No user cookie' || err !== 'User has deauthorized the App') {
-      //     console.log('rendering login with user cookie and an error ', error);
-      //     console.log('should automatically log in without spinner stopping');
-      //     // setTimeout(function(){ getLoginStatus(); }, 2000); //wait for sdk to load
-      //     getLoginStatus(true)
-      //   } else if (!done) {
-      //     console.log('user\'s accessToken is good til ', new Date(1524589200*1000).toString());
-      //     console.log('but they have no user cookie. and so must log in');
-      //     $('#spinner').css('display:none')
-      //     $('.spinner').remove()
-      //     $('.fb-login-button').show()
-      //     done = true
-      //   }
-      // })
-      getLoginStatus(true)
+      FB.Event.subscribe('xfbml.render', function() {
+
+        if (error !== 'No user cookie' || err !== 'User has deauthorized the App') {
+          console.log('rendering login with user cookie and an error ', error);
+          console.log('should automatically log in without spinner stopping');
+          // setTimeout(function(){ getLoginStatus(); }, 2000); //wait for sdk to load
+          getLoginStatus(true)
+        } else if (!done) {
+          console.log('user\'s accessToken is good til ', new Date(1524589200*1000).toString());
+          console.log('but they have no user cookie. and so must log in');
+          $('#spinner').css('display:none')
+          $('.spinner').remove()
+          $('.fb-login-button').show()
+          done = true
+        }
+      })
+      
     }
 
     const getLoginStatus = (cookie = false) => {
       FB.getLoginStatus(function(response) {
-
+        console.log(response.status);
         if (response.status === 'connected') {
-          console.log('login status was connected');
+          console.log('login status was connected, logging in user to db');
           if (!cookie) { //there was no cookie
-            console.log('there was no cookie, shouldnt be true at all');// shouldn't be true
             getUserInfo(response.authResponse)
           } else { //there was a cookie
             //nothing needs to happen?
           }
         }
         else {
-                  console.log('not connected ', response.status);
           FB.login()
         }
       })

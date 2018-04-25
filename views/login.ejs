@@ -1,5 +1,5 @@
   <% include ./partials/header.ejs %>
-  <% include ./partials/sdk.ejs %>
+  <% include ./partials/sdklogin.ejs %>
 
     <div class='login main-container container-fluid'>
       <h1> Welcome to Tour Popsicle! </h1>
@@ -37,7 +37,7 @@
 
     <script>
 
-      let error = '<%= error%>'
+      let error = '<%= error.message%>'
       // if (error !== 'No user cookie') {
       //   setTimeout(function(){ getLoginStatus(); }, 2000); //wait for sdk to load
       // }

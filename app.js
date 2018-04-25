@@ -72,42 +72,37 @@ const authorize = (req, res, next) => {
               {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`,
               json:true
             },
-              (err, response, data) => {
+              (err, response, dat) => {
 
-                console.log('>>>> data ', data);
-                if (data.error) { // works for certain errors
-                  console.log('data.error ', data.error);
-                    let error = data.error.message
-                    let code = data.error.code
+                console.log('>>>> dat ', dat);
+                if (dat.error) { // works for certain errors?
+                  console.log('data.error ', dat.error);
+                    let error = dat.error.message
+                    let code = dat.error.code
                     console.log('error ', error ,'code ', code);
                     console.log('access token wasnt valid');
                     res.render('login', {error, code})
-                  } else if (data.data.error) { // works for local server
-                    console.log('data.data.error ', data.data.error);
-                    console.log('subcode here seems more relevant - ',data.data.error.code);
-                      let error = data.data.error.message
-                      let code = data.data.error.code
-                      console.log('error ', error ,'code ', code);
-                      console.log('access token wasnt valid');
-                      res.render('login', {error, code})
-                  }
-
-                else if (data.data) {
-                  if (data.data.expires_at) {
-                    console.log('expires at ',(new Date(data.data.expires_at*1000)).toString());
-                    console.log('currently ', (new Date()).toString());
-                  }
-                  if (data.data.is_valid) {
-                    console.log('was valid', data.data);
-                    next()
-                  } else {
-                    res.render('login', {error: 'User accesss token wasn not valid'})
-                  }
-
                 } else {
-                  throw new Error
-                }
+                  let  {data} = dat
+                  // console.log('>>>> data ', data);
+                  // if (data.error) {
+                  //   // let {error} = data
+                  //   console.log('error ', data.error);
+                  //   console.log('access token wasnt valid');
+                  //   res.render('login', {error: data.error})
+                  // } else {
+                  //   console.log('expires at ',(new Date(data.expires_at*1000)).toString());
+                  //   console.log('currently ', (new Date()).toString());
+                    if (data.is_valid) {
+                      console.log('access token was valid');
+                      next()
+                  //   } else {
+                  //     console.log('going to render login with error ');
+                  //     res.render('login', {error: 'User access token was not valid'})
+                  //   }
+                  }
 
+                }
               })
           } else {
            console.log('user wasnt authorized');
@@ -115,17 +110,12 @@ const authorize = (req, res, next) => {
            // res.redirect('/')
            res.render('login', {error: 'User has deauthorized the App'}) //haven't tested this
          }
-
-
        } else {
          console.log('user had logged out');
          res.clearCookie('user')
          // res.redirect('/')
          res.render('login', {error: 'User has logged out'})
        }
-
-          // next()
-
       })
     }
   }
