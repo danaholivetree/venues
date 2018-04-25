@@ -75,8 +75,9 @@ const authorize = (req, res, next) => {
               (err, response, dat) => {
 
                 console.log('>>>> dat ', dat);
-                if (dat.error) { // works for certain errors?
-                  console.log('data.error ', dat.error);
+                if (dat.error) {
+                  console.log('works for certain errors maybe???');
+                  console.log('dat.error ', dat.error);
                     let error = dat.error.message
                     let code = dat.error.code
                     console.log('error ', error ,'code ', code);
@@ -84,18 +85,27 @@ const authorize = (req, res, next) => {
                     res.render('login', {error, code})
                 } else {
                   let  {data} = dat
-                  // console.log('>>>> data ', data);
-                  // if (data.error) {
-                  //   // let {error} = data
-                  //   console.log('error ', data.error);
-                  //   console.log('access token wasnt valid');
-                  //   res.render('login', {error: data.error})
-                  // } else {
+                  console.log('>>>> data ', data);
+                  if (data.error) {
+
+                    console.log('error ', data.error);
+                    console.log('access token wasnt valid');
+                    if (data.error.subcode == 463) {
+                      console.log('was expired. going next anyway');
+                      next()
+                    }
+                    // want to not render login for expired tokens because that shouldnt happen anymore
+                    else {
+                      //other error, render login
+                      res.render('login', {error: data.error})
+                    }
+                  }
+                  // else {
                   //   console.log('expires at ',(new Date(data.expires_at*1000)).toString());
                   //   console.log('currently ', (new Date()).toString());
-                    if (data.is_valid) {
-                      console.log('access token was valid');
-                      next()
+                  else if (data.is_valid) {
+                    console.log('access token was valid');
+                    next()
                   //   } else {
                   //     console.log('going to render login with error ');
                   //     res.render('login', {error: 'User access token was not valid'})
