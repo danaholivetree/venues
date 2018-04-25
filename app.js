@@ -66,54 +66,55 @@ const authorize = (req, res, next) => {
         if (user.loggedIn) {
 
           if (user.authorized) {
-            console.log('user was authorized, checking if access token is valid');
-            let path = `https://graph.facebook.com/debug_token?input_token=`
-            request.get(
-              {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`,
-              json:true
-            },
-              (err, response, dat) => {
+              next()
+            // console.log('user was authorized, checking if access token is valid');
+            // let path = `https://graph.facebook.com/debug_token?input_token=`
+            // request.get(
+            //   {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`,
+            //   json:true
+            // },
+            //   (err, response, dat) => {
+            //
+            //     console.log('>>>> dat ', dat);
+            //     if (dat.error) {
+            //       console.log('works for certain errors maybe???');
+            //       console.log('dat.error ', dat.error);
+            //         let error = dat.error.message
+            //         let code = dat.error.code
+            //         console.log('error ', error ,'code ', code);
+            //         console.log('access token wasnt valid');
+            //         res.render('login', {error, code})
+            //     } else {
+            //       let  {data} = dat
+            //       console.log('>>>> data ', data);
+            //       if (data.error) {
+            //
+            //         console.log('error ', data.error);
+            //         console.log('access token wasnt valid');
+            //         if (data.error.subcode == 463) {
+            //           console.log('was expired. going next anyway');
+            //           next()
+            //         }
+            //         // want to not render login for expired tokens because that shouldnt happen anymore
+            //         else {
+            //           //other error, render login
+            //           res.render('login', {error: data.error})
+            //         }
+            //       }
+            //
+            //       //   console.log('expires at ',(new Date(data.expires_at*1000)).toString());
+            //       //   console.log('currently ', (new Date()).toString());
+            //       else if (data.is_valid) {
+            //         console.log('access token was valid');
+            //         next()
+            //
+            //       //     console.log('else render login with {error: 'User access token was not valid'} ');
+            //
+            //       }
+            //
+            //     }
+            //   })
 
-                console.log('>>>> dat ', dat);
-                if (dat.error) {
-                  console.log('works for certain errors maybe???');
-                  console.log('dat.error ', dat.error);
-                    let error = dat.error.message
-                    let code = dat.error.code
-                    console.log('error ', error ,'code ', code);
-                    console.log('access token wasnt valid');
-                    res.render('login', {error, code})
-                } else {
-                  let  {data} = dat
-                  console.log('>>>> data ', data);
-                  if (data.error) {
-
-                    console.log('error ', data.error);
-                    console.log('access token wasnt valid');
-                    if (data.error.subcode == 463) {
-                      console.log('was expired. going next anyway');
-                      next()
-                    }
-                    // want to not render login for expired tokens because that shouldnt happen anymore
-                    else {
-                      //other error, render login
-                      res.render('login', {error: data.error})
-                    }
-                  }
-                  // else {
-                  //   console.log('expires at ',(new Date(data.expires_at*1000)).toString());
-                  //   console.log('currently ', (new Date()).toString());
-                  else if (data.is_valid) {
-                    console.log('access token was valid');
-                    next()
-                  //   } else {
-                  //     console.log('going to render login with error ');
-                  //     res.render('login', {error: 'User access token was not valid'})
-                  //   }
-                  }
-
-                }
-              })
           } else {
            console.log('user wasnt authorized');
            res.clearCookie('user')
@@ -121,27 +122,14 @@ const authorize = (req, res, next) => {
            res.render('login', {error: 'User has deauthorized the App'}) //haven't tested this
          }
        } else {
+         //this shouldn't happen unless they've logged out on a different machine
          console.log('user had logged out');
          res.clearCookie('user')
-         // res.redirect('/')
          res.render('login', {error: 'User has logged out'})
        }
       })
     }
   }
-
-    //     } else {
-    //       console.log(parsedData.data.error);
-    //       let err = parsedData.data.error.message
-    //       let subcode = parsedData.data.error.subcode
-    //       if (subcode === 463) {
-    //         //token expired
-    //
-    //       }
-    //       if (subcode === 467)  {
-    //         //user logged out of Facebook
-    //
-
 
 
 app.use('/auth', auth)

@@ -27,12 +27,12 @@
 
       FB.Event.subscribe('xfbml.render', function() {
 
-        if (error !== 'No user cookie' || err !== 'User has deauthorized the App') {
-          console.log('rendering login with user cookie and an error ', error);
-          console.log('should automatically log in without spinner stopping');
-          // setTimeout(function(){ getLoginStatus(); }, 2000); //wait for sdk to load
-          getLoginStatus(true)
-        } else if (!done) {
+        // if (error !== 'No user cookie' || err !== 'User has deauthorized the App') {
+        //   console.log('rendering login with user cookie and an error ', error);
+        //   console.log('should automatically log in without spinner stopping');
+        //   getLoginStatus(true)
+        // } else
+         if (!done) {
           console.log('user\'s accessToken is good til ', new Date(1524589200*1000).toString());
           console.log('but they have no user cookie. and so must log in');
           $('#spinner').css('display:none')
@@ -41,7 +41,7 @@
           done = true
         }
       })
-      
+
     }
 
     const getLoginStatus = (cookie = false) => {
