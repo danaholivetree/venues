@@ -226,9 +226,11 @@ $(document).ready(function() {
     let city = formData.city.value
     let band = formData.band.value
     let genres = []
+    console.log("$('.genre-selector:checked')", $('.genre-selector:checked'));
     $('.genre-selector:checked').each( function() {
         genres.push(this.value)
     })
+    console.log('genres searched', genres);
     let starred = $('#starred-select').prop('checked')
     let bookmarked = $('#bookmark-select').prop('checked')
     const params = {state, city, band, genres, starred, bookmarked}
@@ -266,6 +268,7 @@ $(document).ready(function() {
   })
 
   $('.genre-selector').on('change', function() {
+    console.log(' checked length ', $('.genre-selector:checked').length);
     if($('.genre-selector:checked').length > 4) {
        this.checked = false;
      }
@@ -276,7 +279,9 @@ $(document).ready(function() {
       $('#bandcamp').val(data[0].url)
       data[0].tags.forEach( tag => {
         tag = tag[0].toUpperCase()+tag.slice(1)
-        $(`.genres input.${tag}`).prop('checked', true)
+        $(`#addGenres input.${tag}`).prop('checked', true)
+        console.log('genre selector checked lenght ',$('.genre-selector:checked').length);
+        console.log('addgenres checked lenght ',$(`#addGenres input:checked`).length);
       })
     })
   }

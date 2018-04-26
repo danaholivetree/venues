@@ -87,7 +87,7 @@
     'Folk','Country','Lo-fi','Dream','Pop', 'Dance', 'Shoe-Gaze','Glam', 'Psych',
     'Experimental','Orchestral', 'Cello', 'Freak', 'Opera',
     'Ambient','Classic','Vintage','Rap','R&B','Hip-hop','Dark','Electro','Power',
-    'Rock & Roll','Surf','Swing','Ragtime','Jazz','Blues','Experimental','Punk','Emo',
+    'Rock & Roll','Surf','Swing','Ragtime','Jazz','Blues','Punk','Emo',
     'Death', 'Metal', 'Hardcore', 'Noise', 'Electronic', 'Jam', 'Classical',
     'Synth', 'Goth', 'Rockabilly','Math','Post-rock','Prog', 'Steampunk', 'Zombie',
     'Polka', 'Avant', 'World', 'Eclectic' ]
