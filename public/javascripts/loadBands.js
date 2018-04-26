@@ -228,6 +228,7 @@ $(document).ready(function() {
     let genres = []
     console.log("$('.genre-selector:checked')", $('.genre-selector:checked'));
     $('.genre-selector:checked').each( function() {
+      console.log(this.value);
         genres.push(this.value)
     })
     console.log('genres searched', genres);

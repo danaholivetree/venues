@@ -330,17 +330,25 @@ $(document).ready(function() {
   })
 
   const checkForBookingEmail = (field) => {
-    let clean = field.replace(/(\r\n|\n|\r)/gm, " ");
-    let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
-    let booking = clean.split(' ').find( el => el.match(em))
-    return booking
+    // console.log(field);
+    // if (field) {
+      let clean = field.replace(/(\r\n|\n|\r)/gm, " ");
+      let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
+      let booking = clean.split(' ').find( el => el.match(em))
+      return booking
+    // }
   }
 
   const lookForFbInfo = (about, link, emails, location) => {
     if (!$('#url').val().split('/')[3]) {
       $('#url').val(checkUrl(link))
     }
-    let booking = checkForBookingEmail(about)
+    console.log('about', about, 'link', link, 'emails', emails, 'location', location);
+    let booking
+    if (about) {
+      booking = checkForBookingEmail(about)
+    }
+
     if (!booking) {
       if (emails) {
         booking = emails.filter( email => checkForBookingEmail(email))
