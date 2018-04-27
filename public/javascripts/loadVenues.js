@@ -343,7 +343,7 @@ $(document).ready(function() {
     if (!$('#url').val().split('/')[3]) {
       $('#url').val(checkUrl(link))
     }
-    console.log('about', about, 'link', link, 'emails', emails, 'location', location);
+    // console.log('about', about, 'link', link, 'emails', emails, 'location', location);
     let booking
     if (about) {
       booking = checkForBookingEmail(about)
@@ -366,10 +366,10 @@ $(document).ready(function() {
   }
 
   const lookForSiInfo = (venue, location) => {
-    let siQuery = venue.split(' ').join('-') + '-' +location.city+ '-' + abbrState(location.state, 'name')
+    let siQuery = venue.split(' ').join('-') + '-' +location.city.split(' ').join('-')+ '-' + abbrState(location.state, 'name')
     $.get(`/token/si/${siQuery}`, data => {
       if (data.capacity) {
-        $('#capacity').val(Number(data.capacity))
+        $('#cap').val(Number(data.capacity))
       }
     })
   }
@@ -399,8 +399,8 @@ $(document).ready(function() {
     if (formData.email.value) {
       newVenue.email = checkEmail(formData.email.value)
     }
-    if (formData.capacity.value) {
-      newVenue.capacity = formData.capacity.value
+    if (formData.cap.value) {
+      newVenue.capacity = formData.cap.value
     }
     newVenue.diy = formData.diy.checked ? true : false
     return newVenue
@@ -427,7 +427,7 @@ $(document).ready(function() {
       <p>Location: ${formData.city.value}, ${abbrState(formData.state.value, 'abbr')}</p>
       <p>URL: ${formData.url.value}</p>
       <p>Booking Email: ${formData.email.value ? formData.email.value : ''}</p>
-      <p>Capacity: ${formData.capacity.value ? formData.capacity.value : 'Unlisted'}</p>`)
+      <p>Capacity: ${formData.cap.value ? formData.cap.value : 'Unlisted'}</p>`)
     $('#checkInfoModal').modal('show');
     $('#acceptInfo').click( e => {
       $('#checkInfoModal').modal('hide');
