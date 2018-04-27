@@ -366,9 +366,9 @@ $(document).ready(function() {
   }
 
   const lookForSiInfo = (venue, location) => {
-    let siQuery = venue.split(' ').join('-') + '-' +location.city.split(' ').join('-')+ '-' + abbrState(location.state, 'name')
+    let siQuery = venue.split(' ').join('-') + '-' +location.city.split(' ').join('-')+ '-' + abbrState(location.state, 'name').split(' ').join('-')
     $.get(`/token/si/${siQuery}`, data => {
-      if (data.capacity) {
+      if (data.capacity && data.capacity !== 'N/A') {
         $('#cap').val(Number(data.capacity))
       }
     })
