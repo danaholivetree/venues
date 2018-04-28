@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -41,6 +42,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// const forceSsl = function (req, res, next) {
+//     if (req.headers['x-forwarded-proto'] !== 'https') {
+//         return res.redirect(['https://', req.get('Host'), req.url].join(''));
+//     }
+//     return next();
+//  };
+//
+//  app.configure(function () {
+//
+//     if (env === 'production') {
+//         app.use(forceSsl);
+//     }
+// }
 
 
 const authorize = (req, res, next) => {
