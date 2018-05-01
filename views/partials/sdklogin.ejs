@@ -33,7 +33,6 @@
         //   getLoginStatus(true)
         // } else
          if (!done) {
-          console.log('user\'s accessToken is good til ', new Date(1524589200*1000).toString());
           console.log('but they have no user cookie. and so must log in');
           $('#spinner').css('display:none')
           $('.spinner').remove()
@@ -48,7 +47,7 @@
       FB.getLoginStatus(function(response) {
         console.log(response.status);
         if (response.status === 'connected') {
-          console.log('login status was connected, logging in user to db');
+          // console.log('login status was connected, logging in user to db');
           if (!cookie) { //there was no cookie
             getUserInfo(response.authResponse)
           } else { //there was a cookie
@@ -62,13 +61,13 @@
     }
 
     const getUserInfo = (res) => {
-      console.log('res should be authresponse', res);
+      // console.log('res should be authresponse', res);
       let {accessToken} = res
       FB.api(`/me`, 'GET', {fields: 'first_name, last_name, email, id'}, resp => {
-        console.log(resp);
+        // console.log(resp);
         if (resp.error) {
           if (resp.error.error_subcode === 466) {
-            console.log('user has deauthorized app')
+            // console.log('user has deauthorized app')
              /// shouldn't end up here
             window.location.reload()
           }

@@ -48,29 +48,28 @@
       FB.getLoginStatus(function(response) {
 
         if (response.status === 'connected') {
-          console.log('login status was connected');
+          // console.log('login status was connected');
           if (!cookie) { //there was no cookie
-            console.log('there was no cookie, shouldnt be true at all');// shouldn't be true
             getUserInfo(response.authResponse)
           } else { //there was a cookie
             //nothing needs to happen?
           }
         }
         else {
-                  console.log('not connected ', response.status);
+                  // console.log('not connected ', response.status);
           FB.login()
         }
       })
     }
 
     const getUserInfo = (res) => {
-      console.log('res should be authresponse', res);
+      // console.log('res should be authresponse', res);
       let {accessToken} = res
       FB.api(`/me`, 'GET', {fields: 'first_name, last_name, email, id'}, resp => {
-        console.log(resp);
+        // console.log(resp);
         if (resp.error) {
           if (resp.error.error_subcode === 466) {
-            console.log('user has deauthorized app')
+            // console.log('user has deauthorized app')
              /// shouldn't end up here
             window.location.reload()
           }
