@@ -9,16 +9,19 @@ const base64url = require('base64url')
 const crypto = require('crypto');
 
 router.post('/login', (req, res, next) => {
-  const {email, name, accessToken, id} = req.body
+    console.log('req.body ', req.body);
+  const {email, name, accessToken, fbid} = req.body
+
   return knex('users')
     .where('email', email)
     .first()
     .then( exists => {
       if (!exists) {
         return knex('users')
-          .insert({email, name, fbid: id})
-          .returning('id', 'admin')
+          .insert({email, name, fbid})
+          .returning(['id', 'admin'])
           .then( newUser => {
+            console.log('newUser ', newUser);
             res.cookie('user', {
                             id: newUser[0].id,
                             admin: newUser[0].admin,
@@ -30,6 +33,8 @@ router.post('/login', (req, res, next) => {
           })
       } else {
         // if (exists.authorized === false) {
+        console.log('exists.id ', exists.id);
+        console.log('typeof exists.id ', typeof exists.id);
           return knex('users')
             .update({authorized: true, logged_in: true}, '*')
             .where('id', exists.id)

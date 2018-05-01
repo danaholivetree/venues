@@ -71,7 +71,8 @@ const authorize = (req, res, next) => {
     //               })
     res.render('login', {error: 'No user cookie'}) //should i have this redirect to './' ?
   } else if (req.cookies.user) {
-    console.log('there was a user cookie');
+    console.log('there was a user cookie ', req.cookies.user);
+    console.log('typeof req.cookies.user.id ', typeof req.cookies.user.id);
     return knex('users')
       .where({id: req.cookies.user.id})
       .select('authorized', 'logged_in as loggedIn')

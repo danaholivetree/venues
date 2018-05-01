@@ -75,7 +75,7 @@
         } else if (!resp.error) {
           let {first_name, last_name, email, id} = resp
           let name = `${first_name} ${last_name}`
-          $.post(`/auth/login`, {name, email, accessToken, id}, data => {
+          $.post(`/auth/login`, {name, email, accessToken, fbid:id}, data => {
             window.location.reload()
           })
         }
