@@ -50,7 +50,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 //  }
 // app.use(forceSsl)
 const sslRedirect = require('heroku-ssl-redirect')
-app.use(sslRedirect)
+app.use(sslRedirect())
 
 const authorize = (req, res, next) => {
   console.log('going through auth');
