@@ -1,13 +1,12 @@
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
+  require('dotenv').config()
 }
-
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var express = require('express')
+var path = require('path')
+var favicon = require('serve-favicon')
+var logger = require('morgan')
+var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser')
 var helpers = require('express-helpers')
 const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_KEY
@@ -29,117 +28,49 @@ var bc = require('./routes/bc')
 var auth = require('./routes/auth')
 
 
-var app = express();
+var app = express()
 helpers(app)
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'))
+app.set('view engine', 'ejs')
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(logger('dev'))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cookieParser())
+app.use(express.static(path.join(__dirname, 'public')))
 
-// const forceSsl = function (req, res, next) {
-//     if (req.headers['x-forwarded-proto'] !== 'https') {
-//         return res.redirect(['https://', req.get('Host'), req.url].join(''));
-//     }
-//     return next();
-//  };
-//
-//  app.configure(function () {
-//
-//     if (env === 'production') {
-//         app.use(forceSsl);
-//     }
-// }
-
+const forceSsl = function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+        return res.redirect(['https://', req.get('Host'), req.url].join(''));
+    }
+    return next();
+ }
+app.use(forceSsl)
 
 const authorize = (req, res, next) => {
   console.log('going through auth');
   if (!req.cookies.user) {
-    console.log('there was no user cookie, rendering login');
-    // res.cookie('user', {
-    //                 id: 17,
-    //                 admin: true,
-    //                 accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImFkbWluIjpmYWxzZSwiaWF0IjoxNTIzMDQ5Mjk4fQ.4gck4LsQndrCnuveTb_MeTQRxRjhUGaJZ4vqWJzVfGY'
-    //               }, {
-    //                 httpOnly: true
-    //               })
-    res.render('login', {error: 'No user cookie'}) //should i have this redirect to './' ?
+    res.render('login', {error: 'No user cookie'})
   } else if (req.cookies.user) {
     console.log('there was a user cookie ', req.cookies.user);
-    console.log('typeof req.cookies.user.id ', typeof req.cookies.user.id);
     return knex('users')
       .where({id: req.cookies.user.id})
       .select('authorized', 'logged_in as loggedIn')
       .first()
       .then( user => {
-        console.log('authorized' , user.authorized);
         if (user.loggedIn) {
-
           if (user.authorized) {
               next()
-            // console.log('user was authorized, checking if access token is valid');
-            // let path = `https://graph.facebook.com/debug_token?input_token=`
-            // request.get(
-            //   {url: `${path}${req.cookies.user.accessToken}&access_token=${process.env.FACEBOOK_APP_ID}|${process.env.FACEBOOK_APP_SECRET}`,
-            //   json:true
-            // },
-            //   (err, response, dat) => {
-            //
-            //     console.log('>>>> dat ', dat);
-            //     if (dat.error) {
-            //       console.log('works for certain errors maybe???');
-            //       console.log('dat.error ', dat.error);
-            //         let error = dat.error.message
-            //         let code = dat.error.code
-            //         console.log('error ', error ,'code ', code);
-            //         console.log('access token wasnt valid');
-            //         res.render('login', {error, code})
-            //     } else {
-            //       let  {data} = dat
-            //       console.log('>>>> data ', data);
-            //       if (data.error) {
-            //
-            //         console.log('error ', data.error);
-            //         console.log('access token wasnt valid');
-            //         if (data.error.subcode == 463) {
-            //           console.log('was expired. going next anyway');
-            //           next()
-            //         }
-            //         // want to not render login for expired tokens because that shouldnt happen anymore
-            //         else {
-            //           //other error, render login
-            //           res.render('login', {error: data.error})
-            //         }
-            //       }
-            //
-            //       //   console.log('expires at ',(new Date(data.expires_at*1000)).toString());
-            //       //   console.log('currently ', (new Date()).toString());
-            //       else if (data.is_valid) {
-            //         console.log('access token was valid');
-            //         next()
-            //
-            //       //     console.log('else render login with {error: 'User access token was not valid'} ');
-            //
-            //       }
-            //
-            //     }
-            //   })
-
           } else {
            console.log('user wasnt authorized');
            res.clearCookie('user')
-           // res.redirect('/')
-           res.render('login', {error: 'User has deauthorized the App'}) //haven't tested this
+           res.render('login', {error: 'User has deauthorized the App'})
          }
        } else {
          //this shouldn't happen unless they've logged out on a different machine
-         console.log('user had logged out');
          res.clearCookie('user')
          res.render('login', {error: 'User has logged out'})
        }
