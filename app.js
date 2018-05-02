@@ -42,13 +42,15 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-const forceSsl = function (req, res, next) {
-    if (req.headers['x-forwarded-proto'] !== 'https') {
-        return res.redirect(['https://', req.get('Host'), req.url].join(''));
-    }
-    return next();
- }
-app.use(forceSsl)
+// const forceSsl = function (req, res, next) {
+//     if (req.headers['x-forwarded-proto'] !== 'https') {
+//         return res.redirect(['https://', req.get('Host'), req.url].join(''));
+//     }
+//     return next();
+//  }
+// app.use(forceSsl)
+const sslRedirect = require('heroku-ssl-redirect')
+app.use(sslRedirect)
 
 const authorize = (req, res, next) => {
   console.log('going through auth');
