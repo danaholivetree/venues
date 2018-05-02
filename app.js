@@ -1,6 +1,10 @@
+ // dev
+// console.log(process.env.NODE_ENV === 'dev') // false
+// console.log(process.env.NODE_ENV.length) // 4 (including a space at the end)
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
+
 var express = require('express')
 var path = require('path')
 var favicon = require('serve-favicon')
@@ -36,6 +40,10 @@ app.set('view engine', 'ejs')
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+console.log('process.env.NODE_ENV ', process.env.NODE_ENV);
+const sslRedirect = require('heroku-ssl-redirect')
+app.use(sslRedirect(['production', 'development']))
+
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -49,8 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 //     return next();
 //  }
 // app.use(forceSsl)
-const sslRedirect = require('heroku-ssl-redirect')
-app.use(sslRedirect())
+
 
 const authorize = (req, res, next) => {
   console.log('going through auth');
