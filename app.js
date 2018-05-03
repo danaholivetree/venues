@@ -6,6 +6,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 var express = require('express')
+var app = express()
+
+const sslRedirect = require('heroku-ssl-redirect')
+app.use(sslRedirect(['production', 'development']))
+
+
 var path = require('path')
 var favicon = require('serve-favicon')
 var logger = require('morgan')
@@ -32,7 +38,9 @@ var bc = require('./routes/bc')
 var auth = require('./routes/auth')
 
 
-var app = express()
+
+console.log('process.env.NODE_ENV ', process.env.NODE_ENV);
+
 helpers(app)
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -40,9 +48,7 @@ app.set('view engine', 'ejs')
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-console.log('process.env.NODE_ENV ', process.env.NODE_ENV);
-const sslRedirect = require('heroku-ssl-redirect')
-app.use(sslRedirect(['production', 'development']))
+
 
 app.use(logger('dev'))
 app.use(bodyParser.json())
