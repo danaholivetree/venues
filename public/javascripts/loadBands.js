@@ -288,6 +288,7 @@ $(document).ready(function() {
   }
   const getSpotifyToken = () => {
     $.get('/token/spotify', ({access_token, expires_in}) => {
+      console.log('token came back from spotify ', access_token);
       localStorage.setItem('pa_token', access_token)
       localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
       accessToken = access_token
@@ -295,7 +296,9 @@ $(document).ready(function() {
   }
 
   const checkForSpotifyToken = () => {
+    console.log('checking for spotify access token', accessToken);
     if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
+      console.log('getting spotify token');
       getSpotifyToken()
     }
   }

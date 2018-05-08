@@ -18,9 +18,9 @@ var logger = require('morgan')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var helpers = require('express-helpers')
-const jwt = require('jsonwebtoken')
-const secret = process.env.JWT_KEY
-const bcrypt = require('bcrypt')
+// const jwt = require('jsonwebtoken')
+// const secret = process.env.JWT_KEY
+// const bcrypt = require('bcrypt')
 const knex = require('./knex')
 const request = require('request')
 
