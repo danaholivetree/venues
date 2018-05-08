@@ -209,7 +209,10 @@ $(document).ready(function() {
       $('#prev').prop('disabled', false)
       off += 25
       console.log('origQuery ' ,origQuery);
-      const newQueryString = $.param({...params, offset: off})
+      let sendParams = params //added for older browsers
+      sendParams.offset = off  //added for older browsers
+      // const newQueryString = $.param({...params, offset: off})
+      const newQueryString = $.param(sendParams) //added for older browsers
       console.log('newQueryString ', newQueryString);
       getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
         console.log('data ', data);
