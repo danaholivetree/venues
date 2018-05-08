@@ -8,7 +8,6 @@ $(document).ready(function() {
   $.get(`/api/venues/${venueId}`, data => {
     venueData = data
     showVenue(data)
-    console.log('url to get fb info ', data.url);
     getFbInfo(data.url) //maybe not have to do this more than once?
     getSi(data.venue, data.city, data.state)
     editSingleOn()
@@ -19,7 +18,7 @@ $(document).ready(function() {
 
   const showVenue = data => {
     venueData = data
-    console.log('gotData ', data);
+    // console.log('gotData ', data);
     const {id, venue, url, state, city, diy, capacity, email, sound, genres, type, crowd, ages, pay, promo, accessibility, contributedBy, up, down, vote} = data
     //empty and append no matter what OR check if values have changed first , which is more intensive
     $('.container > h3').empty().append(venue)
@@ -274,7 +273,6 @@ $(document).ready(function() {
     })
     $('#submitEdits').click( e => {
       e.preventDefault()
-      console.log('edit venue form was submitted');
       let venueId = document.location.href.match(/(\d+)$/)[0]
       let inputs = $(this).find('input')
       let editedVenue = {}
@@ -294,7 +292,6 @@ $(document).ready(function() {
       })
 
       if (Object.keys(editedVenue).length > 0) {
-        console.log('editedVenue about to be sent to server', editedVenue);
         sendEditToServer(venueId, editedVenue, true)
       }
       inputs.hide()

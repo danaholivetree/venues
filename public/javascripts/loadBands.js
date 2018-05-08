@@ -226,12 +226,9 @@ $(document).ready(function() {
     let city = formData.city.value
     let band = formData.band.value
     let genres = []
-    console.log("$('.genre-selector:checked')", $('.genre-selector:checked'));
     $('.genre-selector:checked').each( function() {
-      console.log(this.value);
         genres.push(this.value)
     })
-    console.log('genres searched', genres);
     let starred = $('#starred-select').prop('checked')
     let bookmarked = $('#bookmark-select').prop('checked')
     const params = {state, city, band, genres, starred, bookmarked}
@@ -281,14 +278,11 @@ $(document).ready(function() {
       data[0].tags.forEach( tag => {
         tag = tag[0].toUpperCase()+tag.slice(1)
         $(`#addGenres input.${tag}`).prop('checked', true)
-        console.log('genre selector checked lenght ',$('.genre-selector:checked').length);
-        console.log('addgenres checked lenght ',$(`#addGenres input:checked`).length);
       })
     })
   }
   const getSpotifyToken = () => {
     $.get('/token/spotify', ({access_token, expires_in}) => {
-      console.log('token came back from spotify ', access_token);
       localStorage.setItem('pa_token', access_token)
       localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
       accessToken = access_token
@@ -296,9 +290,7 @@ $(document).ready(function() {
   }
 
   const checkForSpotifyToken = () => {
-    console.log('checking for spotify access token', accessToken);
     if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
-      console.log('getting spotify token');
       getSpotifyToken()
     }
   }
@@ -326,17 +318,13 @@ $(document).ready(function() {
       if (url.split('.')[1] === 'facebook') {  //from facebook
 
         fbid = url.split('/')[3]
-        console.log('set fbid to ', url.split('/')[3]);
         if (fbid.split('-').length > 1) {
-          console.log('had to get id out of - separated fbid');
           fbid = fbid.split('-')
           fbid = fbid[fbid.length-1]
-            console.log('set fbid to ',   fbid );
         }
       }
     } else { //from url
         fbid = url.split('.')[1]
-        console.log('set fbid to ',   fbid );
     }
     return fbid
   }
@@ -344,7 +332,6 @@ $(document).ready(function() {
   $('#fb').change( e => {
     e.preventDefault()
     let fbid = getFbId(e.currentTarget.value)
-    console.log('querying fbid ', fbid);
     $.get(`/token/facebook/bands/${fbid}`, ({name,website,link,genre,hometown,current_location,fan_count,category}) => {
       console.log('category ', category);
       if (category === 'Musician/Band' || category === 'Music') {
@@ -366,17 +353,13 @@ $(document).ready(function() {
   })
 
   const getLocationFromFb = (curr, home) => {
-    console.log('curr ', curr);
-    console.log('home ', home);
     if ($('#city').val() === '' || ($('#state').val() === 'Any')) {
       if (curr && curr.split(',').length > 1) {
         $('#city').val(curr.split(',')[0])
         if (curr.split(',').length > 1) {
           if (curr.split(',')[1].trim().length === 2) {
-            console.log('setting state to ', abbrState(curr.split(',')[1].trim(), 'name'));
             $('#state').val(abbrState(curr.split(',')[1].trim(), 'name'))
           } else {
-            console.log('setting state to ', curr.split(',')[1].trim());
             $('#state').val(curr.split(',')[1].trim())
           }
         }
@@ -384,10 +367,8 @@ $(document).ready(function() {
         $('#city').val(home.split(',')[0])
         if (home.split(',').length > 1) {
           if (home.split(',')[1].trim().length === 2) {
-            console.log('setting state to ', abbrState(home.split(',')[1].trim(), 'name'));
             $('#state').val(abbrState(home.split(',')[1].trim(), 'name'))
           } else {
-            console.log('setting state to ', home.split(',')[1].trim());
             $('#state').val(home.split(',')[1].trim())
           }
         }
