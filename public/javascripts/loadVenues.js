@@ -230,7 +230,10 @@ $(document).ready(function() {
     $('#prev').click( e => {
       e.preventDefault()
       off -= 25
-      const newQueryString = $.param({...params, offset: off})
+      let sendPrevParams = params //added for older browsers
+      sendPrevParams.offset = off  //added for older browsers
+      const newQueryString = $.param(sendPrevParams) //added for older browsers
+      // const newQueryString = $.param({...params, offset: off})
       getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
         processData(data)
         if (off === 0) {
