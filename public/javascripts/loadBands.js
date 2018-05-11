@@ -52,7 +52,7 @@ $(document).ready(function() {
       const {id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars, bookmark} = bnd
       let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
       let spotifyUri = spotify ? spotify.split('/')[4] : ''
-      let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:artist:${spotifyUri}&theme=white` : ''
+      // let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:artist:${spotifyUri}&theme=white` : ''
       let displaySpotify = spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''
       let displayBandcamp = bandcamp ? `<img class='playBandcamp' data-band='${band}' data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'>` : ``
       let displayBand = fb ? `<a href=${fb} target='_blank'>${band}</a>` : `${band}`
@@ -115,7 +115,7 @@ $(document).ready(function() {
         const {id, band_id, track, title, artist} = data
         $(`
             <div class='widget'>
-               <iframe style="border: 0; width: 370px; height: 120px;" src=https://bandcamp.com/EmbeddedPlayer/album=${id}/size=large/bgcol=ffffff/linkcol=0687f5/tracklist=false/artwork=small/track=${track}/transparent=true/ seamless><a href=${url}>${title} by ${artist}</a></iframe>
+               <iframe style="border: 0; width: 370px; height: 120px;" src=https://bandcamp.com/EmbeddedPlayer/album=${id}/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/track=${track}/transparent=true/ seamless><a href=${url}>${title} by ${artist}</a></iframe>
                <a style="top:45px;" href="/" class="close" aria-label="close">&times;</a>
             </div>
 
