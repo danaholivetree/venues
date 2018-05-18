@@ -1,14 +1,20 @@
-$(document).ready(function() {
+
 
   const { states, abbrState, genreKeywords } = usStates
 
   for (let i = 0; i < states.length; i++ ) {
-    $('.stateSelector').append($(`<option value='${states[i]}'>${states[i]}</option>`))
+    document.querySelector('.stateSelector').innerHTML += `<option value='${states[i]}'>${states[i]}</option>`
   }
+  const genresAndListener = () => {
+    let gs = document.getElementById('genreSelector')
+    let ag = document.getElementById('addGenres')
+    genreKeywords.forEach( genre => {
 
-  genreKeywords.forEach( genre => {
-      $('.genres').append($(`<div class="form-check form-check-inline" style='display:inline-flex;'>
-        <input class="form-check-input genre-selector ${genre}" type="checkbox" value="${genre}">
-        <label class="form-check-label" for=${genre}>${genre}</label></div>`))
-  })
-})
+      let newGenre = `<div class="form-check form-check-inline" style='display:inline-flex;'>
+          <input class="form-check-input genre-selector ${genre}" type="checkbox" value="${genre}">
+          <label class="form-check-label" for=${genre}>${genre}</label></div>`
+      gs.innerHTML += newGenre
+      ag.innerHTML += newGenre
+    })
+  }
+  genresAndListener()

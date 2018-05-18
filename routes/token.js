@@ -27,7 +27,11 @@ router.get('/spotify', (req, res, next) => {
   };
   request.post(authOptions, (error, response, body) => {
     if (!error && response.statusCode === 200) {
+      console.log('body ', body);
       res.send(body)
+    } else {
+      console.log('error ', error);
+      console.log('response.statusCode ', response.statusCode);
     }
   })
 })

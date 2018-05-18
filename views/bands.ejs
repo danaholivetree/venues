@@ -3,8 +3,8 @@
   <% include ./partials/sdk.ejs %>
 
     <div class='container main-container'>
-      <div class='button-header'><button class='btn' id="searchBands">SEARCH BANDS</button>  <button class='btn' id="addBand">ADD A BAND</button></div>
-      <form id='bandSearchForm' style='display:inline;'>
+      <div class='button-header'><button class='btn lightblue' id="searchBands">SEARCH BANDS</button>  <button class='btn' id="addBand">ADD A BAND</button></div>
+      <form id='bandSearchForm'>
         <div class='form-row'>
           <div class="input-group mb-3 col-12 col-lg">
               <label for='state' class="control-label col-3  col-form-label" >State:</label>
@@ -53,7 +53,7 @@
 
 
 
-    <form id='addBandForm' style='display:none;'>
+    <form id='addBandForm' class='hidden' >
       <div class='form-row'>
         <div class="input-group mb-3 col-12 col-md">
           <label for='state' class="control-label col-3  col-form-label" >State:</label>
@@ -83,10 +83,9 @@
           <input type="url" id='bandcamp' class="form-control" >
         </div>
       </div>
-      <div id='spotifyGuess' class='form-row'>
-        <p class='col-12' style='display:none;'>Please select the artist's correct spotify:</p>
-
+      <div id='spotifyGuess' class='form-row'><p class='col-12 hidden'>Please select the artist's correct spotify:</p>
       </div>
+      <div id='wrongSpotify' class="form-row"></div>
       <div class='form-row'>
         <div class="input-group mb-3 col-12">
           <div class='input-group-text genres' id='addGenres'>

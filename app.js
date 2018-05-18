@@ -8,8 +8,8 @@ if (process.env.NODE_ENV !== 'production') {
 var express = require('express')
 var app = express()
 
-const sslRedirect = require('heroku-ssl-redirect')
-app.use(sslRedirect(['production', 'development']))
+// const sslRedirect = require('heroku-ssl-redirect')
+// app.use(sslRedirect(['production', 'development']))
 
 
 var path = require('path')
@@ -18,9 +18,6 @@ var logger = require('morgan')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var helpers = require('express-helpers')
-// const jwt = require('jsonwebtoken')
-// const secret = process.env.JWT_KEY
-// const bcrypt = require('bcrypt')
 const knex = require('./knex')
 const request = require('request')
 
@@ -56,46 +53,39 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-// const forceSsl = function (req, res, next) {
-//     if (req.headers['x-forwarded-proto'] !== 'https') {
-//         return res.redirect(['https://', req.get('Host'), req.url].join(''));
+
+
+// const authorize = (req, res, next) => {
+//   console.log('going through auth');
+//   if (!req.cookies.user) {
+//     res.render('login', {error: 'No user cookie'})
+//   } else if (req.cookies.user) {
+//     console.log('there was a user cookie ', req.cookies.user);
+//     return knex('users')
+//       .where({id: req.cookies.user.id})
+//       .select('authorized', 'logged_in as loggedIn')
+//       .first()
+//       .then( user => {
+//         if (user.loggedIn) {
+//           if (user.authorized) {
+//               next()
+//           } else {
+//            console.log('user wasnt authorized');
+//            res.clearCookie('user')
+//            res.render('login', {error: 'User has deauthorized the App'})
+//          }
+//        } else {
+//          //this shouldn't happen unless they've logged out on a different machine
+//          res.clearCookie('user')
+//          res.render('login', {error: 'User has logged out'})
+//        }
+//       })
 //     }
-//     return next();
-//  }
-// app.use(forceSsl)
-
-
-const authorize = (req, res, next) => {
-  console.log('going through auth');
-  if (!req.cookies.user) {
-    res.render('login', {error: 'No user cookie'})
-  } else if (req.cookies.user) {
-    console.log('there was a user cookie ', req.cookies.user);
-    return knex('users')
-      .where({id: req.cookies.user.id})
-      .select('authorized', 'logged_in as loggedIn')
-      .first()
-      .then( user => {
-        if (user.loggedIn) {
-          if (user.authorized) {
-              next()
-          } else {
-           console.log('user wasnt authorized');
-           res.clearCookie('user')
-           res.render('login', {error: 'User has deauthorized the App'})
-         }
-       } else {
-         //this shouldn't happen unless they've logged out on a different machine
-         res.clearCookie('user')
-         res.render('login', {error: 'User has logged out'})
-       }
-      })
-    }
-  }
-
-
-app.use('/auth', auth)
-app.use(authorize)
+//   }
+//
+//
+// app.use('/auth', auth)
+// app.use(authorize)
 app.use('/', renders)
 app.use('/token', token)
 app.use('/bc', bc)

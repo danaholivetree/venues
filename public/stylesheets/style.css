@@ -69,6 +69,14 @@ footer a:hover {
 .hidden {
   display:none;
 }
+
+.black {
+  background-color:black;
+}
+.lightblue {
+  background-color:lightblue
+}
+
 /* .tooltip.bs-tooltip-auto[x-placement^=left] .arrow::before, .tooltip.bs-tooltip-left .arrow::before {
     right: 0;
     margin-top: -3px;
@@ -132,12 +140,12 @@ li {
 .voteVenue {
   min-width:261px;
 }
-#searchBands {
+/* #searchBands {
   background-color: lightblue;
 }
 #searchVenues {
   background-color: lightblue;
-}
+} */
 
 .edit-form {
   display:none;
