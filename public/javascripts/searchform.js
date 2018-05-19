@@ -3,7 +3,7 @@
   const { states, abbrState, genreKeywords } = usStates
 
   for (let i = 0; i < states.length; i++ ) {
-    document.querySelector('.stateSelector').innerHTML += `<option value='${states[i]}'>${states[i]}</option>`
+    document.querySelectorAll('.stateSelector').forEach(el => el.innerHTML += `<option value='${states[i]}'>${states[i]}</option>`)
   }
   const genresAndListener = () => {
     let gs = document.getElementById('genreSelector')
