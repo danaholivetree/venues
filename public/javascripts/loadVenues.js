@@ -1,52 +1,99 @@
-$(document).ready(function() {
-  const {abbrState} = usStates
+
+  // const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage, copyToClipboard} = helpers
   let off = 0
 
+  const getById = (el) => document.getElementById(el);
+  const next = getById('next')
+  const prev = getById('prev')
+  const topOfResults = getById('venueTable')
+  const prevNext = getById('prevNext')
+  const hideEl = (el) => el.classList.add('hidden')
+  const showEl = (el) => el.classList.remove('hidden')
+  const disable = (el) => {
+    el.disabled = true
+  }
+  const enable = (el) => {
+    el.disabled = false
+  }
+  const clear = (el) => {
+    if (el) {
+        el.innerHTML = ''
+    }
+  }
+
   let info = 'here is some text'
+  const searchVenuesBtn = getById('searchVenues')
+  const addVenueBtn = getById('addVenue')
+  const venueSearchForm = getById('venueSearchForm')
+  const addVenueForm = getById('addVenueForm')
+  let state = {}
+
+  const handleErrors = response => {
+    console.log(response.ok ? 'response ok? ' : response.statusText);
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    } else {
+      return response.json();
+    }
+  }
+
   const getData = async (offset = 0, scroll = false, query = '') => {
-    return $.get(`/api/venues/${query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''}`, (data, status) => {
-      if (offset > 0 && data.length === 0) {
-        $('#next').prop('disabled', true)
-        $('#prev').prop('disabled', true)
-        return
-      } else {
-        if (offset === 0) {
-          $('#prev').prop('disabled', true)
+    return fetch(`/api/venues/${query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''}`)
+      .then(handleErrors)
+      .then(data => {
+        if (offset > 0 && data.length === 0) {
+          disable(next)
+          return
+        } else {
+          if (offset === 0) {
+            disable(prev)
+          }
+          if (scroll) {
+            topOfResults.scrollIntoView() //need to test this
+          }
+          return data
         }
-        if (scroll) {
-          $('#venueTable').get(0).scrollIntoView()
-        }
-        return data
-      }
-    })
+    }).catch(err => console.log(err))
   }
 
   const loadPage = async () => {
     let data = await getData(off)
-    processData(data)
-    setPrevNextListener()
+    if (data) {
+      console.log('data');
+      processData(data)
+      setPrevNextListener()
+    }
   }
 
-  const processData = (venues) => {
-    if (venues) {
-      listVenues(venues)
-      if (venues.length === 0) {
-        $('#prevNext').hide()
-      } else {
-        $('#prevNext').show()
-      }
-      if (venues.length < 25) {
-        $('#next').prop('disabled', true)
-      } else {
-        $('#next').prop('disabled', false)
-      }
+  const managePrevNextButtons = (dataLength) => {
+    if (dataLength === 0) {
+      console.log('hiding prevnext', dataLength);
+      hideEl(prevNext)
+    } else {
+      console.log('showing prevnext', dataLength);
+      showEl(prevNext)
+    }
+    if (dataLength < 25) {
+      disable(next)
+    } else {
+      enable(next)
+    }
+  }
 
+  const processData = (data) => {
+    console.log('processing venues' , data);
+    if (data) {
+      listVenues(data)
+      managePrevNextButtons(data.length)
+    } else {
+      console.log('processing data, no data ', data);
     }
   }
 
   const listVenues = (venues) => {
-    $('#venuesList').empty()
+    let venuesList = getById('venuesList')
+    clear(venuesList)
 
     venues.forEach( ven => {
       const {id, venue, diy, email, city, state, capacity, up, down, bookmark, vote} = ven
@@ -59,94 +106,151 @@ $(document).ready(function() {
         </svg>
       </button>` : ''
       let displayCap = capacity ? capacity : ''
-      let thumbUp = `<span>${up}</span><button ${vote === 'up' ? 'style="color:green;"' : ''} class='btn btn-default vote thumb thumb-up' data-voted='up' data-venueid=${id}><i class="material-icons md-18">thumb_up</i></button>`
-      let thumbDown = `<span>${down}</span><button ${vote === 'down' ? 'style="color:red;"' : ''} class='btn btn-default vote thumb thumb-down' data-voted='down' data-venueid=${id}><i class="material-icons md-18">thumb_down</i></button>`
-      let bookmarkIcon = `<i style="color:lightblue" class="material-icons md-18" >bookmark</i>`
-      let bookmarkBorder = `<i class="material-icons md-18" >bookmark_border</i>`
+      let thumbUp = `<span>${up}</span><button class='btn btn-default vote thumb thumb-up ${vote === 'up' ? 'lightblue-text' : ''} ' data-voted='up' data-venueid=${id}><i class="material-icons md-18 vote">thumb_up</i></button>`
+      let thumbDown = `<span>${down}</span><button class='btn btn-default vote thumb thumb-down ${vote === 'down' ? 'red-text' : ''}' data-voted='down' data-venueid=${id}><i class="material-icons md-18 vote">thumb_down</i></button>`
+      let bookmarkIcon = `<i class="material-icons md-18 bookmark lightblue-text" >bookmark</i>`
+      let bookmarkBorder = `<i class="material-icons md-18 bookmark" >bookmark_border</i>`
       let bkmk = `<button class='btn btn-default thumb bookmark' data-id=${id}>${bookmark ? bookmarkIcon : bookmarkBorder}</button>`
-
-      $('#venuesList').append($(`
-
-        <tr scope='row' data-id=${id} class='venue-row'>
+      let venueRow = `<tr scope='row' data-id=${id} class='venue-row'>
           <td>${abbrState(state, 'abbr')}</td>
           <td>${city}</td>
           <td>${displayVenue}</td>
-          <td class='d-none d-md-table-cell'>${displayEmail}</td>
+          <td class="d-none d-md-table-cell">${displayEmail}</td>
           <td class='d-none d-md-table-cell'>${displayCap}</td>
           <td class='d-none d-md-table-cell'>${thumbUp}</td>
           <td class='d-none d-md-table-cell'>${thumbDown}</td>
-          <td class='d-none d-md-table-cell'>${bkmk}</td>
-        </tr>
-      `))
+          <td>${bkmk}</td>
+        </tr>`
+      venuesList.innerHTML += venueRow
     })
-    setClipboardListener()
-    setThumbListener()
-    setBookmarkListener()
+    // setClipboardListener()
+    // setThumbListener()
+    // setBookmarkListener()
+    setTbodyListeners(venuesList)
 
   }
 
   loadPage()
 
+  const setTbodyListeners = (tbody) => {
+    tbody.addEventListener('click', e => {
+      // e.preventDefault()
+      let targ = e.target
+      console.log('targ: ', targ, 'targ.id', targ.dataset.id);
+      if (targ.matches('.bookmark')) {
+        console.log('clicked .bookmark');
+        console.log(targ.dataset.id);
+        clickedBookmark(targ)
+      } else if (targ.matches('.vote')) {
+        console.log('clicked .vote');
+        clickedVote(targ)
+      }
+    }, true)
+  }
   const setClipboardListener = () => {
-    $('.js-tooltip').tooltip()
-    $('.js-copy').click( function(e) {
+    let clipTips = document.querySelectorAll('.js-tooltip')
+    console.log('cliptip', clipTips);
+    // clipTip.tooltip()
+    let clipCopy = document.querySelectorAll('.js-copy')
+    clipCopy.addEventListener('click', e => {
       e.preventDefault()
-      let el = $(this)
-      let text = el.attr('data-copy')
+      let el = e.target
+      let text = el.getAttribute('data-copy')
       copyToClipboard(text, el)
     })
   }
 
-  const setThumbListener = () => {
-    $('.vote').click( e => {
-      let clicked = $(e.currentTarget)
-      let {voted, venueid} = e.currentTarget.dataset
+  const clickedVote = async (targ) => {
+    let voted
+    let venueid
+    if (targ.dataset.voted) {
+      voted = targ.dataset.voted
+      venueid = targ.dataset.venueid
+    } else if (targ.parentNode.dataset.voted) {
+        targ = targ.parentNode
+        voted = targ.dataset.voted
+        venueid = targ.dataset.venueid
+    }
       let upSpan, downSpan, otherBtn
       if (voted === 'up') {
-        upSpan = clicked.prev('span')
-        downSpan = clicked.closest('td').next('td').find('span')
-        otherBtn = downSpan.next()
+        upSpan = targ.previousSibling
+        downSpan = upSpan.parentNode.nextSibling.nextSibling.firstChild
+        otherBtn = downSpan.nextSibling
       } else {
-        downSpan = clicked.prev('span')
-        upSpan = clicked.closest('td').prev('td').find('span')
-        otherBtn = upSpan.next()
+        downSpan = targ.previousSibling
+        upSpan = downSpan.parentNode.previousSibling.previousSibling.firstChild
+        otherBtn = upSpan.nextSibling
+
       }
-      $.post(`/api/votes`, {venueId: venueid, vote: voted}, data => {
+      return await fetch(`/api/votes`, {body: JSON.stringify({venueId: venueid, vote: voted}), method:'POST', credentials: 'same-origin',
+        headers: {'Content-Type': 'application/json'}})
+        .then(handleErrors)
+        .then(data => {
         let {id, up, down, vote} = data
-        upSpan.text(up)
-        downSpan.text(down)
-        otherBtn.css("color", "black")
+        upSpan.innerText = up
+        downSpan.innerText = down
+        otherBtn.classList.add('black-text')
         if (vote && vote === 'none') {
-          clicked.css("color", "black")
+          targ.classList.add('black-text')
+          targ.classList.remove('red-text')
+          targ.classList.remove('lightblue-text')
         } else {
-          clicked.css("color", `${voted === 'up' ? "green" : "red"}`)
+          if (voted === 'up') {
+            targ.classList.add('lightblue-text')
+            targ.classList.remove('black-text')
+
+          } else if (voted === 'down') {
+            targ.classList.add('red-text')
+            targ.classList.remove('black-text')
+          }
+
         }
       })
-    })
   }
 
-  const setBookmarkListener = () => {
-    $('.bookmark').click( e => {
-      e.preventDefault()
-      $.post(`/api/vBookmarks`, {venueId: e.currentTarget.dataset.id}, data => {
+  const clickedBookmark = async (targ) => {
+    let id
+    if (targ.dataset.id) {
+      id = targ.dataset.id
+    } else if (targ.parentNode.dataset.id) {
+      id = targ.parentNode.dataset.id
+      targ = targ.parentNode
+    }
+    let venueId = targ.dataset.id
+
+    return await fetch(`/api/vBookmarks`, {body: JSON.stringify({venueId}),
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json'}
+    }).then(handleErrors)
+      .then(data => {
+        let icon = targ.firstChild
         if (data.bookmarked) {
-          $(e.currentTarget).children('i').css("color", "lightblue").text('bookmark')
+          icon.classList.add('lightblue-text')
+          clear(icon)
+          iconText = document.createTextNode('bookmark')
+          icon.append(iconText)
         } else {
-          $(e.currentTarget).children('i').css("color", "black").text('bookmark_border')
+          icon.classList.remove('lightblue-text')
+          clear(icon)
+          iconText = document.createTextNode('bookmark_border')
+          icon.append(iconText)
         }
-      })
-    })
-  }
+      }).catch(err => console.log(err))
+    }
 
-  $('.notany').click( e => {
-    if ($('.notany:checked').length === 0) {
-        $('#any').prop("checked", true)
+  let capSel = getById('capacity')
+  capSel.addEventListener('click', e => {
+    let notAny = capSel.querySelectorAll('.notany:checked')
+    let any = getById('any')
+    if (notAny.length === 0) {
+        any.checked = true
     } else {
-        $('#any').prop("checked", false)
+        any.checked = false
     }
   })
 
-  $('#venueSearchForm').submit( e => {
+  const submitSearchForm = e => {
     e.preventDefault()
     off = 0
     let formData = e.target.elements
@@ -154,138 +258,152 @@ $(document).ready(function() {
     let city = formData.city.value
     let venue = formData.venue.value
     let capacity = []
-    $('#capacity :checked').each( function(i, el) {
+    let inputs = capSel.querySelectorAll('input:checked')
+    inputs.forEach( el => {
       capacity.push(el.id)
     })
     if (capacity.length < 1) {
       capacity.push('any')
     }
-    let up = $('#up-select').prop('checked')
-    let down = $('#down-select').prop('checked')
-    let bookmarked = $('#bookmark-select').prop('checked')
+    let up = getById('up-select').checked
+    let down = getById('down-select').checked
+    let bookmarked = getById('bookmark-select').checked
     const params = {state, city, venue, capacity, up, down, bookmarked}
     const queryString = $.param(params)
     getData(0, false, queryString).then( data => {
       processData(data)
-      $('.stateDisplay').html(`<h2>Venues ${bookmarked || up || down ? 'I\'ve ' : ''}
-      ${up ? 'Upvoted' : ''}${up && (down || bookmarked) ? ' and ' : ''}${down ? 'Downvoted ' : ''}
-      ${down && bookmarked ? 'and ' : ''}${params.bookmarked ? 'Bookmarked ' : '' }
-      ${city || state !=='All' ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
-      ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${venue ? 'matching '+ makeUppercase(venue) : ''}</h2>`).show()
-      setPrevNextQueryListener(params, queryString)
+      let resultsTitleDisplay = document.querySelector('.stateDisplay')
+      console.log('resutstitledispay ', resultsTitleDisplay);
+      resultsTitleDisplay.innerHTML = makeResultsTitle(params)
+      showEl(resultsTitleDisplay)
+      state.globalParams = params
+      state.globalOrigQuery = queryString
     })
-  })
+  }
+  const makeResultsTitle = (params) => {
+    console.log(params);
+    let {state, city, venue, up, down, bookmarked} = params
+    return `<h2>Venues ${bookmarked || up || down ? 'I\'ve ' : ''}
+    ${up ? 'Upvoted' : ''}${up && (down || bookmarked) ? ' and ' : ''}${down ? 'Downvoted ' : ''}
+    ${down && bookmarked ? 'and ' : ''}${bookmarked ? 'Bookmarked ' : '' }
+    ${city || state !=='All' ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
+    ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${venue ? 'matching '+ makeUppercase(venue) : ''}</h2>`
+  }
+
+  venueSearchForm.addEventListener('submit', submitSearchForm)
+
+  const nextHandler = e => {
+    e.preventDefault()
+    enable(prev)
+    off += 25
+    if (state.globalParams) {
+      let sendNextParams = state.globalParams //added for older browsers
+      sendNextParams.offset = off  //added for older browsers
+      const newQueryString = makeQuery(sendNextParams) //added for older browsers
+      // const newQueryString = $.param({...params, offset: off})
+      getData(off, true, `${off > 0 ? newQueryString : state.globalOrigQuery}`).then( data => {
+        if (data.length > 0) {
+          processData(data)
+        }
+      })
+    } else {
+      getData(off, true).then( data => {
+        if (data.length > 0) {
+          processData(data)
+        }
+      })
+    }
+  }
+
+  const prevHandler = (e, params, origQuery) => {
+    e.preventDefault()
+    off -= 25
+    if (state.globalParams) {
+      let sendPrevParams = state.globalParams //added for older browsers
+      sendPrevParams.offset = off  //added for older browsers
+      const newQueryString = makeQuery(sendPrevParams) //added for older browsers
+        // const newQueryString = $.param({...params, offset: off})
+      getData(off, true, `${off > 0 ? newQueryString : state.globalOrigQuery}`).then( data => {
+        processData(data)
+      })
+    } else {
+      getData(off, true).then( data => {
+        processData(data)
+      })
+    }
+  }
 
   const setPrevNextListener = () => {
-    $('#prevNext').show()
-    $('#prev').prop('disabled', true)
-    $('#next').click( e => {
-      e.preventDefault()
-      off += 25
-      $('#prev').prop('disabled', false)
-      getData(off, true).then( data => {
-        if (data.length > 0) {
-          processData(data)
-        }
-      })
-    })
-    $('#prev').click( e => {
-      e.preventDefault()
-      off -= 25
-      getData(off, true).then( data => {
-        processData(data)
-      })
-
-    })
+    off = 0
+    disable(prev)
+    next.addEventListener('click', nextHandler)
+    prev.addEventListener('click', prevHandler)
   }
 
-  const setPrevNextQueryListener = (params, origQuery) => {
-    off = 0 // ?
-    $('#prev').prop('disabled', true)
-    $('#next').prop('disabled', false)
-    $('#next').off('click')
-    $('#next').click( e => {
-      e.preventDefault()
-      $('#prev').prop('disabled', false)
-      off += 25
-      console.log('origQuery ' ,origQuery);
-      let sendParams = params //added for older browsers
-      sendParams.offset = off  //added for older browsers
-      // const newQueryString = $.param({...params, offset: off})
-      const newQueryString = $.param(sendParams) //added for older browsers
-      console.log('newQueryString ', newQueryString);
-      getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
-        console.log('data ', data);
-        console.log('data length ', data.length);
-        if (data.length > 0) {
-          console.log('going to process data');
-          processData(data)
-        } else {
-          console.log('no data');
-          $('#next').prop('disabled', true)
-        }
-      })
-    })
-    $('#prev').off('click')
-    $('#prev').click( e => {
-      e.preventDefault()
-      off -= 25
-      let sendPrevParams = params //added for older browsers
-      sendPrevParams.offset = off  //added for older browsers
-      const newQueryString = $.param(sendPrevParams) //added for older browsers
-      // const newQueryString = $.param({...params, offset: off})
-      getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
-        processData(data)
-        if (off === 0) {
-          $('#next').prop('disabled', false)
-        }
-      })
-
-    })
-  }
-
-  $('#searchVenues').click( e => {
+  searchVenuesBtn.click( e => {
     e.preventDefault()
-      $('#venueSearchForm').toggle(true)
-      $('#addVenueForm input').val('')
-      $('#state').val('All')
-      $('#addVenueForm').toggle(false)
-      $('#searchVenues').css('background-color', 'lightblue')
-      $('#addVenue').css('background-color', 'white')
-      $('#venueState').val('All');
+      showEl(venueSearchForm)
+      let formInputs = addVenueForm.querySelectorAll('input')
+      formInputs.forEach( el => {
+        el.value = ''
+        if (el.type === 'checkbox') {
+          el.checked = false
+        }
+      })
+      getById('state').value = 'All'
+      hide(addVenueForm)
+      searchVenuesBtn.classList.add('lightblue')
+      addVenueBtn.classList.remove('lightblue')
+      // $('#venueState').val('All');
   })
 
-  $('#addVenue').click( e => {
+  addVenue.addEventListener('click', e => {
     e.preventDefault()
-      $('#venueSearchForm').toggle(false)
-      $('#addVenueForm').toggle(true)
-      $('#venue').focus()
-      $('#addVenue').css('background-color', 'lightblue')
-      $('#searchVenues').css('background-color', 'white')
+      showEl(addVenueForm)
+      getById('venue').focus()
+      let formInputs = venueSearchForm.querySelectorAll('input')
+      formInputs.forEach( el => {
+        el.value = ''
+        if (el.type === 'checkbox') {
+          el.checked = false
+        }
+      })
+      hideEl(venueSearchForm)
+      addVenueBtn.classList.add('lightblue')
+      searchVenuesBtn.classList.remove('lightblue')
   })
 
 // try to get email, city and state from venue name alone
-  $('#venue').blur( e => {
-    e.preventDefault()
-    if ($('#venue').val()) {
-      let venue = e.currentTarget.value
-      $('#venue').val(makeUppercase(e.currentTarget.value))
-      $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, res => {
-        if (res && !res.error) {
-          let {name,about,link,website,single_line_address,emails,location,events} = res
-          if (location) {
-            $('#checkVenueModal .modal-body').text(`Do you mean ${name} in ${location.city}, ${location.state}?`)
-            $('#checkVenueModal').modal('show');
-            $('#acceptVenue').click( e => {
-              lookForFbInfo(about, link, emails, location)
-              $('#checkVenueModal').modal('hide');
-              lookForSiInfo(venue, location)
-            })
+  let venue = getById('venue')
+  const venueChanged = async (e) => {
+    // e.preventDefault()
+    let ven = venue.value
+    if (ven) {
+      ven = makeUppercase(ven)
+      let checkFb = ven.split(" ").join('')
+      return await fetch(`/token/facebook/venues/${checkFb}`)
+        .then(handleErrors)
+        .then(data =>{
+          if (data && !data.error) {
+            let {name,about,link,website,single_line_address,emails,location,events} = data
+            if (location) {
+              state.fbData = data
+              let checkVenueModal = getById('checkVenueModal')
+              let modalBody = checkVenueModal.querySelector('.modal-body')
+              modalBody.innerHTML = `Do you mean ${name} in ${location.city}, ${location.state}?`
+              showModal(checkVenueModal);
+            }
           }
-        } else {
-          console.log(res.error.message);
-        }
-      })
+      }).catch(err => console.log(err))
+    }
+  }
+
+  getById('confirmVenue').addEventListener('click', e => {
+    hideModal(checkVenueModal)
+    lookForFbInfo(state.fbData.about, state.fbData.link, state.fbData.emails, state.fbData.location)
+    lookForSiInfo(state.fbData.name, state.fbData.location)
+  })
+
       //tried to do this with the SDK. still needs valid app access token, it seems.
       // FB.api(`/${venue.split(" ").join('')}`, 'GET', {fields: 'name,about,link,website,single_line_address,emails,location,events.time_filter(upcoming){name,start_time,id}'}, res => {
         // if (res && !res.error) {
@@ -304,36 +422,40 @@ $(document).ready(function() {
       //     console.log(res.error.message);
       //   }
       // }) // close api call
-    }
-  })
 
+  venue.addEventListener('change', venueChanged)
 
-// check for data from url if it hasn't been found already
-  $('#url').blur( e => {
-    e.preventDefault()
-    let url = e.currentTarget.value
-    if ($('#url').val() && !$('#email').val()) {
+  let url = getById('url')
+  const urlChanged = async (e) => {
+    // e.preventDefault()
+    let email = getById('email')
+    if (url.value && !email.value) {
       let fbid
-      if (url.split('.')[1] === 'facebook') {
-        fbid = url.split('/')[3]
+      if (url.value.split('.')[1] === 'facebook') {
+        console.log('url.value' , url.value);
+        fbid = url.value.split('/')[3]
         if (fbid.split('-').length > 1) {
           fbid = fbid.split('-')
           fbid = fbid[fbid.length-1]
         }
       } else {
-        fbid = url.split('.')[1]
+        fbid = url.value.split('.')[1]
       }
-      $.get(`/token/facebook/venues/${fbid}`, res => {
-        if (res && !res.error) {
-          let {name,about,link,website,single_line_address,emails,location,events} = res
-          lookForFbInfo(about, link, emails, location)
-          lookForSiInfo(name, location)
-        } else {
-          console.log(res.error.message)
-        }
-      })
+      await fetch(`/token/facebook/venues/${fbid}`)
+        .then( res => res.json())
+        .then( data => {
+          if (data && !data.error) {
+            let {name,about,link,website,single_line_address,emails,location,events} = data
+            lookForFbInfo(about, link, emails, location)
+            lookForSiInfo(name, location)
+          }
+        }).catch(err => console.log(err))
     }
-  })
+  }
+
+  // check for data from url if it hasn't been found already
+
+  url.addEventListener('change', urlChanged)
 
   const checkForBookingEmail = (field) => {
     // console.log(field);
@@ -346,38 +468,44 @@ $(document).ready(function() {
   }
 
   const lookForFbInfo = (about, link, emails, location) => {
-    if (!$('#url').val().split('/')[3]) {
-      $('#url').val(checkUrl(link))
+    let url = getById('url')
+    if (!url.value.split('/')[3]) {
+      url.value = checkUrl(link)
     }
     // console.log('about', about, 'link', link, 'emails', emails, 'location', location);
     let booking
     if (about) {
       booking = checkForBookingEmail(about)
     }
-
     if (!booking) {
       if (emails) {
         booking = emails.filter( email => checkForBookingEmail(email))
       }
     }
-    if (booking && !$('#email').val()) {
-      $('#email').val(booking)
+    let email = getById('email')
+    if (booking && !email.value) {
+      email.value = booking
     }
-    if (!$('#city').val()) {
-      $('#city').val(location.city)
+    let city = getById('city')
+    if (!city.value) {
+      city.value = location.city
     }
-    if ($('#state').val() === "All") {
-      $('#state').val(abbrState(location.state, 'name'))
+    let state = getById('state')
+    if (state.value === "All") {
+      state.value = abbrState(location.state, 'name')
     }
   }
 
-  const lookForSiInfo = (venue, location) => {
+  const lookForSiInfo = async (venue, location) => {
     let siQuery = venue.split(' ').join('-') + '-' +location.city.split(' ').join('-')+ '-' + abbrState(location.state, 'name').split(' ').join('-')
-    $.get(`/token/si/${siQuery}`, data => {
-      if (data.capacity && data.capacity !== 'N/A') {
-        $('#cap').val(Number(data.capacity))
-      }
-    })
+    return await fetch(`/token/si/${siQuery}`)
+      .then(res => res.json())
+      .catch(err => console.log('error looking for SI info ', err))
+      .then(data => {
+        if (data.capacity && data.capacity !== 'N/A') {
+          getById('cap').val(Number(data.capacity))
+        }
+      })
   }
 
   const checkForErrors = (formData) => {
@@ -406,40 +534,76 @@ $(document).ready(function() {
       newVenue.email = checkEmail(formData.email.value)
     }
     if (formData.cap.value) {
+
       newVenue.capacity = formData.cap.value
     }
     newVenue.diy = formData.diy.checked ? true : false
     return newVenue
   }
 
-  const newVenueAndSubmit = (newVenue) => {
-    $.post(`/api/venues`, newVenue, (data, status) => {
-      if (!data.id) {
-          return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${data}</div>`)
-      } else {
-        window.location=`/venues/${data.id}`
-      }
-    })
+  const newVenueAndSubmit = async (newVenue) => {
+    console.log('newvenue in newvenueandsubmit ', newVenue);
+    return await fetch(`/api/venues`, {method: 'POST', body: JSON.stringify({newVenue}), credentials: 'same-origin',
+      headers: {'Content-Type': 'application/json'}})
+      .then(handleErrors)
+      .then(data => {
+        if (!data.id) {
+          let errorMessage = getById('errorMessage')
+          let error = `<div class="alert alert-danger fade show" role="alert">${data}</div>`
+            return errorMessage.innerHTML = error
+        } else {
+          window.location=`/venues/${data.id}`
+        }
+      })
   }
 
-  $('#addVenueForm').submit( e => {
+  const displayInfoModal = data => {
+    console.log(data);
+    let {venue, city, state, url, email, capacity} = data
+    let checkInfoModal = getById('checkInfoModal')
+    let infoModal = checkInfoModal.querySelector('.modal-body')
+    console.log('infoModal', infoModal);
+    clear(infoModal)
+    infoModal.innerHTML = `<p>Is this correct?</p>
+      <p>Venue: ${venue}</p>
+      <p>Location: ${city}, ${abbrState(state, 'abbr')}</p>
+      <p>URL: ${url}</p>
+      <p>Booking Email: ${email ? email : ''}</p>
+      <p>Capacity: ${capacity ? capacity : 'Unlisted'}</p>` + infoModal.innerHTML
+    showModal(checkInfoModal)
+
+  }
+  getById('acceptInfo').addEventListener('click', e => {
+    hideModal(checkInfoModal)
+    // const newVenue = newVenueFromForm(data)
+    console.log('global newVenue', state.newVenue);
+    newVenueAndSubmit(newVenue)
+  })
+
+
+  document.querySelector('.modal-close').addEventListener('click', e => {
+    hideModal(checkInfoModal)
+  })
+
+  const hideModal = (modal) => {
+    modal.style.display = 'none'
+  }
+
+  const showModal = (modal) => {
+    modal.style.display = 'block'
+  }
+
+  const submitAddVenueForm = e => {
     e.preventDefault()
     let formData = e.target.elements
     if (checkForErrors(formData)) {
-      return $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${checkForErrors(formData)}</div>`)
+      let errorMessage = getById('errorMessage')
+      let error = `<div class="alert alert-danger fade show" role="alert">${checkForErrors(formData)}</div>`
+      clear(errorMessage)
+      return errorMessage.innerHTML = error
     }
-    $('#checkInfoModal .modal-body').empty().append(`<p>Is this correct?</p>
-      <p>Venue: ${formData.venue.value}</p>
-      <p>Location: ${formData.city.value}, ${abbrState(formData.state.value, 'abbr')}</p>
-      <p>URL: ${formData.url.value}</p>
-      <p>Booking Email: ${formData.email.value ? formData.email.value : ''}</p>
-      <p>Capacity: ${formData.cap.value ? formData.cap.value : 'Unlisted'}</p>`)
-    $('#checkInfoModal').modal('show');
-    $('#acceptInfo').click( e => {
-      $('#checkInfoModal').modal('hide');
-      const newVenue = newVenueFromForm(formData)
-      newVenueAndSubmit(newVenue)
-    })
-  })
+    state.newVenue = newVenueFromForm(formData)
+    displayInfoModal(newVenue)
+  }
 
-})
+  addVenueForm.addEventListener('submit', submitAddVenueForm)

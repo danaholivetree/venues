@@ -43,7 +43,7 @@
 
   exports.copyToClipboard = (text, el) => {
     var copyTest = document.queryCommandSupported('copy');
-    var elOriginalText = el.attr('data-original-title');
+    var elOriginalText = el.getAttribute('data-original-title');
 
     if (copyTest === true) {
       var copyTextArea = document.createElement("textarea");
@@ -53,12 +53,13 @@
       try {
         var successful = document.execCommand('copy');
         var msg = successful ? 'Copied!' : 'Unable to copy';
-        el.attr('data-original-title', msg).tooltip('show');
+        el.setAttribute('data-original-title', msg)
+        console.log(msg);
       } catch (err) {
         console.log('Oops, unable to copy');
       }
       document.body.removeChild(copyTextArea);
-      el.attr('data-original-title', elOriginalText);
+      el.setAttribute('data-original-title', elOriginalText);
     } else {
       // Fallback if browser doesn't support .execCommand('copy')
       window.prompt("Copy to clipboard: Ctrl+C or Command+C, Enter", text);

@@ -1,13 +1,11 @@
-  // const {abbrState} = usStates
+  const {genreKeywords} = usStates
   // const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
   let accessToken = localStorage.getItem('pa_token') || ''
-  console.log('accessToken ', accessToken);
   let off = 0
-
   const getById = (el) => document.getElementById(el);
   const next = getById('next')
   const prev = getById('prev')
-  const topOfResults = getById('bandTable')[0] //was using .get(0) before but not sure why
+  const topOfResults = getById('bandTable') //was using .get(0) before but not sure why
   const prevNext = getById('prevNext')
   const hideEl = (el) => el.classList.add('hidden')
   const showEl = (el) => el.classList.remove('hidden')
@@ -16,50 +14,68 @@
   const searchBandBtn = getById('searchBands')
   const searchBandForm = getById('bandSearchForm')
   const addGenres = getById('addGenres')
+  let globalParams
+  let globalOrigQuery
 
+  const handleErrors = response => {
+    console.log(response.ok ? 'response ok' : response.statusText);
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    } else {
+      return response.json();
+    }
+  }
+
+  const genresAndListener = () => {
+    let gs = getById('genreSelector')
+
+    genreKeywords.forEach( genre => {
+      let newGenre = `<div class="form-check form-check-inline" style='display:inline-flex;'>
+          <input class="form-check-input genre-selector ${genre}" type="checkbox" value="${genre}">
+          <label class="form-check-label" for=${genre}>${genre}</label></div>`
+      gs.innerHTML += newGenre
+      addGenres.innerHTML += newGenre
+    })
+  }
+  genresAndListener()
 
   const getData = async (offset = 0, scroll = false, query = '') => {
     let bandQuery = query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''
     return await fetch(`/api/bands/${bandQuery}`, {credentials: 'same-origin'})
-      .then( response => response.json())
+      .then(handleErrors)
       .then( data => {
-        if (offset > 0 && !data) { // should be data.length === 0?
+        if (offset > 0 && data.length === 0) {
           disable(next)
-          disable(prev)
-          return
+          return //no data, don't reload anything
         } else {
-          console.log('offset ', offset);
           if (offset === 0) {
             disable(prev)
-            if (data.length < 25) { //added this without testing
-              disable(next)
-            }
           }
           if (scroll) {
-            // $('#bandTable').get(0).scrollIntoView()
             topOfResults.scrollIntoView()
           }
-          console.log('about to return data', data);
+          console.log('getData', data);
           return data
         }
+      }).catch( err => {
+        console.log('error fetching data ', err);
       })
-      // .catch( err => {
-      //   console.log('error fetching data ', err);
-      // })
   }
 
   const loadPage = async () => {
     let data = await getData(off)
     processData(data)
-    showEl(prevNext)
+    // showEl(prevNext)
     disable(prev)
     setPrevNextListener()
   }
 
   const managePrevNextButtons = (dataLength) => {
     if (dataLength === 0) {
+      console.log('hiding prevnext',dataLength );
       hideEl(prevNext)
     } else {
+      console.log('showing prevnext', dataLength);
       showEl(prevNext)
     }
     if (dataLength < 25) {
@@ -74,7 +90,7 @@
       listBands(data)
       managePrevNextButtons(data.length)
     } else {
-      // error handling for no data
+      console.log('processing data, no data ', data);
     }
   }
 
@@ -94,7 +110,6 @@
 
   const listBands = (data, bookmarks = false) => {
 
-    // $('#bandsList').empty()
     let tbody = getById('bandsList')
     clear(tbody)
     data.forEach( bnd => {
@@ -105,11 +120,11 @@
       let displaySpotify = spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''
       let displayBandcamp = bandcamp ? `<img class='playBandcamp' data-band='${band}' data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'>` : ``
       let displayBand = fb ? `<a href=${fb} target='_blank'>${band}</a>` : `${band}`
-      let starBorder= `<i style="color:black;" class="material-icons md-18">star_border</i>`
-      let starIcon = `<i style="color:lightblue;" class="material-icons md-18">star</i>`
+      let starBorder= `<i class="material-icons md-18 star">star_border</i>`
+      let starIcon = `<i class="material-icons md-18 lightblue-text star">star</i>`
       let starr = `<button class='btn btn-default thumb star' data-id=${id}>${starred ? starIcon : starBorder}</button><br><span>${stars}</span>`
-      let bookmarkIcon = `<i style="color:lightblue" class="material-icons md-18">bookmark</i>`
-      let bookmarkBorder = `<i class="material-icons md-18">bookmark_border</i>`
+      let bookmarkIcon = `<i class="material-icons md-18 bookmark lightblue-text">bookmark</i>`
+      let bookmarkBorder = `<i class="material-icons md-18 bookmark">bookmark_border</i>`
       let bkmk = `<button class='btn btn-default thumb bookmark' data-id=${id}>${bookmark ? bookmarkIcon : bookmarkBorder}</button>`
       let displayGenre = genre ? genre : ''
       let bodyItem = `
@@ -122,7 +137,6 @@
           <td class='d-none d-md-table-cell' align='center'>${starr}</td>
           <td class='d-none d-md-table-cell'>${bkmk}</td>
         </tr>`
-      // $('#bandsList').append(bodyItem)
 
       tbody.innerHTML += bodyItem
     })
@@ -134,8 +148,7 @@
   const setTbodyListeners = (tbody) => {
     tbody.addEventListener('click', e => {
       e.preventDefault()
-      let targ = e.currentTarget
-      // console.log(targ);
+      let targ = e.target
       if (targ.matches('.playBandcamp')) { //might not work in ie?
         console.log('clicked .playBandcamp');
         clickedBandcamp(targ)
@@ -146,7 +159,7 @@
         console.log('clicked .close')
         clickedClose(targ)
       } else if (targ.matches('.bookmark')) {
-        console.log('clicked .bookmark');
+        console.log('clicked .bookmark', targ);
         clickedBookmark(targ)
       } else if (targ.matches('.star')) {
         console.log('clicked .star');
@@ -215,42 +228,57 @@
       hideEl(targ)
   }
 
-
-  const clickedBookmark = (targ) => {
-    let sendData = {bandId: targ.dataset.id}
-    fetch(`/api/bBookmarks`, {body: JSON.stringify(sendData), credentials: 'same-origin', method: 'POST'})
-      .then(response => response.json())
+  const clickedBookmark = async (targ) => {
+    let bandId
+    if (targ.dataset.id) {
+      bandId = targ.dataset.id
+    } else if (targ.parentNode.dataset.id) {
+      bandId = targ.parentNode.dataset.id
+      targ = targ.parentNode
+    }
+    return await fetch(`/api/bBookmarks`, {body: JSON.stringify({bandId}),
+              headers: {'Content-Type': 'application/json'},
+              credentials: 'same-origin', method: 'POST'
+    }).then(handleErrors)
       .then(data => {
-        let bIcon = targ.firstChild
+        let icon = targ.firstChild
         if (data.bookmarked) {
-          // targ.children('i').css("color", "lightblue").text('bookmark')
-          bIcon.setAttribute('class', 'lightblue') //will this set color of the icon?
-          bIcon.textContent = 'bookmark'
+          icon.classList.add('lightblue-text')
+          clear(icon)
+          iconText = document.createTextNode('bookmark')
+          icon.append(iconText)
         } else {
-          bIcon.setAttribute('class', 'black')
-          bIcon.textContent = 'bookmark_border'
+          icon.classList.remove('lightblue-text')
+          clear(icon)
+          iconText = document.createTextNode('bookmark_border')
+          icon.append(iconText)
         }
-      })
-  }
+      }).catch(err => console.log(err))
+    }
 
   const clickedStar = (targ) => {
-    let sendData = {bandId: targ.dataset.id}
-    fetch(`/api/stars`, {body: JSON.stringify(sendData), credentials: 'same-origin', method: 'POST'})
-      .then(response => response.json())
-      .then(res => {
-        let {starred, stars} = res
-        // $(`#star-number${id}`).text(`${stars}`)
-        let starSpan = targ.nextSibling
-        console.log('should be span ', starSpan);
-        starSpan.textContent = stars
+    let bandId
+    if (targ.dataset.id) {
+      bandId = targ.dataset.id
+    } else if (targ.parentNode.dataset.id) {
+      bandId = targ.parentNode.dataset.id
+      targ = targ.parentNode
+    }
+    fetch(`/api/stars`, {body: JSON.stringify({bandId}),
+              headers: {'Content-Type': 'application/json'},
+              credentials: 'same-origin', method: 'POST'
+    }).then(handleErrors)
+      .then(data => {
+        let {starred, stars} = data
         let starIcon = targ.firstChild
+        let brEl = targ.nextSibling
+        let starSpan = brEl.nextSibling
+        starSpan.textContent = stars
         if (starred) {
-          // $(targ).children('i').css("color", "lightblue").text('star')
-          starIcon.setAttribute('class', 'lightblue')
+          starIcon.classList.add('lightblue-text')
           starIcon.textContent = 'star'
         } else {
-          // $(targ).children('i').css("color", "black").text('star_border')
-          starIcon.setAttribute('class', 'black')
+          starIcon.classList.remove('lightblue-text')
           starIcon.textContent = 'star_border'
         }
       })
@@ -266,69 +294,58 @@
     return s;
   }
 
-  let nextNoQuery = e => {
-    e.preventDefault()
-    off += 25
-    enable(prev)
-    getData(off, true).then( data => {
-      if (data.length > 0) {
-        processData(data)
-      }
-    })
-  }
-  let prevNoQuery = e => {
-    e.preventDefault()
-    off -= 25
-    getData(off, true).then( data => {
-      processData(data)
-    })
-  }
-  const nextWithQuery = e => {
+  const nextHandler = e => {
     e.preventDefault()
     enable(prev)
     off += 25
-    let sendNextParams = params //added for older browsers
-    sendNextParams.offset = off  //added for older browsers
-    const newQueryString = makeQuery(sendNextParams) //added for older browsers
-    // const newQueryString = $.param({...params, offset: off})
-    getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
-      if (data.length > 0) {
-        processData(data)
-      } else {
-        //this shouldn't happen
-        console.log('should only happen if data length was exactly divisible by 25');
-        disable(next)
-      }
-    })
+    console.log('global params ', globalParams);
+    console.log('global origquery ', globalOrigQuery);
+    if (globalParams) {
+      let sendNextParams = globalParams //added for older browsers
+      sendNextParams.offset = off  //added for older browsers
+      const newQueryString = makeQuery(sendNextParams) //added for older browsers
+      // const newQueryString = $.param({...params, offset: off})
+      getData(off, true, `${off > 0 ? newQueryString : globalOrigQuery}`).then( data => {
+        if (data.length > 0) {
+          processData(data)
+        }
+      })
+    } else {
+      getData(off, true).then( data => {
+        if (data.length > 0) {
+          processData(data)
+        }
+      })
+    }
   }
-  const prevWithQuery = e => {
+
+  const prevHandler = (e, params, origQuery) => {
     e.preventDefault()
     off -= 25
-    let sendPrevParams = params //added for older browsers
-    sendPrevParams.offset = off  //added for older browsers
-    const newQueryString = makeQuery(sendPrevParams) //added for older browsers
-    // const newQueryString = $.param({...params, offset: off})
-    getData(off, true, `${off > 0 ? newQueryString : origQuery}`).then( data => {
-      processData(data)
-    })
+    if (globalParams) {
+      let sendPrevParams = globalParams //added for older browsers
+      sendPrevParams.offset = off  //added for older browsers
+      const newQueryString = makeQuery(sendPrevParams) //added for older browsers
+        // const newQueryString = $.param({...params, offset: off})
+      getData(off, true, `${off > 0 ? newQueryString : globalOrigQuery}`).then( data => {
+        processData(data)
+      })
+    } else {
+      getData(off, true).then( data => {
+        processData(data)
+      })
+    }
   }
 
-  const setPrevNextListener = (e) => {
-    next.addEventListener('click', nextNoQuery)
-    prev.addEventListener('click', prevNoQuery)
-  }
-
-  const setPrevNextQueryListener = (params, origQuery) => {
-    off = 0 // ?
+  const setPrevNextListener = () => {
+    off = 0
     disable(prev)
-
-    next.removeEventListener('click', nextNoQuery)
-    next.addEventListener('click', nextWithQuery)
-    prev.removeEventListener('click', prevNoQuery)
-    prev.addEventListener('click', prevWithQuery)
+    next.addEventListener('click', nextHandler)
+    prev.addEventListener('click', prevHandler)
   }
 
   const submitSearch = e => {
+    console.log('submitting search');
     e.preventDefault()
     off = 0
     let formData = e.target.elements
@@ -356,7 +373,9 @@
       processData(data)
       let resultsTitleDisplay = document.querySelector('.stateDisplay')
       resultsTitleDisplay.innerHTML = makeResultsTitle(params)
-      setPrevNextQueryListener(params, queryString)
+      showEl(resultsTitleDisplay)
+      globalParams = params
+      globalOrigQuery = queryString
     })
   }
 
@@ -727,7 +746,7 @@
     let spot = spotChecked ? spotChecked.value : getById('spotifyOther').value
     let selectedGenres = []
     let checkedGenres = addGenres.querySelectorAll('input:checked')
-    checkGenres.forEach( el => {
+    checkedGenres.forEach( el => {
       selectedGenres.push(el.value)
     })
     let checkBandModal = getById('checkBandModal')
