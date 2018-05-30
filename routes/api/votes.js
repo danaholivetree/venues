@@ -5,10 +5,19 @@ const Boom = require('boom')
 
 //get votes by user, for dash
 router.get('/', function(req, res, next) {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
     return knex('venues')
       .select(['venues.id as id', 'venues.venue', 'venue_votes.vote'])
       .innerJoin('venue_votes', function() {
-        this.on('venue_id', '=', 'venues.id').andOn('venue_votes.user_id', '=', req.cookies.user.id)
+        this.on('venue_id', '=', 'venues.id').andOn('venue_votes.user_id', '=', userId)
       }).then( venues => {
         res.send(venues)
       })
@@ -16,8 +25,16 @@ router.get('/', function(req, res, next) {
 
 //user clicked thumb up or thumb down
 router.post('/', (req, res, next) => {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
     const {venueId, vote} = req.body
-    const userId = req.cookies.user.id
     return knex('venue_votes')
       .where('user_id', userId).andWhere('venue_id', venueId)
       .first()
@@ -72,8 +89,17 @@ router.post('/', (req, res, next) => {
 
 //user clicked x next to venue vote on dash
 router.delete('/', (req, res, next) => {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
     return knex('venue_votes')
-      .where({user_id: req.cookies.user.id, venue_id: Number(req.body.id)})
+      .where({user_id: userId, venue_id: Number(req.body.id)})
       .del()
       .returning('vote')
       .then( vote => {

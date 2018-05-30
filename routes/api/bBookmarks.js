@@ -5,10 +5,19 @@ const Boom = require('boom')
 
 //get bookmarks by user, for dash
 router.get('/', function(req, res, next) {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
     return knex('band_bookmarks')
       .select(['bands.id as id', 'bands.band'])
       .innerJoin('', function() {
-        this.on('band_id', '=', 'bands.id').andOn('band_bookmarks.user_id', '=', req.cookies.user.id)
+        this.on('band_id', '=', 'bands.id').andOn('band_bookmarks.user_id', '=', userId)
       }).then( bands => {
         res.send(bands)
       })
@@ -16,8 +25,17 @@ router.get('/', function(req, res, next) {
 
 //user clicked bookmark
 router.post('/', (req, res, next) => {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
+  console.log('req.body ', req.body);
     const {bandId} = req.body
-    const userId = req.cookies.user.id
     return knex('band_bookmarks')
       .where('user_id', userId).andWhere('band_id', bandId)
       .first()

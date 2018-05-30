@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
   if (req.cookies.user) {
     userId = req.cookies.user.id
   } else {
-    userId = 1
+    userId = 17
   }
 
   console.log("userId", userId);
@@ -47,7 +47,7 @@ router.get('/q', function(req, res, next) {
   if (req.cookies.user) {
     userId = req.cookies.user.id
   } else {
-    userId = 1
+    userId = 17
   }
   const {state, city, band, genres, starred, bookmarked } = req.query
   var query = knex('bands')
@@ -155,7 +155,7 @@ router.post('/', (req, res, next) => {
   if (req.cookies.user) {
     userId = req.cookies.user.id
   } else {
-    userId = 1
+    userId = 17
   }
   let data = JSON.parse(req.body.newBand)
   const {state, city, band, url, fb, bandcamp, spotify, genres} = data

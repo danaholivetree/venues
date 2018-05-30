@@ -5,10 +5,19 @@ const Boom = require('boom')
 
 //get votes by user, for dash
 router.get('/', function(req, res, next) {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
     return knex('bands')
       .select(['bands.id as id', 'bands.band'])
       .innerJoin('band_stars', function() {
-        this.on('band_id', '=', 'bands.id').andOn('band_stars.user_id', '=', req.cookies.user.id)
+        this.on('band_id', '=', 'bands.id').andOn('band_stars.user_id', '=', userId)
       }).then( bands => {
         res.send(bands)
       })
@@ -16,8 +25,16 @@ router.get('/', function(req, res, next) {
 
 //user clicked star
 router.post('/', (req, res, next) => {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
     const {bandId} = req.body
-    const userId = req.cookies.user.id
     return knex('band_stars')
       .where('user_id', userId).andWhere('band_id', bandId)
       .first()
@@ -61,9 +78,18 @@ router.post('/', (req, res, next) => {
 
 //user clicked x next to band vote on dash
 router.delete('/', (req, res, next) => {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
   let bandId = Number(req.body.id)
     return knex('band_stars')
-      .where({user_id: req.cookies.user.id, band_id: bandId})
+      .where({user_id: userId, band_id: bandId})
       .del()
       .then( () => {
         knex('bands')
