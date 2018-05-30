@@ -296,16 +296,24 @@ $(document).ready(function() {
   }
 
   const checkForSpotifyToken = () => {
-    if (!accessToken || accessToken == '' || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
-      getSpotifyToken()
+    if (!accessToken || accessToken == '' || accessToken == undefined || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
+      console.log('token expired? ', localStorage.getItem('pa_expires') < (new Date()).getTime());
+      console.log('no token ', !accessToken || accessToken == '' || accessToken == undefined );
+      return false
+    } else {
+      console.log('there was a token ');
+      return true
     }
   }
+
   $('#band').change( e => {
     e.preventDefault()
     let band = e.currentTarget.value
     if (band !== '') {
       getBandcamp(band)
-      checkForSpotifyToken()
+      if (!checkForSpotifyToken()) {
+        getSpotifyToken()
+      }
       getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
       $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
         if (data.category === 'Musician/Band' || data.category === 'Music') {
