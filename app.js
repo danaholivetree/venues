@@ -51,7 +51,9 @@ app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
+app.use('/scripts', express.static(__dirname + '/node_modules/vanilla-modal/dist/'));
 app.use(express.static(path.join(__dirname, 'public')))
+
 
 
 
@@ -109,7 +111,7 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-
+console.log('using last error handler');
   if (err.output) {
     // console.log('err.output ', err.output);
     const {statusCode, error, message} = err.output.payload
@@ -119,6 +121,7 @@ app.use(function(err, req, res, next) {
   } else {
     // set locals, only providing error in development
     res.locals.message = err.message;
+    console.log('err.message ', err.message);
     res.locals.error = req.app.get('env') === 'development' ? err : {};
     // render the error page
     res.status(err.status || 500);

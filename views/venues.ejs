@@ -6,16 +6,15 @@
       $('[data-toggle="popover"]').popover()
     })
   </script>
-    <div class='container main-container'>
+    <div class='container'>
       <div class='row button-header'>
-          <div class='col-11 '>
-            <button class='btn' id='searchVenues'>SEARCH VENUES</button>
-            <button class='btn' id='addVenue'>ADD A VENUE</button>
-          </div>
+        <button class='btn' id='searchVenues'>SEARCH VENUES</button>
+        <button class='btn' id='addVenue'>ADD A VENUE</button>
+      </div>
           <!-- <div class='col-1'>
             <i data-trigger='click focus'  data-toggle="popover" data-placement="left" data-content=${info} style="color:lightblue" class="material-icons md-36">help</i>
           </div> -->
-    </div>
+
 
       <form id='venueSearchForm'>
         <div class='form-row'>
@@ -81,16 +80,15 @@
           </div>
         </div>
         <div class='form-row'>
-          <div class='input-group mb-3 col-12 ' >
-
-            <div class="col-2 mx-auto col-lg-1 ">
+          <div class='input-group mb-3 col-12'>
+            <div class="col-2 mx-auto col-lg-1">
               <button type="submit" class="btn btn-default big-btn">SUBMIT</button>
             </div>
           </div>
         </div>
       </form>
 
-    <form id='addVenueForm' style='display:none;'>
+    <form id='addVenueForm' class='hidden'>
       <div class='form-row'>
         <div class="input-group mb-3 col-12 col-lg-4">
             <label for='state' class="control-label col-3  col-form-label" >State:</label>
@@ -125,36 +123,26 @@
         </div>
       </div>
 
-      <div class="modal" id="checkVenueModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+      <div id="checkVenueModal" class="modal">
+        <div class="modal-inner">
           <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-            </div>
+            <a data-modal-close>x</a>
+            <div class='modal-body'></div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-              <button type="button" id='acceptVenue' class="btn btn-default">Yes</button>
+              <button type="button" class="btn btn-default modal-close">No</button>
+              <button type="button" id='confirmVenue' class="btn btn-default">Yes</button>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="modal" id="checkInfoModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+      <div id="checkInfoModal" class="modal">
+        <div class="modal-inner">
           <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-            </div>
+            <a data-modal-close>x</a>
+            <div class='modal-body'></div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+              <button type="button" class="btn btn-default modal-close">No</button>
               <button type="button" id='acceptInfo' class="btn btn-default">Yes</button>
             </div>
           </div>
@@ -171,18 +159,20 @@
       </div>
     </form>
 
-      <div class='stateDisplay' style='display:none;text-align:center;'></div>
+      <div class='stateDisplay' class='hidden' style='text-align:center;'></div>
 
       <table id='venueTable' class='table table-hover'>
         <thead>
-          <th width='10%'>State</th>
-          <th width='15%'>City</th>
-          <th width='30%'>Venue</th>
-          <th width='15%' class='d-none d-md-table-cell'>Booking</th>
-          <th width='10%' class='d-none d-md-table-cell'>Capacity</th>
-          <th width='5%' class='d-none d-md-table-cell'></th>
-          <th width='5%' class='d-none d-md-table-cell'></th>
-          <th width='5%' class='d-none d-md-table-cell'></th>
+          <!-- <tr class='row'> -->
+            <th >State</th>
+            <th >City</th>
+            <th >Venue</th>
+            <th scope='col' class='d-md-table-cell d-none '>Booking</th>
+            <th scope='col' class='d-none d-md-table-cell'>Capacity</th>
+            <th scope='col' class='d-none d-md-table-cell'></th>
+            <th scope='col' class='d-none d-md-table-cell'></th>
+            <th scope='col' class='d-none d-md-table-cell'></th>
+          <!-- </tr> -->
         </thead>
         <tbody id='venuesList'>
 
@@ -190,7 +180,7 @@
       </table>
       <div class='row'>
         <div class='col-auto mx-auto'>
-          <div id='prevNext' style='display:none;' class='btn-group'>
+          <div id='prevNext' class='btn-group hidden'>
             <button id='prev' type='button' class='btn big-btn'>Prev</button>
             <button id='next' type='button' class='btn big-btn'>Next</button>
           </div>

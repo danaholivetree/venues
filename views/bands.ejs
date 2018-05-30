@@ -3,7 +3,10 @@
   <% include ./partials/sdk.ejs %>
 
     <div class='container main-container'>
-      <div class='button-header'><button class='btn lightblue' id="searchBands">SEARCH BANDS</button>  <button class='btn' id="addBand">ADD A BAND</button></div>
+      <div class='row button-header'>
+        <button class='btn lightblue' id="searchBands">SEARCH BANDS</button>
+        <button class='btn' id="addBand">ADD A BAND</button>
+      </div>
       <form id='bandSearchForm'>
         <div class='form-row'>
           <div class="input-group mb-3 col-12 col-lg">
@@ -30,7 +33,6 @@
         <div class='form-row mb-3'>
 
           <div id='selector' class='input-group order-md-10 mb-3 col-12 col-md-6 mx-auto ml-md-3 mr-md-0 '>
-        <!-- <div id='selector' class='input-group mb-3 col-lg-5 offset-lg-7 col-12'> -->
             <label for='selector' class="control-label col-form-label pr-3" >Select Only:</label>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="checkbox" id="starred-select" value="starred">
@@ -124,7 +126,7 @@
       </div>
     </form>
 
-    <div class='stateDisplay' style='display:none;text-align:center;'></div>
+    <div class='stateDisplay' class='hidden' style='text-align:center;'></div>
 
       <table id='bandTable' class='table'>
         <thead>
@@ -147,7 +149,7 @@
       </table>
       <div class='row'>
         <div class='col-auto mx-auto'>
-          <div id='prevNext' style='display:none;' class='btn-group'>
+          <div id='prevNext' class='btn-group hidden'>
             <button id='prev' type='button' class='btn big-btn'>Prev</button>
             <button id='next' type='button' class='btn big-btn'>Next</button>
           </div>
