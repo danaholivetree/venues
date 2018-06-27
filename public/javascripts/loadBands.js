@@ -1,5 +1,5 @@
   const {genreKeywords} = usStates
-  // const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
+  const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
   let accessToken = localStorage.getItem('pa_token') || ''
   let off = 0
   const getById = (el) => document.getElementById(el);
@@ -18,7 +18,7 @@
   let globalOrigQuery
 
   const handleErrors = response => {
-    console.log(response.ok ? 'response ok' : response.statusText);
+    // console.log(response.ok ? 'response ok' : response.statusText);
     if (!response.ok) {
       throw new Error(response.statusText);
     } else {
@@ -54,7 +54,7 @@
           if (scroll) {
             topOfResults.scrollIntoView()
           }
-          console.log('getData', data);
+          // console.log('getData', data);
           return data
         }
       }).catch( err => {
@@ -72,10 +72,10 @@
 
   const managePrevNextButtons = (dataLength) => {
     if (dataLength === 0) {
-      console.log('hiding prevnext',dataLength );
+      // console.log('hiding prevnext',dataLength );
       hideEl(prevNext)
     } else {
-      console.log('showing prevnext', dataLength);
+      // console.log('showing prevnext', dataLength);
       showEl(prevNext)
     }
     if (dataLength < 25) {
@@ -90,7 +90,7 @@
       listBands(data)
       managePrevNextButtons(data.length)
     } else {
-      console.log('processing data, no data ', data);
+      // console.log('processing data, no data ', data);
     }
   }
 
@@ -150,19 +150,19 @@
       e.preventDefault()
       let targ = e.target
       if (targ.matches('.playBandcamp')) { //might not work in ie?
-        console.log('clicked .playBandcamp');
+        // console.log('clicked .playBandcamp');
         clickedBandcamp(targ)
       } else if (targ.matches('.playSpotify')) {
-        console.log('clicked .playSpotify');
+        // console.log('clicked .playSpotify');
         clickedSpotify(targ)
       } else if (targ.matches('.close')) {
-        console.log('clicked .close')
+        // console.log('clicked .close')
         clickedClose(targ)
       } else if (targ.matches('.bookmark')) {
-        console.log('clicked .bookmark', targ);
+        // console.log('clicked .bookmark', targ);
         clickedBookmark(targ)
       } else if (targ.matches('.star')) {
-        console.log('clicked .star');
+        // console.log('clicked .star');
         clickedStar(targ)
       }
 
@@ -171,11 +171,11 @@
 
   const clickedClose = (targ) => {
     let widget = targ.parentNode
-    console.log('widget ', widget);
+    // console.log('widget ', widget);
     let spot = widget.previousSibling
-    console.log('spotify button ', spot);
+    // console.log('spotify button ', spot);
     let bandcamp = spot.previousSibling
-    console.log('bandcamp button ', bandcamp);
+    // console.log('bandcamp button ', bandcamp);
     showEl(spot)
     showEl(bandcamp)
     widget.remove() // not sure this will work
@@ -186,18 +186,18 @@
     let url = targ.dataset.href
     let link = targ.dataset.href.split('/')[2].split('.')[0]
     let band = targ.dataset.band
-    console.log('spot= ', spot);
-    console.log('url= ', url);
-    console.log('link= ', link);
-    console.log('band= ', band);
+    // console.log('spot= ', spot);
+    // console.log('url= ', url);
+    // console.log('link= ', link);
+    // console.log('band= ', band);
     let getBandcampInfo = new XMLHttpRequest();
     const bandcampAjaxHandler = () => {
         if (getBandcampInfo.readyState === XMLHttpRequest.DONE) {
-          console.log('getBandcampInfo.readyState === XMLHttpRequest.DONE');
+          // console.log('getBandcampInfo.readyState === XMLHttpRequest.DONE');
           if (getBandcampInfo.status === 200) {
-            console.log('status 200');
+            // console.log('status 200');
             let data = JSON.parse(getBandcampInfo.responseText); //is responseText a builtin for ajax?
-            console.log('response from get bandcamp info ' , data.computedString);
+            // console.log('response from get bandcamp info ' , data.computedString);
             const {id, band_id, track, title, artist} = data
             let newBcWidget = `<div class='widget'>
               <iframe style="border: 0; width: 370px; height: 120px;" src=https://bandcamp.com/EmbeddedPlayer/album=${id}/size=large/bgcol=ffffff/linkcol=63b2cc/tracklist=false/artwork=small/track=${track}/transparent=true/ seamless><a href=${url}>${title} by ${artist}</a></iframe>
@@ -207,7 +207,7 @@
             hideEl(targ)
             hideEl(spot)
           } else {
-            console.log('bandcamp request failed- responsetext ', getBandcampInfo.responseText);
+            // console.log('bandcamp request failed- responsetext ', getBandcampInfo.responseText);
           }
         }
     }
@@ -298,8 +298,8 @@
     e.preventDefault()
     enable(prev)
     off += 25
-    console.log('global params ', globalParams);
-    console.log('global origquery ', globalOrigQuery);
+    // console.log('global params ', globalParams);
+    // console.log('global origquery ', globalOrigQuery);
     if (globalParams) {
       let sendNextParams = globalParams //added for older browsers
       sendNextParams.offset = off  //added for older browsers
@@ -345,7 +345,7 @@
   }
 
   const submitSearch = e => {
-    console.log('submitting search');
+    // console.log('submitting search');
     e.preventDefault()
     off = 0
     let formData = e.target.elements
@@ -366,9 +366,9 @@
     const params = {state, city, band, genres, starred, bookmarked}
 
     let queryString = makeQuery(params)
-    console.log( $.param(params) === queryString)
-    console.log('$.param(params) ', $.param(params) );
-    console.log('queryString ', queryString);
+    // console.log( $.param(params) === queryString)
+    // console.log('$.param(params) ', $.param(params) );
+    // console.log('queryString ', queryString);
     getData(0, false, queryString).then( data => {
       processData(data)
       let resultsTitleDisplay = document.querySelector('.stateDisplay')
@@ -451,7 +451,7 @@
           data[0].tags.forEach( tag => {
             tag = tag[0].toUpperCase()+tag.slice(1)
             if (addGenres.querySelector(`input.${tag}`)) {
-              console.log(addGenres.querySelector(`input.${tag}`))
+              // console.log(addGenres.querySelector(`input.${tag}`))
               addGenres.querySelector(`input.${tag}`).checked = true
             }
           })
@@ -461,12 +461,12 @@
   }
 
   const getSpotifyToken = async () => {
-    console.log('getting spotify token');
+    // console.log('getting spotify token');
     return await fetch('/token/spotify')
       .then(res => res.json())
       .catch(err => console.log(err))
       .then( (data) => {
-        console.log('data ', data);
+        // console.log('data ', data);
         const {access_token, expires_in} = data
         localStorage.setItem('pa_token', access_token)
         localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
@@ -477,11 +477,11 @@
 
   const checkForSpotifyToken = () => {
     if (!accessToken || accessToken == '' || accessToken == undefined || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
-      console.log('token expired? ', localStorage.getItem('pa_expires') < (new Date()).getTime());
-      console.log('no token ', !accessToken || accessToken == '' || accessToken == undefined );
+      // console.log('token expired? ', localStorage.getItem('pa_expires') < (new Date()).getTime());
+      // console.log('no token ', !accessToken || accessToken == '' || accessToken == undefined );
       return false
     } else {
-      console.log('there was a token ');
+      // console.log('there was a token ');
       return true
     }
   }
@@ -492,19 +492,20 @@
     if (band !== '') {
       getBandcamp(band)
       if (!checkForSpotifyToken()) {
-        console.log('awaiting getSpotifyToken');
+        // console.log('awaiting getSpotifyToken');
         accessToken = await getSpotifyToken()
-        console.log('this means theres a token', accessToken);
+        // console.log('this means theres a token', accessToken);
       }
-      console.log('and this shouldnt happen first');
+      // console.log('and this shouldnt happen first');
       getSpotifyWidgets(accessToken, band, getById(spotifyGuess))
+      console.log('querying facebook for ', band.split(" ").join(''));
       return await fetch(`/token/facebook/bands/${band.split(" ").join('')}`)
         .then(res => res.json())
         .catch(err => {
           console.log(err)
         }).then( data => {
           if (data) {
-            console.log('data' , data);
+            console.log('got data from fb' , data);
             if (data.category === 'Musician/Band' || data.category === 'Music') {
               // let fb = getById('fb')
               fb.value = data.link // fb will be global anyway
@@ -537,8 +538,10 @@
   }
 
   const processFbData = async (data) => {
+    console.log('got data from fb query ', data);
+    console.log('using fb data to populate form fields');
     const {name,website,link,genre,hometown,current_location,fan_count,category} = data
-    console.log('category ', category);
+    // console.log('category ', category);
     if (category === 'Musician/Band' || category === 'Music') {
       let bc = getById('bandcamp')
       let website = checkUrl(website)
@@ -568,17 +571,17 @@
 
   const fbChanged = async (e) => {
     e.preventDefault()
-    console.log('running fbChanged');
+    // console.log('running fbChanged');
     let fbid = getFbId(e.currentTarget.value)
-    console.log('fbid ', fbid);
+    // console.log('fbid ', fbid);
     await fetch(`/token/facebook/bands/${fbid}`)
       .then( res => res.json())
       .catch( err => {
-        console.log('error getting data from fb ', err);
+        // console.log('error getting data from fb ', err);
       }).then( response => {
-        console.log('response ', response);
+        // console.log('response ', response);
         if (response.name) {
-          console.log('response.name ', response.name);
+          // console.log('response.name ', response.name);
           processFbData(response)
         } else {
            console.log(response);
@@ -618,18 +621,18 @@
   }
 
   const getSpotifyWidgets = async (token, band, target) => {
-    return await fetch(`https://api.spotify.com/v1/search?q="${band}"&type=artist&market=US&limit=4&offset=0`, {
+    return await fetch(`https://api.spotify.com/v1/search?q=artist:"${band}"&type=artist&market=US&limit=4&offset=0`, {
       headers : {
         'Authorization': `Bearer ${token}`
       }
     }).then( res => {
       return res.json()
     }).catch( err => {
-        console.log('error ', err);
+        // console.log('error ', err);
     }).then(({artists}) => {
-      console.log(artists);
+      // console.log(artists);
         const {items} = artists
-        console.log(items);
+        // console.log(items);
         if (items.length > 0) {
           let reordered = items.sort( (a,b) => a.followers.total < b.followers.total)
           let spotifyGuess = getById('spotifyGuess')

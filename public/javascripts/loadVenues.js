@@ -30,7 +30,7 @@
   let state = {}
 
   const handleErrors = response => {
-    console.log(response.ok ? 'response ok? ' : response.statusText);
+    // console.log(response.ok ? 'response ok? ' : response.statusText);
     if (!response.ok) {
       throw new Error(response.statusText);
     } else {
@@ -60,7 +60,7 @@
   const loadPage = async () => {
     let data = await getData(off)
     if (data) {
-      console.log('data');
+      // console.log('data');
       processData(data)
       setPrevNextListener()
     }
@@ -68,10 +68,10 @@
 
   const managePrevNextButtons = (dataLength) => {
     if (dataLength === 0) {
-      console.log('hiding prevnext', dataLength);
+      // console.log('hiding prevnext', dataLength);
       hideEl(prevNext)
     } else {
-      console.log('showing prevnext', dataLength);
+      // console.log('showing prevnext', dataLength);
       showEl(prevNext)
     }
     if (dataLength < 25) {
@@ -82,12 +82,12 @@
   }
 
   const processData = (data) => {
-    console.log('processing venues' , data);
+    // console.log('processing venues' , data);
     if (data) {
       listVenues(data)
       managePrevNextButtons(data.length)
     } else {
-      console.log('processing data, no data ', data);
+      // console.log('processing data, no data ', data);
     }
   }
 
@@ -136,20 +136,20 @@
     tbody.addEventListener('click', e => {
       // e.preventDefault()
       let targ = e.target
-      console.log('targ: ', targ, 'targ.id', targ.dataset.id);
+      // console.log('targ: ', targ, 'targ.id', targ.dataset.id);
       if (targ.matches('.bookmark')) {
-        console.log('clicked .bookmark');
-        console.log(targ.dataset.id);
+        // console.log('clicked .bookmark');
+        // console.log(targ.dataset.id);
         clickedBookmark(targ)
       } else if (targ.matches('.vote')) {
-        console.log('clicked .vote');
+        // console.log('clicked .vote');
         clickedVote(targ)
       }
     }, true)
   }
   const setClipboardListener = () => {
     let clipTips = document.querySelectorAll('.js-tooltip')
-    console.log('cliptip', clipTips);
+    // console.log('cliptip', clipTips);
     // clipTip.tooltip()
     let clipCopy = document.querySelectorAll('.js-copy')
     clipCopy.addEventListener('click', e => {
@@ -273,7 +273,7 @@
     getData(0, false, queryString).then( data => {
       processData(data)
       let resultsTitleDisplay = document.querySelector('.stateDisplay')
-      console.log('resutstitledispay ', resultsTitleDisplay);
+      // console.log('resutstitledispay ', resultsTitleDisplay);
       resultsTitleDisplay.innerHTML = makeResultsTitle(params)
       showEl(resultsTitleDisplay)
       state.globalParams = params
@@ -281,7 +281,7 @@
     })
   }
   const makeResultsTitle = (params) => {
-    console.log(params);
+    // console.log(params);
     let {state, city, venue, up, down, bookmarked} = params
     return `<h2>Venues ${bookmarked || up || down ? 'I\'ve ' : ''}
     ${up ? 'Upvoted' : ''}${up && (down || bookmarked) ? ' and ' : ''}${down ? 'Downvoted ' : ''}
@@ -381,6 +381,7 @@
     if (ven) {
       ven = makeUppercase(ven)
       let checkFb = ven.split(" ").join('')
+      console.log(`querying public page content api for /${checkFb}`);
       return await fetch(`/token/facebook/venues/${checkFb}`)
         .then(handleErrors)
         .then(data =>{
@@ -400,6 +401,8 @@
 
   getById('confirmVenue').addEventListener('click', e => {
     hideModal(checkVenueModal)
+    console.log('fb data came back: ', state.fbData);
+    console.log('using data from fb query to autofill fields');
     lookForFbInfo(state.fbData.about, state.fbData.link, state.fbData.emails, state.fbData.location)
     lookForSiInfo(state.fbData.name, state.fbData.location)
   })
@@ -432,7 +435,7 @@
     if (url.value && !email.value) {
       let fbid
       if (url.value.split('.')[1] === 'facebook') {
-        console.log('url.value' , url.value);
+        // console.log('url.value' , url.value);
         fbid = url.value.split('/')[3]
         if (fbid.split('-').length > 1) {
           fbid = fbid.split('-')
@@ -441,11 +444,14 @@
       } else {
         fbid = url.value.split('.')[1]
       }
+      console.log(`querying public page content api for /${fbid}`);
       await fetch(`/token/facebook/venues/${fbid}`)
         .then( res => res.json())
         .then( data => {
           if (data && !data.error) {
             let {name,about,link,website,single_line_address,emails,location,events} = data
+            console.log('fb data came back:');
+            console.log('using data from fb query to autofill fields');
             lookForFbInfo(about, link, emails, location)
             lookForSiInfo(name, location)
           }
@@ -503,7 +509,7 @@
       .catch(err => console.log('error looking for SI info ', err))
       .then(data => {
         if (data.capacity && data.capacity !== 'N/A') {
-          getById('cap').val(Number(data.capacity))
+          getById('cap').value = Number(data.capacity)
         }
       })
   }
