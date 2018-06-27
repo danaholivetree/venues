@@ -409,7 +409,7 @@ $(document).ready(function() {
           $('.guesses').remove()
           $('#wrongSpotify').remove()
           reordered.forEach( (item, i, arr) => {
-            console.log('item ',i, ' = ' item);
+            console.log('item ',i, ' = ', item);
             let artistId = item.id
             let artistSpotify = item.external_urls.spotify
             let artistUri = item.uri
