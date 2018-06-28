@@ -38,9 +38,9 @@ router.get('/facebook/venues/:qs', (req, res, next) => {
   let uri = `https://graph.facebook.com/v2.12/${query}?`
   let qs = `fields=name,about,link,website,single_line_address,emails,location,events.time_filter(upcoming){name,start_time,id}`
   //use app token (once approved)
-  let auth = `&access_token=${app_id}|${app_secret}`
+  // let auth = `&access_token=${app_id}|${app_secret}`
   //use token stolen from graph api for testing
-  // let auth = `&access_token=${process.env.TEMP_TOKEN}`
+  let auth = `&access_token=${process.env.TEMP_TOKEN}`
   //use user access token
   // let auth = `&access_token=${req.cookies.user.accessToken}`
   request.get({url: uri+qs+auth, json: true}, (error, response, body) => {
@@ -61,9 +61,9 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
   let uri = `https://graph.facebook.com/v2.12/${query}`
   let qs = `?fields=name,website,link,genre,hometown,current_location,category,fan_count,events.limit(5){name,start_time,place{name,location{city,state}}}`
   //use app token (once approved)
-  let auth = `&access_token=${app_id}|${app_secret}`
+  // let auth = `&access_token=${app_id}|${app_secret}`
   //use token stolen from graph api for testing
-  // let auth = `&access_token=${process.env.TEMP_TOKEN}`
+  let auth = `&access_token=${process.env.TEMP_TOKEN}`
   //use user access token doesn't work either
   // let auth = `&access_token=${req.cookies.user.accessToken}`
   request.get({url: uri+qs+auth, json: true}, (error, response, body) => {
