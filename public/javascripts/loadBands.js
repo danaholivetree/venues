@@ -33,7 +33,7 @@
   const enable = (el) => {
     el.disabled = false
   }
-
+  var tbody = getById('bandsList')
   const next = getById('next')
   const prev = getById('prev')
   const topOfResults = getById('bandTable') //was using .get(0) before but not sure why
@@ -89,6 +89,7 @@
     // showEl(prevNext)
     disable(prev)
     setPrevNextListener()
+    setTbodyListeners()
   }
 
   const managePrevNextButtons = (dataLength) => {
@@ -117,7 +118,7 @@
 
   const listBands = (data, bookmarks = false) => {
 
-    let tbody = getById('bandsList')
+
     clear(tbody)
     data.forEach( bnd => {
       const {id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars, bookmark} = bnd
@@ -147,12 +148,11 @@
 
       tbody.innerHTML += bodyItem
     })
-    setTbodyListeners(tbody)
   }
 
   loadPage()
 
-  const setTbodyListeners = (tbody) => {
+  const setTbodyListeners = () => {
     tbody.addEventListener('click', e => {
       e.preventDefault()
       let targ = e.target
@@ -161,6 +161,7 @@
         clickedBandcamp(targ)
       } else if (targ.matches('.playSpotify')) {
         // console.log('clicked .playSpotify');
+
         clickedSpotify(targ)
       } else if (targ.matches('.close')) {
         // console.log('clicked .close')
@@ -224,15 +225,19 @@
   }
 
   const clickedSpotify = (targ) => {
+    console.log('targ ', targ);
       let bc = targ.previousSibling
+      console.log('targ.previousSibling ', bc);
       let uri = targ.dataset.uri
+      console.log('targ.dataset.uri ', targ.dataset.uri);
       hideEl(bc)
+      hideEl(targ)
       let spotifyWidget = `<div class='widget'>
             <iframe src=https://open.spotify.com/embed?uri=spotify:artist:${uri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
             <a style="top:25px;" href="/" class="close" aria-label="close">&times;</a>
           </div>`
       targ.parentNode.innerHTML += spotifyWidget
-      hideEl(targ)
+
   }
 
   const clickedBookmark = async (targ) => {
@@ -706,10 +711,12 @@
       band: makeUppercase(formData.band.value)
     }
     let selectedGenres = []
+    console.log(`addGenres.querySelectorAll('input:checked')`, addGenres.querySelectorAll('input:checked'));
     let checkedGenres = addGenres.querySelectorAll('input:checked')
     checkedGenres.forEach( el => {
       selectedGenres.push(el.value)
     })
+    console.log('selected Genres ', selectedGenres);
     newBand.genres = selectedGenres.slice(0,4)
 
     if (formData.url.value !== '') {
@@ -743,7 +750,7 @@
   }
 
   const clearInputs = () => {
-    document.querySelectorAll('input').forEach( inp => {
+    document.querySelectorAll('input:not([type="checkbox"])').forEach( inp => {
       inp.value = ''
     })
     console.log('cleared inputs');
@@ -796,6 +803,7 @@
     let checkBandModal = getById('checkBandModal')
     let modalBody = checkBandModal.querySelector('.modal-body')
     clear(modalBody)
+    console.log('inputData.genres ' , inputData.genres);
     modalBody.innerHTML = `<p>Is this correct?</p>
       <p>Band: ${inputData.band}</p>
       <p>Location: ${inputData.city}, ${abbrState(inputData.state, 'abbr')}</p>
@@ -803,7 +811,7 @@
       <p>URL: <a href="${inputData.url}" target="_blank">${inputData.url}</a></p>
       <p>Bandcamp: <a href="${inputData.bandcamp}" target="_blank">${inputData.bandcamp}</a></p>
       <p>Spotify: <a href=${inputData.spotify} target="_blank">${inputData.spotify}</a></p>
-      <p>Genres: ${inputData.genres.slice(0,4).join(' ')}`
+      <p>Genres: ${inputData.genres.join(' ')}`
     checkBandModal.style = 'display:block;'
     showEl(checkBandModal)
     let acceptedBand = e => {
