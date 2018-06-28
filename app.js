@@ -117,7 +117,8 @@ console.log('using last error handler');
     const {statusCode, error, message} = err.output.payload
     console.log('statusCode ', statusCode);
     console.log('message ', message);
-    res.send(message)
+    res.status(statusCode || 500)
+    res.send({message})
   } else {
     // set locals, only providing error in development
     res.locals.message = err.message;

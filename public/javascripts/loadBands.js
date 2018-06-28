@@ -1,48 +1,57 @@
+(function (window, document, undefined) {
+
   const {genreKeywords} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
   let accessToken = localStorage.getItem('pa_token') || ''
   let off = 0
+
   const getById = (el) => document.getElementById(el);
+  const hideEl = (el) => el.classList.add('hidden')
+  const showEl = (el) => el.classList.remove('hidden')
+  const clear = (el) => {
+    if (el) {
+        el.innerHTML = ''
+    }
+  }
+  const handleErrorsAndReturnJson = async response => {
+    console.log('response ', response);
+    // console.log(response.ok ? 'response ok' : response.statusText);
+    if (!response.ok || response.status != 200) {
+      console.log('response.statusText', response.statusText);
+      let err = await response.json()
+      console.log('err' , err);
+      throw new Error(err.message);
+    } else {
+      console.log('response.ok was true ', response.ok,' and response.status was 200 ', response.status);
+      console.log('returning response.json() ');
+      return response.json();
+    }
+  }
+  const disable = (el) => {
+    el.disabled = true
+  }
+  const enable = (el) => {
+    el.disabled = false
+  }
+
   const next = getById('next')
   const prev = getById('prev')
   const topOfResults = getById('bandTable') //was using .get(0) before but not sure why
   const prevNext = getById('prevNext')
-  const hideEl = (el) => el.classList.add('hidden')
-  const showEl = (el) => el.classList.remove('hidden')
   const addBandBtn = getById('addBand')
   const addBandForm = getById('addBandForm')
   const searchBandBtn = getById('searchBands')
   const searchBandForm = getById('bandSearchForm')
   const addGenres = getById('addGenres')
+  let bandInput = getById('band')
+  let fb = getById('fb')
   let globalParams
   let globalOrigQuery
-
-  const handleErrors = response => {
-    // console.log(response.ok ? 'response ok' : response.statusText);
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    } else {
-      return response.json();
-    }
-  }
-
-  const genresAndListener = () => {
-    let gs = getById('genreSelector')
-
-    genreKeywords.forEach( genre => {
-      let newGenre = `<div class="form-check form-check-inline" style='display:inline-flex;'>
-          <input class="form-check-input genre-selector ${genre}" type="checkbox" value="${genre}">
-          <label class="form-check-label" for=${genre}>${genre}</label></div>`
-      gs.innerHTML += newGenre
-      addGenres.innerHTML += newGenre
-    })
-  }
-  genresAndListener()
 
   const getData = async (offset = 0, scroll = false, query = '') => {
     let bandQuery = query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''
     return await fetch(`/api/bands/${bandQuery}`, {credentials: 'same-origin'})
-      .then(handleErrors)
+      .then(handleErrorsAndReturnJson)
       .then( data => {
         if (offset > 0 && data.length === 0) {
           disable(next)
@@ -63,6 +72,18 @@
   }
 
   const loadPage = async () => {
+    const displayGenres = () => {
+      let gs = getById('genreSelector')
+
+      genreKeywords.forEach( genre => {
+        let newGenre = `<div class="form-check form-check-inline" style='display:inline-flex;'>
+            <input class="form-check-input genre-selector ${genre}" type="checkbox" value="${genre}">
+            <label class="form-check-label" for=${genre}>${genre}</label></div>`
+        gs.innerHTML += newGenre
+        addGenres.innerHTML += newGenre
+      })
+    }
+    displayGenres()
     let data = await getData(off)
     processData(data)
     // showEl(prevNext)
@@ -92,20 +113,6 @@
     } else {
       // console.log('processing data, no data ', data);
     }
-  }
-
-  const clear = (el) => {
-    if (el) {
-        el.innerHTML = ''
-    }
-  }
-
-  const disable = (el) => {
-    el.disabled = true
-  }
-
-  const enable = (el) => {
-    el.disabled = false
   }
 
   const listBands = (data, bookmarks = false) => {
@@ -239,7 +246,7 @@
     return await fetch(`/api/bBookmarks`, {body: JSON.stringify({bandId}),
               headers: {'Content-Type': 'application/json'},
               credentials: 'same-origin', method: 'POST'
-    }).then(handleErrors)
+    }).then(handleErrorsAndReturnJson)
       .then(data => {
         let icon = targ.firstChild
         if (data.bookmarked) {
@@ -267,7 +274,7 @@
     fetch(`/api/stars`, {body: JSON.stringify({bandId}),
               headers: {'Content-Type': 'application/json'},
               credentials: 'same-origin', method: 'POST'
-    }).then(handleErrors)
+    }).then(handleErrorsAndReturnJson)
       .then(data => {
         let {starred, stars} = data
         let starIcon = targ.firstChild
@@ -344,6 +351,58 @@
     prev.addEventListener('click', prevHandler)
   }
 
+  const makeResultsTitle = (params) => {
+    let {state, city, band, genres, starred, bookmarked} = params
+    return `<h2>Bands ${bookmarked || starred ? 'I\'ve ' : ''}${bookmarked ? 'Bookmarked ' : '' }${bookmarked && starred ? 'and ' : ''}
+    ${starred ? 'Starred ' : '' }${city || state !== 'All' ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
+    ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${band ? 'matching '+ makeUppercase(band) : ''}</h2>`
+  }
+
+  const getBandcamp = async (band) => {
+    return await fetch(`/bc/search/${band}`)
+      .then( res => res.json())
+      .catch( err => console.log(err))
+      .then( data => {
+        if (data) {
+          getById('bandcamp').value = data[0].url
+          data[0].tags.forEach( tag => {
+            tag = tag[0].toUpperCase()+tag.slice(1)
+            if (addGenres.querySelector(`input.${tag}`)) {
+              // console.log(addGenres.querySelector(`input.${tag}`))
+              addGenres.querySelector(`input.${tag}`).checked = true
+            }
+          })
+
+        }
+      })
+  }
+
+  const getSpotifyToken = async () => {
+    console.log('getting new spotify token');
+    return await fetch('/token/spotify')
+      .then(res => res.json())
+      .catch(err => console.log(err))
+      .then( (data) => {
+        // console.log('data ', data);
+        const {access_token, expires_in} = data
+        localStorage.setItem('pa_token', access_token)
+        localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
+        accessToken = access_token
+        return accessToken
+      })
+  }
+
+  const checkForSpotifyToken = () => {
+    if (!accessToken || accessToken == '' || accessToken == undefined || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
+      console.log('token expired? ', localStorage.getItem('pa_expires') < (new Date()).getTime());
+      console.log('no token ', !accessToken || accessToken == '' || accessToken == undefined );
+      return false
+    } else {
+      console.log('there was a token ');
+      return true
+    }
+  }
+
   const submitSearch = e => {
     // console.log('submitting search');
     e.preventDefault()
@@ -378,15 +437,7 @@
       globalOrigQuery = queryString
     })
   }
-
   searchBandForm.addEventListener('submit', submitSearch)
-
-  const makeResultsTitle = (params) => {
-    let {state, city, band, genres, starred, bookmarked} = params
-    return `<h2>Bands ${bookmarked || starred ? 'I\'ve ' : ''}${bookmarked ? 'Bookmarked ' : '' }${bookmarked && starred ? 'and ' : ''}
-    ${starred ? 'Starred ' : '' }${city || state !== 'All' ? 'in ' :''}${city ? city : ''}${city && (state !== 'All') ? ',' : ''}
-    ${state !== 'All' ? abbrState(state, 'abbr') : ''} ${band ? 'matching '+ makeUppercase(band) : ''}</h2>`
-  }
 
   const showSearchForm = e => {
     e.preventDefault()
@@ -405,7 +456,6 @@
     searchBandBtn.classList.add('lightblue')
     addBandBtn.classList.remove('lightblue')
   }
-
   searchBandBtn.addEventListener('click', showSearchForm)
 
   const showAddForm = e => {
@@ -426,7 +476,6 @@
       let fb = document.getElementById('fb')
       fb.value = 'http://www.facebook.com/'
   }
-
   addBandBtn.addEventListener('click', showAddForm)
 
   const preventFifthGenre = e => {
@@ -438,53 +487,7 @@
       }
     }
   }
-
   addGenres.addEventListener('click', preventFifthGenre)
-
-  const getBandcamp = async (band) => {
-    return await fetch(`/bc/search/${band}`)
-      .then( res => res.json())
-      .catch( err => console.log(err))
-      .then( data => {
-        if (data) {
-          getById('bandcamp').value = data[0].url
-          data[0].tags.forEach( tag => {
-            tag = tag[0].toUpperCase()+tag.slice(1)
-            if (addGenres.querySelector(`input.${tag}`)) {
-              // console.log(addGenres.querySelector(`input.${tag}`))
-              addGenres.querySelector(`input.${tag}`).checked = true
-            }
-          })
-
-        }
-      })
-  }
-
-  const getSpotifyToken = async () => {
-    // console.log('getting spotify token');
-    return await fetch('/token/spotify')
-      .then(res => res.json())
-      .catch(err => console.log(err))
-      .then( (data) => {
-        // console.log('data ', data);
-        const {access_token, expires_in} = data
-        localStorage.setItem('pa_token', access_token)
-        localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
-        accessToken = access_token
-        return accessToken
-      })
-  }
-
-  const checkForSpotifyToken = () => {
-    if (!accessToken || accessToken == '' || accessToken == undefined || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
-      // console.log('token expired? ', localStorage.getItem('pa_expires') < (new Date()).getTime());
-      // console.log('no token ', !accessToken || accessToken == '' || accessToken == undefined );
-      return false
-    } else {
-      // console.log('there was a token ');
-      return true
-    }
-  }
 
   const changedBand = async (e) => {
     e.preventDefault()
@@ -517,8 +520,6 @@
         })
     }
   }
-
-  let bandInput = getById('band')
   bandInput.addEventListener('change', changedBand)
 
   const getFbId = (url) => {
@@ -576,20 +577,18 @@
     // console.log('fbid ', fbid);
     await fetch(`/token/facebook/bands/${fbid}`)
       .then( res => res.json())
-      .catch( err => {
-        // console.log('error getting data from fb ', err);
-      }).then( response => {
-        // console.log('response ', response);
+      .then( response => {
+        console.log('response ', response);
         if (response.name) {
           // console.log('response.name ', response.name);
           processFbData(response)
         } else {
-           console.log(response);
+           console.log('no data in response, not doing anything');
         }
+      }).catch( err => {
+        console.log('error getting data from fb ', err);
       })
   }
-
-  let fb = getById('fb')
   fb.addEventListener('change', fbChanged)
 
   const getLocationFromFb = (curr, home) => {
@@ -629,7 +628,7 @@
       return res.json()
     }).catch( err => {
         // console.log('error ', err);
-    }).then(({artists}) => {
+    }).then( ({artists}) => {
       // console.log(artists);
         const {items} = artists
         // console.log(items);
@@ -677,30 +676,40 @@
       })
   }
 
-  const checkForErrors = (formData) => {
-    if (!formData.state.value || formData.state.value === 'All') {
+  const checkForErrors = (data) => {
+    if (!data.state || data.state === 'All') {
       return "Please select a state"
     }
-    if (!formData.city.value) {
+    if (!data.city) {
       return "Please enter a city"
     }
-    if (!formData.band.value) {
+    if (!data.band) {
       return "Please enter a band name"
     }
-    if (formData.fb && formData.fb.value.split('.')[1] !== 'facebook') {
+    if (data.fb && data.fb.split('.')[1] !== 'facebook') {
       return "Incorrect form for facebook url"
     }
-    if (formData.fb && !formData.fb.value.split('/')[3]) {
+    if (data.fb && !data.fb.split('/')[3]) {
       return "Please enter a complete facebook url"
     }
+    if (!data.spotify && !data.bandcamp) {
+      return "Please enter a spotify or bandcamp link"
+    }
+    console.log('no input errors');
   }
 
-  const newBandFromForm = (formData, spot, selectedGenres) => {
+  const newBandFromForm = (formData) => {
+    console.log('newBandFromForm');
     let newBand = {
       state: formData.state.value,
       city: makeUppercase(formData.city.value),
       band: makeUppercase(formData.band.value)
     }
+    let selectedGenres = []
+    let checkedGenres = addGenres.querySelectorAll('input:checked')
+    checkedGenres.forEach( el => {
+      selectedGenres.push(el.value)
+    })
     newBand.genres = selectedGenres.slice(0,4)
 
     if (formData.url.value !== '') {
@@ -712,63 +721,98 @@
     if (formData.bandcamp.value !== '') {
       newBand.bandcamp = checkUrl(formData.bandcamp.value)
     }
-    newBand.spotify = spot
+    let spotChecked = document.querySelector('input.guess:checked')
+    let spotWritten = getById('spotifyOther')
+    newBand.spotify = spotChecked ? spotChecked.value : spotWritten.value
+    console.log('newBand created from form', newBand);
     return newBand
   }
 
-  const newBandandSubmit = (formData, spot, selectedGenres) => {
-    let newBand = newBandFromForm(formData, spot, selectedGenres)
-    $.ajax({
-      method: 'POST',
-      url: '/api/bands',
-      dataType: 'json',
-      data: {newBand: JSON.stringify(newBand)},
-      success: function (data) {
-                  $('#errorMessage').empty()
-                  $('input').val('');
-                  $('.guesses').remove()
-                  $('.genre-selector').prop('checked', false)
-                  $('#state').val('All');
-                  listBands(data)
-              },
-      error: err => {
-        $('#errorMessage').html(`<div class="alert alert-danger fade show" role="alert">${err.responseText}</div>`)
-      }
+  const clearGuesses = () => {
+    document.querySelectorAll('.guesses').forEach( guess => {
+      clear(guess)
     })
+    console.log('cleared guesses');
+  }
+
+  const uncheckGenres = () => {
+    document.querySelectorAll('.genre-selector').forEach( selector => {
+      selector.checked = false
+    })
+    console.log('unchecked genres');
+  }
+
+  const clearInputs = () => {
+    document.querySelectorAll('input').forEach( inp => {
+      inp.value = ''
+    })
+    console.log('cleared inputs');
+  }
+
+  const resetForm = () => {
+    console.log('resetting form');
+    let errorMessage = getById('errorMessage')
+    clear(errorMessage)
+    console.log('cleared error message');
+    clearInputs()
+    clearGuesses()
+    uncheckGenres()
+    getById('state').value = 'All'
+  }
+  const submitNewBand = async (newBand) => {
+    console.log('submitNewBand ', newBand);
+    return await fetch('/api/bands', {
+                        body: JSON.stringify({newBand}),
+                        headers: {'Content-Type': 'application/json'},
+                        credentials: 'same-origin', method: 'POST'})
+      .then(handleErrorsAndReturnJson)
+      .then( data => {
+        console.log('data' , data);
+        if (!data.error) {
+          resetForm()
+          listBands(data)
+        }
+      }).catch(err => {
+        console.log('err ', err)
+        let error = `<div class="alert alert-danger fade show" role="alert">${err}</div><button type='button' id='clearForm'>Clear Form</button>`
+        errorMessage.innerHTML = error
+        getById('clearForm').addEventListener('click', resetForm)
+      })
   }
 
   const submitAddBandForm = e => {
+    console.log('submitaddbandform');
     e.preventDefault()
-    let formData = e.target.elements
-    if (checkForErrors(formData)) {
+    //sort form data and checked inputs
+    let inputData = newBandFromForm(e.target.elements)
+    //check sorted inputData for missing or incorrect fields
+    let inputError = checkForErrors(inputData)
+    if (inputError) {
       let errorMessage = getById('errorMessage')
-      let error = `<div class="alert alert-danger fade show" role="alert">${checkForErrors(formData)}</div>`
+      let error = `<div class="alert alert-danger fade show" role="alert">${inputError}</div>`
       return errorMessage.innerHTML = error
     }
-    let spotChecked = document.querySelector('input.guess:checked')
-    let spot = spotChecked ? spotChecked.value : getById('spotifyOther').value
-    let selectedGenres = []
-    let checkedGenres = addGenres.querySelectorAll('input:checked')
-    checkedGenres.forEach( el => {
-      selectedGenres.push(el.value)
-    })
+    //check for approval of submitted band
     let checkBandModal = getById('checkBandModal')
     let modalBody = checkBandModal.querySelector('.modal-body')
     clear(modalBody)
     modalBody.innerHTML = `<p>Is this correct?</p>
-      <p>Band: ${formData.band.value}</p>
-      <p>Location: ${formData.city.value}, ${abbrState(formData.state.value, 'abbr')}</p>
-      <p>FB: <a href="${formData.fb.value}" target="_blank">${formData.fb.value}</a></p>
-      <p>URL: <a href="${formData.url.value}" target="_blank">${formData.url.value}</a></p>
-      <p>Bandcamp: <a href="${formData.bandcamp.value}" target="_blank">${formData.bandcamp.value}</a></p>
-      <p>Spotify: <a href=${spot} target="_blank">${spot}</a></p>
-      <p>Genres: ${selectedGenres.slice(0,4).join(' ')}`
-    checkBandModal.modal('show');
-    getById('acceptBand').addEventListener('click', e => {
-      checkBandModal.modal('hide');
-      newBandandSubmit(formData, spot, selectedGenres)
-    })
+      <p>Band: ${inputData.band}</p>
+      <p>Location: ${inputData.city}, ${abbrState(inputData.state, 'abbr')}</p>
+      <p>FB: <a href="${inputData.fb}" target="_blank">${inputData.fb}</a></p>
+      <p>URL: <a href="${inputData.url}" target="_blank">${inputData.url}</a></p>
+      <p>Bandcamp: <a href="${inputData.bandcamp}" target="_blank">${inputData.bandcamp}</a></p>
+      <p>Spotify: <a href=${inputData.spotify} target="_blank">${inputData.spotify}</a></p>
+      <p>Genres: ${inputData.genres.slice(0,4).join(' ')}`
+    checkBandModal.style = 'display:block;'
+    showEl(checkBandModal)
+    let acceptedBand = e => {
+      hideEl(checkBandModal)
+      submitNewBand(inputData)
+      getById('acceptBand').removeEventListener('click', acceptedBand)
+    }
+    getById('acceptBand').addEventListener('click', acceptedBand)
   }
-
-
   addBandForm.addEventListener('submit', submitAddBandForm)
+
+})(window, document);

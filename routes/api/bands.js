@@ -2,17 +2,16 @@ var express = require('express');
 var router = express.Router();
 const knex = require('../../knex')
 const boom = require('boom')
+var userId = 17
 
 
 router.get('/', function(req, res, next) {
   // for production
   // let userId = req.cookies.user.id
+
   //just for testing
-  let userId
   if (req.cookies.user) {
     userId = req.cookies.user.id
-  } else {
-    userId = 17
   }
 
   console.log("userId", userId);
@@ -43,13 +42,10 @@ router.get('/q', function(req, res, next) {
   // for production
   // let userId = req.cookies.user.id
   //just for testing
-  let userId
   if (req.cookies.user) {
     userId = req.cookies.user.id
-  } else {
-    userId = 17
   }
-  const {state, city, band, genres, starred, bookmarked } = req.query
+  let {state, city, band, genres, starred, bookmarked } = req.query
   var query = knex('bands')
               .select('bands.id', 'state', 'city', 'band', 'genre', 'url', 'fb', 'bandcamp', 'spotify', 'stars', "band_stars.id as starred", "band_bookmarks.id as bookmark")
 
@@ -64,6 +60,8 @@ router.get('/q', function(req, res, next) {
   }
 
   if (genres) {
+    genres = genres.split(',')
+    console.log('genres ', genres);
     var rawGenreQuery = ''
     var rawBindings = []
     genres.forEach( (genre, i) => {
@@ -151,14 +149,11 @@ router.post('/', (req, res, next) => {
   // for production
   // let userId = req.cookies.user.id
   //just for testing
-  let userId
   if (req.cookies.user) {
     userId = req.cookies.user.id
-  } else {
-    userId = 17
   }
-  let data = JSON.parse(req.body.newBand)
-  const {state, city, band, url, fb, bandcamp, spotify, genres} = data
+  console.log('req.body.newBand ', req.body.newBand);
+  const {state, city, band, url, fb, bandcamp, spotify, genres} = req.body.newBand
   var newBand = {state, city, band}
   if (url) {
     newBand.url = url
@@ -182,6 +177,7 @@ router.post('/', (req, res, next) => {
     .then( exists => {
       if (exists[0]) {
         return next(boom.badRequest('This band is already in the database'))
+        // return boom.badRequest('This band is already in the database')
       } else {
         return knex('users')
           .where('id', userId)
