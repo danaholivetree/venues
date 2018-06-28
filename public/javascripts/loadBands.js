@@ -316,6 +316,7 @@ $(document).ready(function() {
       }
       getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
       $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
+        console.log('data from call to fb api ', data);
         if (data.category === 'Musician/Band' || data.category === 'Music') {
           $('#fb').val(data.link)
           $('#url').val(checkUrl(data.website))

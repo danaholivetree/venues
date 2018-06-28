@@ -272,6 +272,7 @@ $(document).ready(function() {
       $('#venue').val(makeUppercase(e.currentTarget.value))
       $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, res => {
         if (res && !res.error) {
+          console.log('got data back from fb ', res);
           let {name,about,link,website,single_line_address,emails,location,events} = res
           if (location) {
             $('#checkVenueModal .modal-body').text(`Do you mean ${name} in ${location.city}, ${location.state}?`)
@@ -283,7 +284,7 @@ $(document).ready(function() {
             })
           }
         } else {
-          console.log(res.error.message);
+          console.log('tried to query fb api. error.message ', res.error.message);
         }
       })
       //tried to do this with the SDK. still needs valid app access token, it seems.
