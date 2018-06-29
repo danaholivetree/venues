@@ -47,6 +47,7 @@
   let fb = getById('fb')
   let globalParams
   let globalOrigQuery
+  let wrongSpotify = getById('wrongSpotify')
 
   const getData = async (offset = 0, scroll = false, query = '') => {
     let bandQuery = query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''
@@ -71,6 +72,12 @@
       })
   }
 
+  const closeModal = (e) => {
+    console.log('event ', e);
+    e.preventDefault()
+    hideEl(document.querySelector('.modal'))
+  }
+
   const loadPage = async () => {
     const displayGenres = () => {
       let gs = getById('genreSelector')
@@ -90,6 +97,9 @@
     disable(prev)
     setPrevNextListener()
     setTbodyListeners()
+    document.querySelectorAll('.closemodal').forEach( closemo => {
+      closemo.addEventListener('click', closeModal)
+    })
   }
 
   const managePrevNextButtons = (dataLength) => {
@@ -127,7 +137,7 @@
       // let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:artist:${spotifyUri}&theme=white` : ''
       let displaySpotify = spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''
       let displayBandcamp = bandcamp ? `<img class='playBandcamp' data-band='${band}' data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'>` : ``
-      let displayBand = fb ? `<a href=${fb} target='_blank'>${band}</a>` : `${band}`
+      let displayBand = fb ? `<a href=${fb} target="_blank">${band}</a>` : `${band}`
       let starBorder= `<i class="material-icons md-18 star">star_border</i>`
       let starIcon = `<i class="material-icons md-18 lightblue-text star">star</i>`
       let starr = `<button class='btn btn-default thumb star' data-id=${id}>${starred ? starIcon : starBorder}</button><br><span>${stars}</span>`
@@ -500,11 +510,8 @@
     if (band !== '') {
       getBandcamp(band)
       if (!checkForSpotifyToken()) {
-        // console.log('awaiting getSpotifyToken');
         accessToken = await getSpotifyToken()
-        // console.log('this means theres a token', accessToken);
       }
-      // console.log('and this shouldnt happen first');
       getSpotifyWidgets(accessToken, band, getById(spotifyGuess))
       console.log('querying facebook for ', band.split(" ").join(''));
       return await fetch(`/token/facebook/bands/${band.split(" ").join('')}`)
@@ -624,60 +631,52 @@
     }
   }
 
+  const displayWidget = (item, i, check) => {
+    let spotifyGuess = getById('spotifyGuess')
+    let artistId = item.id
+    let artistSpotify = item.external_urls.spotify
+    let artistUri = item.uri
+    let widget =  `<div class='form-group col-lg-3 col-12 guesses'>
+              <div class="form-radio-inline mx-auto">
+                <div class='form-radio col-12'>
+                  <label class="form-radio-label" for="radio${i}">
+                    <iframe src=https://open.spotify.com/embed?uri=${artistUri} width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                  </label>
+                </div>
+
+                <div class='mx-auto col-1'>
+                  <input class="form-radio-input guess" type="radio" id="radio${i}" ${check && 'checked'} value=${artistSpotify} />
+                </div>
+              </div>
+            </div>`
+    spotifyGuess.innerHTML += widget
+  }
+
   const getSpotifyWidgets = async (token, band, target) => {
     return await fetch(`https://api.spotify.com/v1/search?q=artist:"${band}"&type=artist&market=US&limit=4&offset=0`, {
       headers : {
         'Authorization': `Bearer ${token}`
       }
-    }).then( res => {
-      return res.json()
-    }).catch( err => {
-        // console.log('error ', err);
-    }).then( ({artists}) => {
+    }).then(handleErrorsAndReturnJson)
+      .then( ({artists}) => {
       // console.log(artists);
         const {items} = artists
-        // console.log(items);
+        let spotifyGuess = getById('spotifyGuess')
+        showEl(spotifyGuess.firstChild)
+        clear(document.querySelector('.guesses'))
+
         if (items.length > 0) {
           let reordered = items.sort( (a,b) => a.followers.total < b.followers.total)
-          let spotifyGuess = getById('spotifyGuess')
-          showEl(spotifyGuess.firstChild)
-          clear(document.querySelector('.guesses'))
-          let wrongSpotify = getById('wrongSpotify')
-          clear(wrongSpotify)
           reordered.forEach( (item, i, arr) => {
-            let artistId = item.id
-            let artistSpotify = item.external_urls.spotify
-            let artistUri = item.uri
-            let showItAll =  `<div class='form-group col-lg-3 col-12 guesses'>
-                      <div class="form-radio-inline mx-auto">
-                        <div class='form-radio col-12'>
-                          <label class="form-radio-label" for="radio${i}">
-                            <iframe src=https://open.spotify.com/embed?uri=${artistUri}&theme=white width="250" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-                          </label>
-                        </div>
-
-                        <div class='mx-auto col-1'>
-                          <input class="form-radio-input guess" type="radio" id="radio${i}" value=${artistSpotify} />
-                        </div>
-                      </div>
-                    </div>`
-
-            spotifyGuess.innerHTML += showItAll
-            // if (arr.length === 1) {
-            //   $('input.guess').prop("checked", true)
-            // }
+            let check = arr.length === 1 ? true : false // automatically check box if there's only one
+            displayWidget(item, i, check)
           })
-          wrongSpotify.innerHTML = `<div class="input-group mb-3 col-12 col-md-8">
-            <div class="d-none d-md-inline-block input-group-prepend">
-              <span class="input-group-text">Wrong artist? Spotify URL:</span>
-            </div>
-            <label for='spotifyOther' class="control-label col-3 d-md-none col-form-label" >or Spotify URL:</label>
-            <input type="url" id='spotifyOther' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
-          </div>`
-
+          showEl(wrongSpotify)
           let spotifyOther = getById('spotifyOther')
           spotifyOther.addEventListener('change', e => document.querySelector('input.guess:checked').checked = false)
         }
+      }).catch( err => {
+          console.log('error getting Spotify Widgets ', err);
       })
   }
 
@@ -711,12 +710,10 @@
       band: makeUppercase(formData.band.value)
     }
     let selectedGenres = []
-    console.log(`addGenres.querySelectorAll('input:checked')`, addGenres.querySelectorAll('input:checked'));
     let checkedGenres = addGenres.querySelectorAll('input:checked')
     checkedGenres.forEach( el => {
       selectedGenres.push(el.value)
     })
-    console.log('selected Genres ', selectedGenres);
     newBand.genres = selectedGenres.slice(0,4)
 
     if (formData.url.value !== '') {
@@ -787,19 +784,7 @@
       })
   }
 
-  const submitAddBandForm = e => {
-    console.log('submitaddbandform');
-    e.preventDefault()
-    //sort form data and checked inputs
-    let inputData = newBandFromForm(e.target.elements)
-    //check sorted inputData for missing or incorrect fields
-    let inputError = checkForErrors(inputData)
-    if (inputError) {
-      let errorMessage = getById('errorMessage')
-      let error = `<div class="alert alert-danger fade show" role="alert">${inputError}</div>`
-      return errorMessage.innerHTML = error
-    }
-    //check for approval of submitted band
+  const fillModal = (inputData) => {
     let checkBandModal = getById('checkBandModal')
     let modalBody = checkBandModal.querySelector('.modal-body')
     clear(modalBody)
@@ -820,6 +805,22 @@
       getById('acceptBand').removeEventListener('click', acceptedBand)
     }
     getById('acceptBand').addEventListener('click', acceptedBand)
+  }
+
+  const submitAddBandForm = e => {
+    console.log('submitaddbandform');
+    e.preventDefault()
+    //sort form data and checked inputs
+    let inputData = newBandFromForm(e.target.elements)
+    //check sorted inputData for missing or incorrect fields
+    let inputError = checkForErrors(inputData)
+    if (inputError) {
+      let errorMessage = getById('errorMessage')
+      let error = `<div class="alert alert-danger fade show" role="alert">${inputError}</div>`
+      return errorMessage.innerHTML = error
+    }
+    //check for approval of submitted band
+    fillModal(inputData)
   }
   addBandForm.addEventListener('submit', submitAddBandForm)
 

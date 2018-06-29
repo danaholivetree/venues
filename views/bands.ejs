@@ -87,7 +87,13 @@
       </div>
       <div id='spotifyGuess' class='form-row'><p class='col-12 hidden'>Please select the artist's correct spotify:</p>
       </div>
-      <div id='wrongSpotify' class="form-row"></div>
+      <div id='wrongSpotify' class="form-row hidden"><div class="input-group mb-3 col-12 col-md-8">
+        <div class="d-none d-md-inline-block input-group-prepend">
+          <span class="input-group-text">Wrong artist? Spotify URL:</span>
+        </div>
+        <label for='spotifyOther' class="control-label col-3 d-md-none col-form-label" >or Spotify URL:</label>
+        <input type="url" id='spotifyOther' class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+      </div></div>
       <div class='form-row'>
         <div class="input-group mb-3 col-12">
           <div class='input-group-text genres' id='addGenres'>
@@ -101,7 +107,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <!-- <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5> -->
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="closemodal close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -109,7 +115,7 @@
             <!-- Did you mean venue in city, state? -->
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            <button type="button" class="btn btn-default closemodal" data-dismiss="modal">No</button>
             <button type="button" id='acceptBand' class="btn btn-default">Yes</button>
           </div>
         </div>
