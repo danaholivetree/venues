@@ -126,37 +126,38 @@
     }
   }
 
+  const buildBandForList = bnd => {
+    const {id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars, bookmark} = bnd
+    let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
+    let spotifyUri = spotify ? spotify.split('/')[4] : ''
+    let displaySpotify = spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''
+    let displayBandcamp = bandcamp ? `<img class='playBandcamp' data-band='${band}' data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'>` : ``
+    let displayBand = fb ? `<a href=${fb} target="_blank">${band}</a>` : `${band}`
+    let starBorder= `<i class="material-icons md-18 star">star_border</i>`
+    let starIcon = `<i class="material-icons md-18 lightblue-text star">star</i>`
+    let starr = `<button class='btn btn-default thumb star' data-id=${id}>${starred ? starIcon : starBorder}</button><br><span>${stars}</span>`
+    let bookmarkIcon = `<i class="material-icons md-18 bookmark lightblue-text">bookmark</i>`
+    let bookmarkBorder = `<i class="material-icons md-18 bookmark">bookmark_border</i>`
+    let bkmk = `<button class='btn btn-default thumb bookmark' data-id=${id}>${bookmark ? bookmarkIcon : bookmarkBorder}</button>`
+    let displayGenre = genre ? genre : ''
+    let bodyItem = `
+      <tr>
+        <td class='d-none d-md-table-cell'>${abbrState(state, 'abbr')}</td>
+        <td>${city}</td>
+        <td>${displayBand}</td>
+        <td class="genreList d-none d-md-table-cell">${displayGenre}</td>
+        <td class="widgets-column">${displayBandcamp}${displaySpotify}</td>
+        <td class='d-none d-md-table-cell' align='center'>${starr}</td>
+        <td class='d-none d-md-table-cell'>${bkmk}</td>
+      </tr>`
+    return bodyItem
+  }
+
   const listBands = (data, bookmarks = false) => {
-
-
     clear(tbody)
-    data.forEach( bnd => {
-      const {id, band, state, city, url, spotify, bandcamp, fb, genre, starred, stars, bookmark} = bnd
-      let displayUrl = url  ? `<a href=${url} target='_blank'>www</a>` : ``
-      let spotifyUri = spotify ? spotify.split('/')[4] : ''
-      // let spotifySrc = spotify ? `https://open.spotify.com/embed?uri=spotify:artist:${spotifyUri}&theme=white` : ''
-      let displaySpotify = spotify ? `<img class='playSpotify' src='images/Spotify_Icon_RGB_Green.png' data-uri=${spotifyUri} style="width:32px; background-color:inherit; cursor: pointer;"/>` : ''
-      let displayBandcamp = bandcamp ? `<img class='playBandcamp' data-band='${band}' data-href=${bandcamp} src='images/bandcamp-button-bc-circle-aqua-32.png'>` : ``
-      let displayBand = fb ? `<a href=${fb} target="_blank">${band}</a>` : `${band}`
-      let starBorder= `<i class="material-icons md-18 star">star_border</i>`
-      let starIcon = `<i class="material-icons md-18 lightblue-text star">star</i>`
-      let starr = `<button class='btn btn-default thumb star' data-id=${id}>${starred ? starIcon : starBorder}</button><br><span>${stars}</span>`
-      let bookmarkIcon = `<i class="material-icons md-18 bookmark lightblue-text">bookmark</i>`
-      let bookmarkBorder = `<i class="material-icons md-18 bookmark">bookmark_border</i>`
-      let bkmk = `<button class='btn btn-default thumb bookmark' data-id=${id}>${bookmark ? bookmarkIcon : bookmarkBorder}</button>`
-      let displayGenre = genre ? genre : ''
-      let bodyItem = `
-        <tr>
-          <td class='d-none d-md-table-cell'>${abbrState(state, 'abbr')}</td>
-          <td>${city}</td>
-          <td>${displayBand}</td>
-          <td class="genreList d-none d-md-table-cell">${displayGenre}</td>
-          <td class="widgets-column">${displayBandcamp}${displaySpotify}</td>
-          <td class='d-none d-md-table-cell' align='center'>${starr}</td>
-          <td class='d-none d-md-table-cell'>${bkmk}</td>
-        </tr>`
-
-      tbody.innerHTML += bodyItem
+    data.forEach( item => {
+      let band = buildBandForList(item)
+      tbody.innerHTML += band
     })
   }
 
@@ -164,26 +165,18 @@
 
   const setTbodyListeners = () => {
     tbody.addEventListener('click', e => {
-      e.preventDefault()
       let targ = e.target
       if (targ.matches('.playBandcamp')) { //might not work in ie?
-        // console.log('clicked .playBandcamp');
         clickedBandcamp(targ)
       } else if (targ.matches('.playSpotify')) {
-        // console.log('clicked .playSpotify');
-
         clickedSpotify(targ)
       } else if (targ.matches('.close')) {
-        // console.log('clicked .close')
         clickedClose(targ)
       } else if (targ.matches('.bookmark')) {
-        // console.log('clicked .bookmark', targ);
         clickedBookmark(targ)
       } else if (targ.matches('.star')) {
-        // console.log('clicked .star');
         clickedStar(targ)
       }
-
     })
   }
 
@@ -763,6 +756,7 @@
     uncheckGenres()
     getById('state').value = 'All'
   }
+
   const submitNewBand = async (newBand) => {
     console.log('submitNewBand ', newBand);
     return await fetch('/api/bands', {
