@@ -1,3 +1,4 @@
+(function (window, document, undefined) {
 
   // const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage, copyToClipboard} = helpers
@@ -11,6 +12,7 @@
 
   let info = 'here is some text'
   const searchVenuesBtn = getById('searchVenues')
+  console.log(searchVenuesBtn);
   const addVenueBtn = getById('addVenue')
   const venueSearchForm = getById('venueSearchForm')
   const addVenueForm = getById('addVenueForm')
@@ -328,8 +330,9 @@
     prev.addEventListener('click', prevHandler)
   }
 
-  searchVenuesBtn.click( e => {
+  searchVenuesBtn.addEventListener('click', e => {
     e.preventDefault()
+    console.log('clicked searchVenuesBtn');
       showEl(venueSearchForm)
       let formInputs = addVenueForm.querySelectorAll('input')
       formInputs.forEach( el => {
@@ -339,7 +342,7 @@
         }
       })
       getById('state').value = 'All'
-      hide(addVenueForm)
+      hideEl(addVenueForm)
       searchVenuesBtn.classList.add('lightblue')
       addVenueBtn.classList.remove('lightblue')
       // $('#venueState').val('All');
@@ -601,3 +604,4 @@
   }
 
   addVenueForm.addEventListener('submit', submitAddVenueForm)
+})(window, document);
