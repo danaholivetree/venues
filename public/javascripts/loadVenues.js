@@ -1,26 +1,13 @@
 
   // const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage, copyToClipboard} = helpers
+  const {handleErrorsAndReturnJson, disable, enable, hideEl, showEl, clear, getById, makeQuery} = sharedFunctions
   let off = 0
 
-  const getById = (el) => document.getElementById(el);
   const next = getById('next')
   const prev = getById('prev')
   const topOfResults = getById('venueTable')
   const prevNext = getById('prevNext')
-  const hideEl = (el) => el.classList.add('hidden')
-  const showEl = (el) => el.classList.remove('hidden')
-  const disable = (el) => {
-    el.disabled = true
-  }
-  const enable = (el) => {
-    el.disabled = false
-  }
-  const clear = (el) => {
-    if (el) {
-        el.innerHTML = ''
-    }
-  }
 
   let info = 'here is some text'
   const searchVenuesBtn = getById('searchVenues')
@@ -29,18 +16,18 @@
   const addVenueForm = getById('addVenueForm')
   let state = {}
 
-  const handleErrors = response => {
-    // console.log(response.ok ? 'response ok? ' : response.statusText);
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    } else {
-      return response.json();
-    }
-  }
+  // const handleErrorsAndReturnJson = response => {
+  //   // console.log(response.ok ? 'response ok? ' : response.statusText);
+  //   if (!response.ok) {
+  //     throw new Error(response.statusText);
+  //   } else {
+  //     return response.json();
+  //   }
+  // }
 
   const getData = async (offset = 0, scroll = false, query = '') => {
     return fetch(`/api/venues/${query ? 'q?'+query : offset > 0 ? '?offset='+offset: ''}`)
-      .then(handleErrors)
+      .then(handleErrorsAndReturnJson)
       .then(data => {
         if (offset > 0 && data.length === 0) {
           disable(next)
@@ -184,7 +171,7 @@
       }
       return await fetch(`/api/votes`, {body: JSON.stringify({venueId: venueid, vote: voted}), method:'POST', credentials: 'same-origin',
         headers: {'Content-Type': 'application/json'}})
-        .then(handleErrors)
+        .then(handleErrorsAndReturnJson)
         .then(data => {
         let {id, up, down, vote} = data
         upSpan.innerText = up
@@ -222,7 +209,7 @@
       method: 'POST',
       credentials: 'same-origin',
       headers: {'Content-Type': 'application/json'}
-    }).then(handleErrors)
+    }).then(handleErrorsAndReturnJson)
       .then(data => {
         let icon = targ.firstChild
         if (data.bookmarked) {
@@ -269,7 +256,8 @@
     let down = getById('down-select').checked
     let bookmarked = getById('bookmark-select').checked
     const params = {state, city, venue, capacity, up, down, bookmarked}
-    const queryString = $.param(params)
+    // const queryString = $.param(params)
+    let queryString = makeQuery(params)
     getData(0, false, queryString).then( data => {
       processData(data)
       let resultsTitleDisplay = document.querySelector('.stateDisplay')
@@ -383,7 +371,7 @@
       let checkFb = ven.split(" ").join('')
       console.log(`querying public page content api for /${checkFb}`);
       return await fetch(`/token/facebook/venues/${checkFb}`)
-        .then(handleErrors)
+        .then(handleErrorsAndReturnJson)
         .then(data =>{
           if (data && !data.error) {
             let {name,about,link,website,single_line_address,emails,location,events} = data
@@ -551,7 +539,7 @@
     console.log('newvenue in newvenueandsubmit ', newVenue);
     return await fetch(`/api/venues`, {method: 'POST', body: JSON.stringify({newVenue}), credentials: 'same-origin',
       headers: {'Content-Type': 'application/json'}})
-      .then(handleErrors)
+      .then(handleErrorsAndReturnJson)
       .then(data => {
         if (!data.id) {
           let errorMessage = getById('errorMessage')
