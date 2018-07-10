@@ -80,7 +80,7 @@ router.get('/facebook/bands/:qs', (req, res, next) => {
           if (!error && response.statusCode === 200) {
             res.send(body)
           } else {
-            console.log(body.error);
+            console.log('error getting fb data for ' ,qs , ' ', body.error);
             // res.send(body)
           }
         })
