@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
-const secret = process.env.JWT_KEY
+// const bcrypt = require('bcrypt');
+// const jwt = require('jsonwebtoken')
+// const secret = process.env.JWT_KEY
 const knex = require('../knex')
 const boom = require('boom')
 const base64url = require('base64url')
