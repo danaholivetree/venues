@@ -1,18 +1,21 @@
-$(document).ready(function() {
+(function (window, document, undefined) {
 
   let {copyToClipboard} = helpers
-
+  const {handleErrorsAndReturnJson} = sharedFunctions
   let venueId = document.location.href.match(/(\d+)$/)[0]
   let venueData = {}
 
-  $.get(`/api/venues/${venueId}`, data => {
+  fetch(`/api/venues/${venueId}`)
+    .then(handleErrorsAndReturnJson)
+    .then( data => {
+      console.log(data);
     venueData = data
     showVenue(data)
     getFbInfo(data.url) //maybe not have to do this more than once?
     getSi(data.venue, data.city, data.state)
     editSingleOn()
     submitFormOff()
-  }).fail( err => {
+  }).catch( err => {
     console.log('error ' , err);
   })
 
@@ -351,4 +354,4 @@ const sendEditToServer = (id, edits, all) => {
   })
 }
 
-})
+})(window, document);

@@ -332,20 +332,18 @@
 
   searchVenuesBtn.addEventListener('click', e => {
     e.preventDefault()
-    console.log('clicked searchVenuesBtn');
-      showEl(venueSearchForm)
-      let formInputs = addVenueForm.querySelectorAll('input')
-      formInputs.forEach( el => {
-        el.value = ''
-        if (el.type === 'checkbox') {
-          el.checked = false
-        }
-      })
-      getById('state').value = 'All'
-      hideEl(addVenueForm)
-      searchVenuesBtn.classList.add('lightblue')
-      addVenueBtn.classList.remove('lightblue')
-      // $('#venueState').val('All');
+    showEl(venueSearchForm)
+    let formInputs = addVenueForm.querySelectorAll('input')
+    formInputs.forEach( el => {
+      el.value = ''
+      if (el.type === 'checkbox') {
+        el.checked = false
+      }
+    })
+    getById('state').value = 'All'
+    hideEl(addVenueForm)
+    searchVenuesBtn.classList.add('lightblue')
+    addVenueBtn.classList.remove('lightblue')
   })
 
   addVenue.addEventListener('click', e => {
