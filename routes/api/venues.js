@@ -75,9 +75,12 @@ router.get('/q', (req, res, next) => {
 
   var rawCapQuery = ''
   var rawBindings = []
-  if (capacity[0] !== 'any') {
+  console.log('capacity ', capacity);
+  if (capacity !== 'any') {
+    console.log('capacity wasnt any', capacity);
     rawCapQuery += ' capacity IS NULL'
-      capacity.forEach( (cap, i) => {
+    capa = capacity.split(',')
+      capa.forEach( (cap, i) => {
           if (cap !== 'capxl' ) {
               rawCapQuery += ' OR capacity BETWEEN ? AND ?'
           }
@@ -92,7 +95,7 @@ router.get('/q', (req, res, next) => {
       })
   }
   rawCapQuery = '(' + rawCapQuery + ')'
-  if (capacity[0] !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
+  if (capacity !== 'any') query.andWhereRaw(rawCapQuery, rawBindings)
 
   if (bookmarked === 'true') {
     query.innerJoin('venue_bookmarks', function() {
