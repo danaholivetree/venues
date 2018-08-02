@@ -287,7 +287,7 @@ $(document).ready(function() {
       })
     })
   }
-  const getSpotifyToken = async () => {
+  const getSpotifyToken = () => {
     $.get('/token/spotify', ({access_token, expires_in}) => {
       localStorage.setItem('pa_token', access_token)
       localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
@@ -313,7 +313,7 @@ $(document).ready(function() {
     if (band !== '') {
       getBandcamp(band)
       if (!checkForSpotifyToken()) {
-        accessToken = await getSpotifyToken()
+        accessToken = getSpotifyToken()
       }
       getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
       // $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
