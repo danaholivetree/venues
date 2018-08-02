@@ -2,6 +2,17 @@ $(document).ready(function() {
   const {abbrState} = usStates
   const {makeUppercase, addHttp, checkUrl, checkEmail, endMessage} = helpers
   let accessToken = localStorage.getItem('pa_token')
+  const getSpotifyToken = () => {
+    $.get('/token/spotify', ({access_token, expires_in}) => {
+      localStorage.setItem('pa_token', access_token)
+      localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
+      accessToken = access_token
+      return access_token
+    })
+  }
+  if (!accessToken || accessToken == '' || accessToken == undefined || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
+    accessToken = getSpotifyToken()
+  }
   let off = 0
 
   const getData = async (offset = 0, scroll = false, query = '') => {
@@ -287,14 +298,7 @@ $(document).ready(function() {
       })
     })
   }
-  const getSpotifyToken = () => {
-    $.get('/token/spotify', ({access_token, expires_in}) => {
-      localStorage.setItem('pa_token', access_token)
-      localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
-      accessToken = access_token
-      return access_token
-    })
-  }
+
 
   const checkForSpotifyToken = () => {
     if (!accessToken || accessToken == '' || accessToken == undefined || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
@@ -314,7 +318,9 @@ $(document).ready(function() {
       getBandcamp(band)
       if (!checkForSpotifyToken()) {
         accessToken = getSpotifyToken()
+        console.log('created new access token ', accessToken)
       }
+      console.log('getting spotify widgets');
       getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
       // $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
       //   console.log('data from call to fb api ', data);

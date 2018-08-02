@@ -24,6 +24,7 @@
     "knex": "^0.14.4",
     "knex-csv-seeder": "^0.4.1",
     "morgan": "~1.9.0",
+    "ngrok": "^3.0.1",
     "pg": "^7.4.1",
     "pg-copy-streams": "^1.2.0",
     "popper.js": "^1.12.9",
