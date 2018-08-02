@@ -287,11 +287,12 @@ $(document).ready(function() {
       })
     })
   }
-  const getSpotifyToken = () => {
+  const getSpotifyToken = async () => {
     $.get('/token/spotify', ({access_token, expires_in}) => {
       localStorage.setItem('pa_token', access_token)
       localStorage.setItem('pa_expires', 1000*(expires_in) + (new Date()).getTime())
       accessToken = access_token
+      return access_token
     })
   }
 
@@ -312,84 +313,85 @@ $(document).ready(function() {
     if (band !== '') {
       getBandcamp(band)
       if (!checkForSpotifyToken()) {
-        getSpotifyToken()
+        accessToken = await getSpotifyToken()
       }
       getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
-      $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
-        console.log('data from call to fb api ', data);
-        if (data.category === 'Musician/Band' || data.category === 'Music') {
-          $('#fb').val(data.link)
-          $('#url').val(checkUrl(data.website))
-          getLocationFromFb(data.current_location, data.hometown)
-        }
-      })
+      // $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
+      //   console.log('data from call to fb api ', data);
+      //   if (data.category === 'Musician/Band' || data.category === 'Music') {
+      //     $('#fb').val(data.link)
+      //     $('#url').val(checkUrl(data.website))
+      //     getLocationFromFb(data.current_location, data.hometown)
+      //   }
+      // })
     }
   })
 
-  const getFbId = (url) => {
-    let fbid
-    if (url.split('/')[3]) { // like name in facebook.com/name
+  // const getFbId = (url) => {
+  //   let fbid
+  //   if (url.split('/')[3]) { // like name in facebook.com/name
+  //
+  //     if (url.split('.')[1] === 'facebook') {  //from facebook
+  //
+  //       fbid = url.split('/')[3]
+  //       if (fbid.split('-').length > 1) {
+  //         fbid = fbid.split('-')
+  //         fbid = fbid[fbid.length-1]
+  //       }
+  //     }
+  //   } else { //from url
+  //       fbid = url.split('.')[1]
+  //   }
+  //   return fbid
+  // }
 
-      if (url.split('.')[1] === 'facebook') {  //from facebook
+//relies on api access that was not granted
+  // $('#fb').change( e => {
+  //   e.preventDefault()
+  //   let fbid = getFbId(e.currentTarget.value)
+  //   $.get(`/token/facebook/bands/${fbid}`, ({name,website,link,genre,hometown,current_location,fan_count,category}) => {
+  //     console.log('category ', category);
+  //     if (category === 'Musician/Band' || category === 'Music') {
+  //       let url = checkUrl(website)
+  //       getLocationFromFb(current_location, hometown)
+  //       if ($('#band').val() === '') {
+  //         $('#band').val(name)
+  //         getBandcamp(name)
+  //         checkForSpotifyToken()
+  //         getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
+  //       }
+  //       if (url.split('.')[1] ==='bandcamp') {
+  //         $('#bandcamp').val(url)
+  //       } else if (url.split('/')[2].split('.')[0] === 'www') {
+  //         $('#url').val(url)
+  //       }
+  //     }
+  //   })
+  // })
 
-        fbid = url.split('/')[3]
-        if (fbid.split('-').length > 1) {
-          fbid = fbid.split('-')
-          fbid = fbid[fbid.length-1]
-        }
-      }
-    } else { //from url
-        fbid = url.split('.')[1]
-    }
-    return fbid
-  }
-
-  $('#fb').change( e => {
-    e.preventDefault()
-    let fbid = getFbId(e.currentTarget.value)
-    $.get(`/token/facebook/bands/${fbid}`, ({name,website,link,genre,hometown,current_location,fan_count,category}) => {
-      console.log('category ', category);
-      if (category === 'Musician/Band' || category === 'Music') {
-        let url = checkUrl(website)
-        getLocationFromFb(current_location, hometown)
-        if ($('#band').val() === '') {
-          $('#band').val(name)
-          getBandcamp(name)
-          checkForSpotifyToken()
-          getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
-        }
-        if (url.split('.')[1] ==='bandcamp') {
-          $('#bandcamp').val(url)
-        } else if (url.split('/')[2].split('.')[0] === 'www') {
-          $('#url').val(url)
-        }
-      }
-    })
-  })
-
-  const getLocationFromFb = (curr, home) => {
-    if ($('#city').val() === '' || ($('#state').val() === 'Any')) {
-      if (curr && curr.split(',').length > 1) {
-        $('#city').val(curr.split(',')[0])
-        if (curr.split(',').length > 1) {
-          if (curr.split(',')[1].trim().length === 2) {
-            $('#state').val(abbrState(curr.split(',')[1].trim(), 'name'))
-          } else {
-            $('#state').val(curr.split(',')[1].trim())
-          }
-        }
-      } else if (home) {
-        $('#city').val(home.split(',')[0])
-        if (home.split(',').length > 1) {
-          if (home.split(',')[1].trim().length === 2) {
-            $('#state').val(abbrState(home.split(',')[1].trim(), 'name'))
-          } else {
-            $('#state').val(home.split(',')[1].trim())
-          }
-        }
-      }
-    }
-  }
+  // const getLocationFromFb = (curr, home) => {
+  //   if ($('#city').val() === '' || ($('#state').val() === 'Any')) {
+  //     if (curr && curr.split(',').length > 1) {
+  //       $('#city').val(curr.split(',')[0])
+  //       if (curr.split(',').length > 1) {
+  //         if (curr.split(',')[1].trim().length === 2) {
+  //           $('#state').val(abbrState(curr.split(',')[1].trim(), 'name'))
+  //         } else {
+  //           $('#state').val(curr.split(',')[1].trim())
+  //         }
+  //       }
+  //     } else if (home) {
+  //       $('#city').val(home.split(',')[0])
+  //       if (home.split(',').length > 1) {
+  //         if (home.split(',')[1].trim().length === 2) {
+  //           $('#state').val(abbrState(home.split(',')[1].trim(), 'name'))
+  //         } else {
+  //           $('#state').val(home.split(',')[1].trim())
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   const getSpotifyWidgets = (token, band, target) => {
     $.ajax({
