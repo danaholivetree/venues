@@ -4,6 +4,7 @@ const knex = require('../../knex')
 const boom = require('boom')
 
 router.get('/', (req, res, next) => {
+  console.log('got to regular get route. req.query ', req.query);
   // for production
   // let userId = req.cookies.user.id
   //just for testing
@@ -27,11 +28,12 @@ router.get('/', (req, res, next) => {
     .orderBy('venue', 'asc')
     .limit(25)
 
-    if (req.query.offset) {
+    if (req.query.offset !== 0) {
       venueQuery.offset(req.query.offset)
     }
     return venueQuery
       .then( venues => {
+        console.log('venues ', venues.slice(0,5))
         res.send(venues)
       }).catch(err => next(err))
 });
@@ -46,7 +48,7 @@ router.get('/q', (req, res, next) => {
   } else {
     userId = 17
   }
-  console.log(req.query);
+  console.log('req.query was', req.query);
   const {state, city, venue, capacity, up, down, bookmarked, offset } = req.query
 
   var query = knex('venues')
@@ -137,6 +139,113 @@ router.get('/q', (req, res, next) => {
     })
 });
 
+router.get('/qs', (req, res, next) => {
+  // for production
+  // let userId = req.cookies.user.id
+  //just for testing
+  let userId
+  if (req.cookies.user) {
+    userId = req.cookies.user.id
+  } else {
+    userId = 17
+  }
+  console.log('req.query was', req.query);
+  const {state, city, venue, xs, s, m, l, xl, up, down, bookmarked, offset, any } = req.query
+  var query = knex('venues')
+              .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'email', 'city', 'capacity', 'vote', 'venue_bookmarks.id as bookmark')
+  const addState = (state) => {
+    if (state !== 'All') {
+      console.log('state wasnt all ', state)
+      return query.where('state', state)
+    }
+  }
+  const addCity = (city) => {
+    return query.where('city', 'ilike', `${city}%`)
+  }
+  const addVenue = (venue) => {
+    console.log('adding venue ', venue)
+    return query.where('venue', 'ilike', `%${venue}%`)
+  }
+
+  if (state) {
+    console.log('adding state ', state);
+    addState(state)
+  }
+  if (city) {
+    console.log('adding city ', city);
+    addCity(city)
+  }
+  if (venue) {
+    console.log('adding venue' , venue);
+    addVenue(venue)
+  }
+
+  var rawCapQuery = ''
+  var rawBindings = []
+  // if (capacity !== 'any') {
+  //   console.log('capacity wasnt any', capacity);
+  if (!any) rawCapQuery += ' capacity IS NULL'
+    // capa = capacity.split(',')
+    //   capa.forEach( (cap, i) => {
+
+  let cap = ' OR capacity BETWEEN ? AND ?'
+  if (xs) rawCapQuery += cap
+  if (s) rawCapQuery += cap
+  if (m) rawCapQuery += cap
+  if (l) rawCapQuery += cap
+  if (xl) rawCapQuery += ' OR capacity > ?'
+  if (xs) rawBindings = rawBindings.concat([0, 100])
+  if (s) rawBindings = rawBindings.concat([101, 250])
+  if (m) rawBindings = rawBindings.concat([251, 600])
+  if (l) rawBindings = rawBindings.concat([601, 1200])
+  if (xl) rawBindings = rawBindings.concat(['capacity', 1200])
+
+
+  rawCapQuery = '(' + rawCapQuery + ')'
+  if (!any) query.andWhereRaw(rawCapQuery, rawBindings)
+
+  if (bookmarked === 'true') {
+    query.innerJoin('venue_bookmarks', function() {
+      this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn('venue_bookmarks.user_id', '=', userId)
+    })
+  } else {
+   query.leftOuterJoin('venue_bookmarks', function() {
+     this.on('venues.id', '=', 'venue_bookmarks.venue_id').andOn("venue_bookmarks.user_id", "=", userId)
+   })
+ }
+ if (up === 'true' && down === 'true') {
+   query.innerJoin('venue_votes', function() {
+     this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', userId)
+   }).where('vote', '=', 'up').orWhere('vote', '=', 'down')
+ } else {
+   if (up === 'true') {
+     query.innerJoin('venue_votes', function() {
+       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', userId)
+     }).where('vote', '=', 'up')
+   }
+   if (down === 'true') {
+     query.innerJoin('venue_votes', function() {
+       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', userId)
+     }).where('vote', '=', 'down')
+   } else if (up !== 'true' && down !== 'true') {
+     query.leftOuterJoin('venue_votes', function() {
+       this.on('venues.id', '=', 'venue_votes.venue_id').andOn('venue_votes.user_id', '=', userId)
+     })
+   }
+ }
+
+  query.orderBy('state', 'asc').orderBy('city', 'asc').orderBy('venue', 'asc').limit(25)
+  if (req.query.offset) {
+    if (req.query.offset != 0) {
+      query.offset(req.query.offset)
+    }
+  }
+  return query.then( venues => {
+    console.log(venues.slice(0,5));
+    res.send(venues)
+  })
+});
+
 router.get('/:id', (req, res, next) => {
   // for production
   // let userId = req.cookies.user.id
@@ -157,6 +266,7 @@ router.get('/:id', (req, res, next) => {
     .select('venues.id as id', 'venue', 'state', 'url', 'diy', 'up', 'down', 'vote', 'venues.email', 'city', 'capacity','genres_booked as genres', 'ages', 'accessibility', 'type', 'crowd', 'pay', 'promo',  'users.name as contributedBy', 'sound')
     .first()
     .then( venue => {
+      console.log(venue)
       res.send(venue)
     })
 });

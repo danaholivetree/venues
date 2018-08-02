@@ -11,6 +11,13 @@ var app = express()
 // const sslRedirect = require('heroku-ssl-redirect')
 // app.use(sslRedirect(['production', 'development']))
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods", "*");
+  next();
+});
+
 
 var path = require('path')
 var favicon = require('serve-favicon')

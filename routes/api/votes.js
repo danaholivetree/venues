@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const knex = require('../../knex')
-const Boom = require('boom')
+const boom = require('boom')
 
 //get votes by user, for dash
 router.get('/', function(req, res, next) {
@@ -88,10 +88,17 @@ router.post('/', (req, res, next) => {
 })
 
 //user clicked x next to venue vote on dash
-router.delete('/', (req, res, next) => {
+router.delete('/:id', (req, res, next) => {
+  console.log('got to delete , req.params.id', typeof req.params.id);
   // for production
   // let userId = req.cookies.user.id
   //just for testing
+  // console.log('req.body', req.body);
+  // console.log('req.body.id' , req.body.id);
+  // if (!req.body.id) {
+  //   return next(boom.badRequest('DELETE request requires venue id in body.'))
+  // }
+  // console.log('typeof req.body.id', typeof req.body.id);
   let userId
   if (req.cookies.user) {
     userId = req.cookies.user.id
@@ -99,14 +106,14 @@ router.delete('/', (req, res, next) => {
     userId = 17
   }
     return knex('venue_votes')
-      .where({user_id: userId, venue_id: Number(req.body.id)})
+      .where({user_id: userId, venue_id: req.params.id})
       .del()
       .returning('vote')
       .then( vote => {
         let oldVote = vote[0]
         knex('venues')
           .decrement(`${oldVote}`, 1)
-          .where('id', Number(req.body.id))
+          .where('id', req.params.id)
           .returning(`*`)
           .then( updatedVenue => {
             res.send(updatedVenue[0])
