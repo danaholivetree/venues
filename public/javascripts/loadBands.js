@@ -475,6 +475,9 @@ $(document).ready(function() {
     if (formData.fb && !formData.fb.value.split('/')[3]) {
       return "Please enter a complete facebook url"
     }
+    if ($( "#addGenres input:checked" ).length < 2) {
+      return "Please select at least two genres"
+    }
   }
 
   const newBandFromForm = (formData, spot, selectedGenres) => {
