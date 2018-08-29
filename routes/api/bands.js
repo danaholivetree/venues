@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const knex = require('../../knex')
 const boom = require('boom')
+const env = process.env.NODE_ENV || 'development'
 
 router.get('/', function(req, res, next) {
   let userId

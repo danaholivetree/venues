@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const knex = require('../../knex')
 const Boom = require('boom')
+const env = process.env.NODE_ENV || 'development'
 
 //get votes by user, for dash
 router.get('/', function(req, res, next) {
