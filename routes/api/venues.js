@@ -204,7 +204,7 @@ router.put('/:id', (req, res, next) => {
     return updatedVenue
   }
 
-  const {url, email, capacity, diy, genres, type, crowd, ages, accessibility, pay, promo, sound} = req.body
+  const {url, email, capacity, diy, genres, type, crowd, ages, accessibility, pay, promo, sound, bookingDetails} = req.body
   let toVenues = {}
   let toProfile = {}
   if (url || url === '') {
