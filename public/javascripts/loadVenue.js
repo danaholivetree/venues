@@ -19,7 +19,7 @@ $(document).ready(function() {
   const showVenue = data => {
     venueData = data
     // console.log('gotData ', data);
-    const {id, venue, url, state, city, diy, capacity, email, sound, genres, type, crowd, ages, pay, promo, accessibility, contributedBy, up, down, vote} = data
+    const {id, venue, url, state, city, diy, capacity, email, sound, genres, type, crowd, ages, pay, promo, accessibility, contributedBy, up, down, vote, bookingDetails} = data
     //empty and append no matter what OR check if values have changed first , which is more intensive
     $('.container > h3').empty().append(venue)
     $('.info.location').empty().append(`${city}, ${state}`)
