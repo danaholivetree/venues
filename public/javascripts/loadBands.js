@@ -283,7 +283,6 @@ $(document).ready(function() {
   })
 
   $('.genre-selector').on('change', function() {
-    console.log(' checked length ', $('.genre-selector:checked').length);
     if($('.genre-selector:checked').length > 4) {
        this.checked = false;
      }
@@ -302,11 +301,8 @@ $(document).ready(function() {
 
   const checkForSpotifyToken = () => {
     if (!accessToken || accessToken == '' || accessToken == undefined || localStorage.getItem('pa_expires') < (new Date()).getTime()) {
-      console.log('token expired? ', localStorage.getItem('pa_expires') < (new Date()).getTime());
-      console.log('no token ', !accessToken || accessToken == '' || accessToken == undefined );
       return false
     } else {
-      console.log('there was a token ');
       return true
     }
   }
@@ -318,9 +314,7 @@ $(document).ready(function() {
       getBandcamp(band)
       if (!checkForSpotifyToken()) {
         accessToken = getSpotifyToken()
-        console.log('created new access token ', accessToken)
       }
-      console.log('getting spotify widgets');
       getSpotifyWidgets(accessToken, band, $('#spotifyGuess'))
       // $.get(`/token/facebook/bands/${band.split(" ").join('')}`, data => {
       //   console.log('data from call to fb api ', data);
@@ -410,15 +404,12 @@ $(document).ready(function() {
       },
       success : ({artists}) => {
         const {items} = artists
-        console.log('items ' , items);
         if (items.length > 0) {
           let reordered = items.sort( (a,b) => a.followers.total < b.followers.total)
-          console.log('reordered ', reordered);
           $('#spotifyGuess').children().first().show()
           $('.guesses').remove()
           $('#wrongSpotify').remove()
           reordered.forEach( (item, i, arr) => {
-            console.log('item ',i, ' = ', item);
             let artistId = item.id
             let artistSpotify = item.external_urls.spotify
             let artistUri = item.uri

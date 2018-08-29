@@ -239,16 +239,11 @@ $(document).ready(function() {
 
   const clickedSave = (btn, thisInput) => {
     let origVal = venueData[$(thisInput).prop('id')]
-    console.log('clicked save. origVal was', origVal )
     let field = $(thisInput).prop('id')
-    console.log('field ', field);
     let editedVenue = {}
     let newVal = (field === 'diy') ? $(thisInput).prop('checked') : $(thisInput).val()
-    console.log('newVal ', newVal);
     if (newVal !== origVal) {
-      console.log('newVal was different than origVal ');
       editedVenue[field] = newVal
-      console.log('editedVenue about to be sent to server ', editedVenue);
       sendEditToServer(venueId, editedVenue)
       venueData[field] = editedVenue[field]
     }
@@ -346,7 +341,6 @@ const sendEditToServer = (id, edits, all) => {
     method: 'PUT',
     data: edits,
     success: data => {
-      console.log('edited data came back from server ', data)
       if (all) {
         showVenue(data) //might be able to avoid this
       }
