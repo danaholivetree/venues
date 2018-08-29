@@ -2,8 +2,10 @@ var express = require('express');
 var router = express.Router();
 const knex = require('../../knex')
 const boom = require('boom')
+const env = process.env.NODE_ENV || 'development'
 
 router.get('/', (req, res, next) => {
+  console.log('env ', env)
   let userId = req.cookies.user.id
   let venueQuery = knex('venues')
     .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'up', 'down', 'vote', 'venue_bookmarks.id as bookmark'])
@@ -203,7 +205,7 @@ router.put('/:id', (req, res, next) => {
     }
     return updatedVenue
   }
-
+  console.log('req.body', req.body)
   const {url, email, capacity, diy, genres, type, crowd, ages, accessibility, pay, promo, sound, bookingDetails} = req.body
   let toVenues = {}
   let toProfile = {}
