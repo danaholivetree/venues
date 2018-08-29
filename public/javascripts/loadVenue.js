@@ -8,7 +8,7 @@ $(document).ready(function() {
   $.get(`/api/venues/${venueId}`, data => {
     venueData = data
     showVenue(data)
-    getFbInfo(data.url) //maybe not have to do this more than once?
+    //getFbInfo(data.url)
     getSi(data.venue, data.city, data.state)
     editSingleOn()
     submitFormOff()
@@ -29,6 +29,7 @@ $(document).ready(function() {
     $('.info.email').empty().append(`${email ? email + `  <button type="button" class="btn btn-default thumb btn-copy js-tooltip js-copy" data-toggle="tooltip" data-placement="top" data-copy=${email} title="Copy to clipboard"><svg class="icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="18" height="18" viewBox="0 0 24 24"><path d="M17,9H7V7H17M17,13H7V11H17M14,17H7V15H14M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3Z" /></svg></button>` : ''}`)
     $('.info.capacity').empty().append(`${(capacity !== 0) && capacity ? capacity : ''}`)
     $('.info.genres').empty().append(`${genres ? genres : ''}`)
+    $('.info.bookingDetails').empty().append(`${bookingDetails ? bookingDetails : ''}`)
     $('.info.type').empty().append(`${type ? type : ''}`)
     $('.info.crowd').empty().append(`${crowd ? crowd : ''}`)
     $('.info.sound').empty().append(`${sound ? sound : ''}`)
@@ -92,31 +93,31 @@ $(document).ready(function() {
     })
   }
 
-  const getFbInfo = url => {
-    let fbid
-    if (url.split('.')[1] === 'facebook') {
-      fbid = url.split('/')[3]
-      if (fbid.split('-').length > 1) {
-        fbid = fbid.split('-')
-        fbid = fbid[fbid.length-1]
-      }
-    } else {
-      fbid = url.split('.')[1]
-    }
-    console.log('fbid to be serached', fbid);
-      $.get(`/token/facebook/venues/${fbid}`, data => {
-        console.log('fb data ', data);
-        if (data.events) {
-          getEvents(data.events.data)
-        }
-        if (data.about) {
-          checkForBookingEmail(data.about)
-        }
-        if (data.emails) {
-          data.emails.filter( email => checkForBookingEmail(email))
-        }
-      })
-  }
+  // const getFbInfo = url => {
+  //   let fbid
+  //   if (url.split('.')[1] === 'facebook') {
+  //     fbid = url.split('/')[3]
+  //     if (fbid.split('-').length > 1) {
+  //       fbid = fbid.split('-')
+  //       fbid = fbid[fbid.length-1]
+  //     }
+  //   } else {
+  //     fbid = url.split('.')[1]
+  //   }
+  //   console.log('fbid to be serached', fbid);
+  //     $.get(`/token/facebook/venues/${fbid}`, data => {
+  //       console.log('fb data ', data);
+  //       if (data.events) {
+  //         getEvents(data.events.data)
+  //       }
+  //       if (data.about) {
+  //         checkForBookingEmail(data.about)
+  //       }
+  //       if (data.emails) {
+  //         data.emails.filter( email => checkForBookingEmail(email))
+  //       }
+  //     })
+  // }
 
   const getSi = (venue, city, state) => {
     let cityParam = city
@@ -166,32 +167,32 @@ $(document).ready(function() {
 
 {/* <h3> ${venue} </h3> */}
 {/* <button id='editVenue' class='btn btn-default'>Edit All</button> */}
-  const getEvents = events => {
-    let upcomingEvents = events.filter( event => (new Date(event.start_time) > new Date()))
-    if (upcomingEvents.length > 0) {
-      let displayEvents = upcomingEvents.map( event => {
-        return `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`
-      })
-      displayEvents.forEach( event => {
-        $('#displayEvents ul').prepend(event)
-      })
-    }
-  }
+  // const getEvents = events => {
+  //   let upcomingEvents = events.filter( event => (new Date(event.start_time) > new Date()))
+  //   if (upcomingEvents.length > 0) {
+  //     let displayEvents = upcomingEvents.map( event => {
+  //       return `<li>${new Date(event.start_time).toDateString()}: <a href=http://www.facebook.com/events/${event.id} target='_blank'>${event.name}</a></li>`
+  //     })
+  //     displayEvents.forEach( event => {
+  //       $('#displayEvents ul').prepend(event)
+  //     })
+  //   }
+  // }
 
-  const checkForBookingEmail = (field) => {
-    let clean = field.replace(/(\r\n|\n|\r)/gm, " ");
-    let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
-    // will add test for if found email contains 'booking' or if there may be a typo
-    // in already-listed email address
-    // let book = /(booking)/gi
-    // let bookingEm = /(booking)+@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/gi
-
-    let booking = clean.split(' ').find( el => el.match(em))
-    if (booking && !venueData.email) {
-      $('#email').show().val(booking)
-      editOn('email')
-  }
-}
+//   const checkForBookingEmail = (field) => {
+//     let clean = field.replace(/(\r\n|\n|\r)/gm, " ");
+//     let em = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g
+//     // will add test for if found email contains 'booking' or if there may be a typo
+//     // in already-listed email address
+//     // let book = /(booking)/gi
+//     // let bookingEm = /(booking)+@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/gi
+//
+//     let booking = clean.split(' ').find( el => el.match(em))
+//     if (booking && !venueData.email) {
+//       $('#email').show().val(booking)
+//       editOn('email')
+//   }
+// }
 
   const editSingleOn = () => {
     $('.edit-btn').click( e => {
