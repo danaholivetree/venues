@@ -5,8 +5,12 @@ const boom = require('boom')
 const env = process.env.NODE_ENV || 'development'
 
 router.get('/', (req, res, next) => {
-  console.log('env ', env)
-  let userId = req.cookies.user.id
+  let userId
+  if (env === 'development') {
+    userId = process.env.USER_ID;
+  } else {
+    userId = req.cookies.user.id
+  }
   let venueQuery = knex('venues')
     .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'up', 'down', 'vote', 'venue_bookmarks.id as bookmark'])
     .leftOuterJoin('venue_votes', function() {
@@ -30,7 +34,12 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/q', (req, res, next) => {
-  let userId = req.cookies.user.id
+  let userId
+  if (env === 'development') {
+    userId = process.env.USER_ID;
+  } else {
+    userId = req.cookies.user.id
+  }
   console.log(req.query);
   const {state, city, venue, capacity, up, down, bookmarked, offset } = req.query
 
@@ -120,7 +129,12 @@ router.get('/q', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-  let userId = req.cookies.user.id
+  let userId
+  if (env === 'development') {
+    userId = process.env.USER_ID;
+  } else {
+    userId = req.cookies.user.id
+  }
   return knex('venues')
     .where('venues.id', Number(req.params.id))
     .leftOuterJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
@@ -136,7 +150,12 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-  let userId = req.cookies.user.id
+  let userId
+  if (env === 'development') {
+    userId = process.env.USER_ID;
+  } else {
+    userId = req.cookies.user.id
+  }
   const {state, city, venue, capacity, email, url, diy} = req.body
   var newVenue = {state, city, venue, url, contributed_by: userId}
   if (capacity) {
@@ -173,6 +192,12 @@ router.post('/', (req, res, next) => {
 })
 
 router.put('/:id', (req, res, next) => {
+  let userId
+  if (env === 'development') {
+    userId = process.env.USER_ID;
+  } else {
+    userId = req.cookies.user.id
+  }
   const venueQuery =   knex('venues').where('id', Number(req.params.id))
   const profileQuery = knex('venue_profiles').where('venue_id', Number(req.params.id))
 
@@ -246,7 +271,7 @@ router.put('/:id', (req, res, next) => {
     toProfile.sound = sound
   }
   if (bookingDetails || bookingDetails === '') {
-    toProfile.bookingDetails = bookingDetails
+    toProfile.booking_details = bookingDetails
   }
   let updatedVenue = {}
   if (Object.keys(toVenues).length > 0) {

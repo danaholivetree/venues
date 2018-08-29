@@ -36,10 +36,7 @@ var bBookApi = require('./routes/api/bBookmarks')
 var token = require('./routes/token')
 var bc = require('./routes/bc')
 var auth = require('./routes/auth')
-
-
-
-console.log('process.env.NODE_ENV ', process.env.NODE_ENV);
+let env = process.env.NODE_ENV
 
 helpers(app)
 // view engine setup
@@ -93,9 +90,10 @@ const authorize = (req, res, next) => {
     }
   }
 
-
-app.use('/auth', auth)
-app.use(authorize)
+if (env === 'production') {
+  app.use('/auth', auth)
+  app.use(authorize)
+}
 app.use('/', renders)
 app.use('/token', token)
 app.use('/bc', bc)

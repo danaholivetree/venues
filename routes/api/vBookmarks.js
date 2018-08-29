@@ -5,10 +5,16 @@ const Boom = require('boom')
 
 //get bookmarks by user, for dash
 router.get('/', function(req, res, next) {
+  let userId
+  if (env === 'development') {
+    userId = process.env.USER_ID;
+  } else {
+    userId = req.cookies.user.id
+  }
     return knex('venues')
       .select(['venues.id as id', 'venues.venue'])
       .innerJoin('venue_bookmarks', function() {
-        this.on('venue_id', '=', 'venues.id').andOn('venue_bookmarks.user_id', '=', req.cookies.user.id)
+        this.on('venue_id', '=', 'venues.id').andOn('venue_bookmarks.user_id', '=', userId)
       }).then( venues => {
         res.send(venues)
       })
@@ -16,8 +22,13 @@ router.get('/', function(req, res, next) {
 
 //user clicked bookmark
 router.post('/', (req, res, next) => {
+  let userId
+  if (env === 'development') {
+    userId = process.env.USER_ID;
+  } else {
+    userId = req.cookies.user.id
+  }
     const {venueId} = req.body
-    const userId = req.cookies.user.id
     return knex('venue_bookmarks')
       .where('user_id', userId).andWhere('venue_id', venueId)
       .first()
