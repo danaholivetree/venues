@@ -3,11 +3,12 @@ var router = express.Router();
 const knex = require('../../knex')
 const boom = require('boom')
 const env = process.env.NODE_ENV || 'development'
+const devId = Number(process.env.USER_ID)
 
 router.get('/', function(req, res, next) {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
@@ -37,7 +38,7 @@ router.get('/', function(req, res, next) {
 router.get('/q', function(req, res, next) {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
@@ -112,7 +113,7 @@ router.get('/q', function(req, res, next) {
 router.get('/genres', (req, res, next) => {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
@@ -150,7 +151,7 @@ router.get('/genres', (req, res, next) => {
 router.post('/', (req, res, next) => {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }

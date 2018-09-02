@@ -3,11 +3,12 @@ var router = express.Router();
 const knex = require('../../knex')
 const boom = require('boom')
 const env = process.env.NODE_ENV || 'development'
+const devId = Number(process.env.USER_ID)
 
 router.get('/', (req, res, next) => {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
@@ -36,7 +37,7 @@ router.get('/', (req, res, next) => {
 router.get('/q', (req, res, next) => {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
@@ -131,7 +132,7 @@ router.get('/q', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
@@ -152,7 +153,7 @@ router.get('/:id', (req, res, next) => {
 router.post('/', (req, res, next) => {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
@@ -194,7 +195,7 @@ router.post('/', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }

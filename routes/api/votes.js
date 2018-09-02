@@ -3,12 +3,13 @@ var router = express.Router();
 const knex = require('../../knex')
 const Boom = require('boom')
 const env = process.env.NODE_ENV || 'development'
+const devId = Number(process.env.USER_ID)
 
 //get votes by user, for dash
 router.get('/', function(req, res, next) {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
@@ -26,7 +27,7 @@ router.post('/', (req, res, next) => {
     const {venueId, vote} = req.body
     let userId
     if (env === 'development') {
-      userId = process.env.USER_ID;
+      userId = devId;
     } else {
       userId = req.cookies.user.id
     }
@@ -86,7 +87,7 @@ router.post('/', (req, res, next) => {
 router.delete('/', (req, res, next) => {
   let userId
   if (env === 'development') {
-    userId = process.env.USER_ID;
+    userId = devId;
   } else {
     userId = req.cookies.user.id
   }
