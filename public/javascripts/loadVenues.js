@@ -265,28 +265,28 @@ $(document).ready(function() {
   })
 
 // try to get email, city and state from venue name alone
-  $('#venue').blur( e => {
-    e.preventDefault()
-    if ($('#venue').val()) {
-      let venue = e.currentTarget.value
-      $('#venue').val(makeUppercase(e.currentTarget.value))
-      $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, res => {
-        if (res && !res.error) {
-          console.log('got data back from fb ', res);
-          let {name,about,link,website,single_line_address,emails,location,events} = res
-          if (location) {
-            $('#checkVenueModal .modal-body').text(`Do you mean ${name} in ${location.city}, ${location.state}?`)
-            $('#checkVenueModal').modal('show');
-            $('#acceptVenue').click( e => {
-              lookForFbInfo(about, link, emails, location)
-              $('#checkVenueModal').modal('hide');
-              lookForSiInfo(venue, location)
-            })
-          }
-        } else {
-          console.log('tried to query fb api. error.message ', res.error.message);
-        }
-      })
+  // $('#venue').blur( e => {
+  //   e.preventDefault()
+  //   if ($('#venue').val()) {
+  //     let venue = e.currentTarget.value
+  //     $('#venue').val(makeUppercase(e.currentTarget.value))
+  //     $.get(`/token/facebook/venues/${venue.split(" ").join('')}`, res => {
+  //       if (res && !res.error) {
+  //         console.log('got data back from fb ', res);
+  //         let {name,about,link,website,single_line_address,emails,location,events} = res
+  //         if (location) {
+  //           $('#checkVenueModal .modal-body').text(`Do you mean ${name} in ${location.city}, ${location.state}?`)
+  //           $('#checkVenueModal').modal('show');
+  //           $('#acceptVenue').click( e => {
+  //             // lookForFbInfo(about, link, emails, location)
+  //             $('#checkVenueModal').modal('hide');
+  //             lookForSiInfo(venue, location)
+  //           })
+  //         }
+  //       } else {
+  //         console.log('tried to query fb api. error.message ', res.error.message);
+  //       }
+  //     })
       //tried to do this with the SDK. still needs valid app access token, it seems.
       // FB.api(`/${venue.split(" ").join('')}`, 'GET', {fields: 'name,about,link,website,single_line_address,emails,location,events.time_filter(upcoming){name,start_time,id}'}, res => {
         // if (res && !res.error) {
@@ -305,36 +305,37 @@ $(document).ready(function() {
       //     console.log(res.error.message);
       //   }
       // }) // close api call
-    }
-  })
+
+    // }
+  // })
 
 
 // check for data from url if it hasn't been found already
-  $('#url').blur( e => {
-    e.preventDefault()
-    let url = e.currentTarget.value
-    if ($('#url').val() && !$('#email').val()) {
-      let fbid
-      if (url.split('.')[1] === 'facebook') {
-        fbid = url.split('/')[3]
-        if (fbid.split('-').length > 1) {
-          fbid = fbid.split('-')
-          fbid = fbid[fbid.length-1]
-        }
-      } else {
-        fbid = url.split('.')[1]
-      }
-      $.get(`/token/facebook/venues/${fbid}`, res => {
-        if (res && !res.error) {
-          let {name,about,link,website,single_line_address,emails,location,events} = res
-          lookForFbInfo(about, link, emails, location)
-          lookForSiInfo(name, location)
-        } else {
-          console.log(res.error.message)
-        }
-      })
-    }
-  })
+  // $('#url').blur( e => {
+  //   e.preventDefault()
+  //   let url = e.currentTarget.value
+  //   if ($('#url').val() && !$('#email').val()) {
+  //     let fbid
+  //     if (url.split('.')[1] === 'facebook') {
+  //       fbid = url.split('/')[3]
+  //       if (fbid.split('-').length > 1) {
+  //         fbid = fbid.split('-')
+  //         fbid = fbid[fbid.length-1]
+  //       }
+  //     } else {
+  //       fbid = url.split('.')[1]
+  //     }
+  //     $.get(`/token/facebook/venues/${fbid}`, res => {
+  //       if (res && !res.error) {
+  //         let {name,about,link,website,single_line_address,emails,location,events} = res
+  //         lookForFbInfo(about, link, emails, location)
+  //         lookForSiInfo(name, location)
+  //       } else {
+  //         console.log(res.error.message)
+  //       }
+  //     })
+  //   }
+  // })
 
   const checkForBookingEmail = (field) => {
     // console.log(field);
@@ -346,31 +347,30 @@ $(document).ready(function() {
     // }
   }
 
-  const lookForFbInfo = (about, link, emails, location) => {
-    if (!$('#url').val().split('/')[3]) {
-      $('#url').val(checkUrl(link))
-    }
-    // console.log('about', about, 'link', link, 'emails', emails, 'location', location);
-    let booking
-    if (about) {
-      booking = checkForBookingEmail(about)
-    }
-
-    if (!booking) {
-      if (emails) {
-        booking = emails.filter( email => checkForBookingEmail(email))
-      }
-    }
-    if (booking && !$('#email').val()) {
-      $('#email').val(booking)
-    }
-    if (!$('#city').val()) {
-      $('#city').val(location.city)
-    }
-    if ($('#state').val() === "All") {
-      $('#state').val(abbrState(location.state, 'name'))
-    }
-  }
+  // const lookForFbInfo = (about, link, emails, location) => {
+  //   if (!$('#url').val().split('/')[3]) {
+  //     $('#url').val(checkUrl(link))
+  //   }
+  //   let booking
+  //   if (about) {
+  //     booking = checkForBookingEmail(about)
+  //   }
+  //
+  //   if (!booking) {
+  //     if (emails) {
+  //       booking = emails.filter( email => checkForBookingEmail(email))
+  //     }
+  //   }
+  //   if (booking && !$('#email').val()) {
+  //     $('#email').val(booking)
+  //   }
+  //   if (!$('#city').val()) {
+  //     $('#city').val(location.city)
+  //   }
+  //   if ($('#state').val() === "All") {
+  //     $('#state').val(abbrState(location.state, 'name'))
+  //   }
+  // }
 
   const lookForSiInfo = (venue, location) => {
     let siQuery = venue.split(' ').join('-') + '-' +location.city.split(' ').join('-')+ '-' + abbrState(location.state, 'name').split(' ').join('-')
