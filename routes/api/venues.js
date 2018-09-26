@@ -6,12 +6,7 @@ const env = process.env.NODE_ENV || 'development'
 const devId = Number(process.env.USER_ID)
 
 router.get('/', (req, res, next) => {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
   let venueQuery = knex('venues')
     .select(['venues.id', 'state', 'url', 'email', 'city', 'venue', 'capacity', 'diy', 'up', 'down', 'vote', 'venue_bookmarks.id as bookmark'])
     .leftOuterJoin('venue_votes', function() {
@@ -35,13 +30,7 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/q', (req, res, next) => {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
-  console.log(req.query);
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
   const {state, city, venue, capacity, up, down, bookmarked, offset } = req.query
 
   var query = knex('venues')
@@ -130,12 +119,7 @@ router.get('/q', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
   return knex('venues')
     .where('venues.id', Number(req.params.id))
     .leftOuterJoin('venue_profiles', 'venues.id', 'venue_profiles.venue_id')
@@ -151,12 +135,7 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
   const {state, city, venue, capacity, email, url, diy} = req.body
   var newVenue = {state, city, venue, url, contributed_by: userId}
   if (capacity) {
@@ -193,12 +172,7 @@ router.post('/', (req, res, next) => {
 })
 
 router.put('/:id', (req, res, next) => {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
   const venueQuery =   knex('venues').where('id', Number(req.params.id))
   const profileQuery = knex('venue_profiles').where('venue_id', Number(req.params.id))
 
@@ -231,7 +205,6 @@ router.put('/:id', (req, res, next) => {
     }
     return updatedVenue
   }
-  console.log('req.body', req.body)
   const {url, email, capacity, diy, genres, type, crowd, ages, accessibility, pay, promo, sound, bookingDetails} = req.body
   let toVenues = {}
   let toProfile = {}

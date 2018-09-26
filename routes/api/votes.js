@@ -7,30 +7,20 @@ const devId = Number(process.env.USER_ID)
 
 //get votes by user, for dash
 router.get('/', function(req, res, next) {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
-    return knex('venues')
-      .select(['venues.id as id', 'venues.venue', 'venue_votes.vote'])
-      .innerJoin('venue_votes', function() {
-        this.on('venue_id', '=', 'venues.id').andOn('venue_votes.user_id', '=', userId)
-      }).then( venues => {
-        res.send(venues)
-      })
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
+  return knex('venues')
+    .select(['venues.id as id', 'venues.venue', 'venue_votes.vote'])
+    .innerJoin('venue_votes', function() {
+      this.on('venue_id', '=', 'venues.id').andOn('venue_votes.user_id', '=', userId)
+    }).then( venues => {
+      res.send(venues)
+    })
 })
 
 //user clicked thumb up or thumb down
 router.post('/', (req, res, next) => {
     const {venueId, vote} = req.body
-    let userId
-    if (env === 'development') {
-      userId = devId;
-    } else {
-      userId = req.cookies.user.id
-    }
+    let userId = ( env === 'development' ) ? devId : req.cookies.user.id
     return knex('venue_votes')
       .where('user_id', userId).andWhere('venue_id', venueId)
       .first()
@@ -85,12 +75,7 @@ router.post('/', (req, res, next) => {
 
 //user clicked x next to venue vote on dash
 router.delete('/', (req, res, next) => {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
     return knex('venue_votes')
       .where({user_id: userId, venue_id: Number(req.body.id)})
       .del()

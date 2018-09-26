@@ -6,12 +6,7 @@ const env = process.env.NODE_ENV || 'development'
 const devId = Number(process.env.USER_ID)
 
 router.get('/', function(req, res, next) {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
   console.log('userId ', userId)
   let bandQuery = knex('bands')
     .select(['bands.id', 'state', 'url', 'bandcamp', 'fb', 'spotify', 'city', 'band', 'genre', 'stars', 'band_stars.id as starred', 'band_bookmarks.id as bookmark'])
@@ -36,14 +31,9 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/q', function(req, res, next) {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
   console.log('userId ', userId)
- const {state, city, band, genres, starred, bookmarked } = req.query
+  const {state, city, band, genres, starred, bookmarked } = req.query
   var query = knex('bands')
               .select('bands.id', 'state', 'city', 'band', 'genre', 'url', 'fb', 'bandcamp', 'spotify', 'stars', "band_stars.id as starred", "band_bookmarks.id as bookmark")
 
@@ -111,13 +101,6 @@ router.get('/q', function(req, res, next) {
 })
 
 router.get('/genres', (req, res, next) => {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
-  console.log('userId ', userId)
   return knex('bands')
     .select('genre')
     .then( genres => {
@@ -149,13 +132,8 @@ router.get('/genres', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
-  let userId
-  if (env === 'development') {
-    userId = devId;
-  } else {
-    userId = req.cookies.user.id
-  }
-    console.log('userId ', userId)
+  let userId = ( env === 'development' ) ? devId : req.cookies.user.id
+  console.log('userId ', userId)
   let data = JSON.parse(req.body.newBand)
   const {state, city, band, url, fb, bandcamp, spotify, genres} = data
   var newBand = {state, city, band}
